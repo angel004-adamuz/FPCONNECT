@@ -1,0 +1,272 @@
+Proyecto Transversal Integrador 
+ 
+0373. Lenguajes de marcas y sistemas de gestión de información 
+RA1. Reconoce las características de lenguajes de marcas analizando e interpretando 
+fragmentos de código. 
+ 
+• CE1.e: Se han reconocido la necesidad y los ámbitos específicos de aplicación 
+de un lenguaje de marcas de propósito general. 
+ 
+• CE1.f: Se han analizado las características propias de diferentes lenguajes de 
+marcas. 
+ 
+Definir y utilizar un lenguaje de marcas de propósito general (XML, JSON o YAML) para 
+representar la información clave del proyecto, estableciendo una estructura clara que 
+permita describir configuraciones, datos del sistema o elementos necesarios para su 
+funcionamiento. 
+ 
+ 
+ 
+0483. Sistemas Informáticos. 
+RA2. Instala sistemas operativos planificando el proceso e interpretando 
+documentación técnica. 
+ 
+• CE2.e: Se han instalado y actualizado sistemas operativos libres y propietarios. 
+ 
+Definir y Preparar el entorno de despliegue donde se alojará el backend y la BBDD 
+dentro del servidor de producción utilizando Windows Server / Linux. 
+ 
+ 
+ 
+0484. Bases de Datos 
+RA2. Crea bases de datos definiendo su estructura y las características de sus elementos 
+según el modelo relacional. 
+ 
+• CE2.b: Se han creado las tablas y las relaciones entre ellas. 
+ 
+• CE2.c: Se han seleccionado los tipos de datos adecuados. 
+ 
+• CE2.d: Se han definido los campos clave en las tablas. 
+ 
+Diseñar el modelo entidad–relación de la aplicación, asegurando que representa 
+adecuadamente los procesos y necesidades del proyecto. 
+ 
+Crear el esquema final de la base de datos dentro del gestor elegido (MySQL, MariaDB, 
+PostgreSQL, 
+ 
+0485. Programación. 
+RA4. Desarrolla programas organizados en clases analizando y aplicando los principios 
+de la programación orientada a objetos. 
+ 
+• CE4.b: Se han definido clases. 
+ 
+• CE4.c: Se han definido propiedades y métodos. 
+ 
+• CE4.d: Se han creado constructores. 
+ 
+• CE4.e: Se han desarrollado programas que instancien y utilicen objetos de las 
+clases creadas anteriormente. 
+ 
+• CE4.g: Se han definido y utilizado clases heredadas. 
+ 
+Diseñar y crear las clases principales de la aplicación, representando las entidades del 
+dominio mediante programación orientada a objetos definiendo las propiedades y 
+métodos necesarios para modelar el comportamiento de cada entidad y su lógica de 
+negocio asociada. 
+ 
+Implementar los constructores que aseguren una correcta inicialización de los objetos 
+y crear relaciones jerárquicas básicas entre clases mediante herencia cuando sea 
+necesario. 
+ 
+ 
+ 
+0487. Entornos de Desarrollo. 
+RA4. Optimiza código empleando las herramientas disponibles en el entorno de 
+desarrollo. 
+ 
+• CE4.f: Se ha realizado el control de versiones integrado en el entorno de 
+desarrollo. 
+ 
+Gestionar el control de versiones del proyecto desde el propio entorno de desarrollo. 
+ 
+ 
+ 
+1665. Digitalización aplicada a los sectores productivos. 
+RA2. Utiliza herramientas digitales para gestionar procesos en entornos profesionales. 
+ 
+• CE2.a: Se han empleado herramientas digitales colaborativas para organizar y 
+coordinar tareas del proyecto. 
+ 
+• CE2.c: Se ha gestionado documentación digital aplicando medidas de 
+seguridad, integridad y accesibilidad. 
+ 
+• CE2.d: Se han utilizado sistemas de almacenamiento y repositorios digitales 
+garantizando su correcta estructuración. 
+ 
+Gestión del proyecto en Trello / GitHub / Notion. 
+1708. Sostenibilidad aplicada al sistema productivo. 
+RA2. Propone medidas de mejora para reducir el impacto ambiental en el entorno 
+productivo. 
+ 
+• CE2.a: Se ha analizado el impacto ambiental y energético de la infraestructura 
+tecnológica propuesta. 
+ 
+• CE2.b: Se han propuesto medidas de eficiencia energética en servidores, 
+sistemas de almacenamiento y equipamiento de red. 
+ 
+• CE2.c: Se han evaluado alternativas sostenibles relacionadas con la 
+virtualización, la reutilización o el reciclaje de hardware. 
+ 
+• CE2.d: Se ha justificado la selección de soluciones que minimizan el impacto 
+ambiental del sistema. 
+ 
+Plan de sostenibilidad del CPD. 
+ 
+Optimización energética y reciclaje. 
+ 
+ 
+ 
+1709. Itinerario Personal de Empleabilidad I 
+RA2. Utiliza herramientas de comunicación y búsqueda activa de empleo. 
+ 
+• CE2.a: Se ha elaborado o actualizado un currículum vitae técnico adecuado al 
+sector profesional. 
+•  
+• CE2.c: Se ha documentado la experiencia y competencias adquiridas durante el 
+desarrollo del proyecto. 
+•  
+• CE2.d: Se han utilizado plataformas digitales para la presentación del perfil 
+profesional. 
+ 
+Inclusión del Proyecto Intermodular en el currículum técnico del alumno. 
+ 
+Actualización del perfil profesional en LinkedIn, detallando el rol desempeñado, 
+tecnologías utilizadas y tareas realizadas. 
+ 
+ 
+ 
+0489. Programación multimedia y dispositivos móviles. 
+RA2. Desarrollo de aplicaciones móviles. 
+• CE4.a: Generación de la estructura de clases necesaria para la aplicación. 
+ 
+• CE4.b: Uso de clases que modelan ventanas, menús y controles de la interfaz 
+móvil. 
+ 
+Desarrollar la versión móvil de la aplicación, implementando su estructura de clases, 
+pantallas y navegación interna mediante el uso de las librerías gráficas del entorno 
+móvil (Android, Flutter, Swift, etc.). 
+0179. Inglés Profesional 
+RA4. Utiliza herramientas de comunicación y búsqueda activa de empleo. 
+ 
+• CE4.a: Se han elaborado textos escritos propios del ámbito profesional 
+utilizando estructuras y vocabulario adecuados. 
+ 
+• CE4.c: Se ha utilizado terminología técnica relacionada con la familia 
+profesional. 
+ 
+• CE4.d: Se han elaborado documentos de forma clara, ordenada y comprensible. 
+ 
+ 
+Redacción de un resumen ejecutivo del proyecto en inglés técnico. 
+Elaboración de un glosario de términos TI utilizados en el proyecto. 
+Uso de etiquetado técnico en inglés en diagramas y documentación. 
+ 
+ 
+ 
+ 
+0486. Acceso a Datos. 
+RA4. Gestiona la persistencia de los datos identificando herramientas de mapeo objeto-
+relacional (ORM) y desarrollando aplicaciones que las utilizan. 
+ 
+• CE4.e: Se han desarrollado aplicaciones que modifican y recuperan objetos 
+persistentes. 
+ 
+• CE4.f: Se han desarrollado aplicaciones que realizan consultas usando SQL. 
+ 
+Implementar la lógica de acceso a datos del proyecto mediante un ORM, desarrollando 
+los servicios necesarios para añadir, modificar, eliminar y recuperar objetos 
+persistentes que representen las entidades principales de la aplicación. 
+ 
+Desarrollar consultas avanzadas sobre la base de datos utilizando mecanismos SQL 
+proporcionados por el ORM. 
+ 
+ 
+ 
+ 
+0491. Sistemas de Gestión y Procesos. 
+RA3. Realiza operaciones de gestión, consulta y análisis de la información siguiendo 
+las especificaciones de diseño y utilizando las herramientas proporcionadas por los 
+sistemas ERP-CRM. 
+• CE3.e: Automatizar extracciones de datos mediante procesos. 
+ 
+• CE3.f: Verificar el rendimiento del sistema ERP-CRM. 
+ 
+Implementar un módulo de gestión de datos que permita automatizar procesos de 
+extracción, generar informes o conjuntos de datos que puedan ser utilizados para 
+análisis internos o para otras funcionalidades de la aplicación. 
+0488. Desarrollo de Interfaces. 
+RA4. Diseña interfaces gráficas identificando y aplicando criterios de usabilidad y 
+accesibilidad. 
+ 
+• CE4.c: Se han creado diferentes tipos de menús cuya estructura y contenido 
+siguen los estándares establecidos. 
+ 
+• CE4.d: Se han distribuido las acciones en menús, barras de herramientas, 
+botones de comando, entre otros, siguiendo un criterio coherente. 
+ 
+• CE4.e: Se han distribuido adecuadamente los controles en la interfaz de usuario. 
+ 
+Diseñar y construir la interfaz gráfica completa de la aplicación, organizando la 
+información y las funcionalidades en diferentes ventanas, pantallas o vistas según la 
+arquitectura del proyecto (web o escritorio), garantizando que cada elemento 
+represente correctamente los procesos del sistema y facilite la interacción del usuario. 
+ 
+ 
+0490. Programación de Servicios y Procesos. 
+RA3. Programa mecanismos de comunicación en red empleando sockets y analizando el 
+escenario de ejecución. 
+• CE4.i: Se han utilizado hilos para posibilitar la comunicación simultánea de 
+varios clientes con el servidor. 
+ 
+• CE4.f: Se ha desarrollado una aplicación servidor en red y verificado su 
+funcionamiento. 
+ 
+Probar la comunicación simultánea con varios clientes, garantizando la correcta 
+sincronización y control de accesos a los recursos compartidos durante el intercambio 
+de datos. 
+Depurar y documentar todo el proceso, describiendo el escenario de comunicación, el 
+protocolo utilizado (propio o estándar), los flujos de conexión y las pruebas realizadas 
+para validar el correcto funcionamiento del sistema. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+0492. Proyecto Intermodular. 
+RA5. Transmite información con claridad, de manera ordenada y estructurada. 
+• CE5.a: Mantener una actitud ordenada y metódica en la transmisión de la 
+información. 
+ 
+• CE5.b: Transmitir información verbal tanto horizontal como verticalmente. 
+ 
+• CE5.c: Transmitir información entre los miembros del grupo utilizando medios  
+• informáticos. 
+ 
+• CE5.d: Conocer términos técnicos en otras lenguas que sean estándares del 
+sector. 
+ 
+Estructurar y organizar toda la documentación del proyecto de manera metódica. 
+Preparar y realizar una presentación oral profesional. 
+Utilizar herramientas digitales para la comunicación interna del equipo. 
+ 
+ 
+1710. Itinerario Personal para la Empleabilidad II. 
+RA5. Desarrolla un proyecto emprendedor de innovación social y/o tecnológica 
+aplicada en colaboración con el entorno. 
+• CE5.a: Se han analizado los conceptos básicos del emprendimiento y la 
+innovación social. 
+ 
+• CE5.g: Se han aplicado las estrategias necesarias para analizar la viabilidad del 
+proyecto emprendedor. 
+ 
+Desarrollar el proyecto intermodular aplicando los principios de innovación 
+tecnológica o social, considerando el impacto y la relevancia en el entorno o sector 
+profesional relacionado. 
+Analizar la viabilidad del proyecto, evaluando recursos, tiempo, costes y resultados 
+esperados, asegurando que la propuesta es práctica y ejecutable dentro del contexto 
+académico y profesional. 
+ 
+ 
+ 

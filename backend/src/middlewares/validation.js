@@ -35,11 +35,28 @@ export const schemas = {
     firstName: Joi.string().max(100).required(),
     lastName: Joi.string().max(100).required(),
     role: Joi.string().valid('ALUMNO', 'CENTRO', 'EMPRESA').required(),
+    recoveryQuestion: Joi.string().min(8).max(255).optional(),
+    recoveryAnswer: Joi.string().min(2).max(255).optional(),
   }),
 
   login: Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string().required(),
+  }),
+
+  recoveryChallenge: Joi.object({
+    email: Joi.string().email().required(),
+  }),
+
+  recoveryReset: Joi.object({
+    email: Joi.string().email().required(),
+    recoveryAnswer: Joi.string().min(2).max(255).required(),
+    newPassword: Joi.string().min(8).required(),
+  }),
+
+  recoveryConfigure: Joi.object({
+    recoveryQuestion: Joi.string().min(8).max(255).required(),
+    recoveryAnswer: Joi.string().min(2).max(255).required(),
   }),
 
   // Posts

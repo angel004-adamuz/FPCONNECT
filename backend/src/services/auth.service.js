@@ -9,6 +9,10 @@ import { AppError } from '../middlewares/errorHandler.js';
 const SALT_ROUNDS = 10;
 
 export const authService = {
+  normalizeRecoveryAnswer: (answer = '') => {
+    return answer.trim().toLowerCase();
+  },
+
   // Hash de contraseña
   hashPassword: async (password) => {
     return await bcrypt.hash(password, SALT_ROUNDS);
@@ -48,7 +52,15 @@ export const authService = {
 
   // Registro de usuario
   register: async (userData) => {
-    const { email, password, firstName, lastName, role } = userData;
+    const {
+      email,
+      password,
+      firstName,
+      lastName,
+      role,
+      recoveryQuestion,
+      recoveryAnswer,
+    } = userData;
 
     // Verificar si el usuario ya existe
     const existingUser = await prisma.user.findUnique({
@@ -61,6 +73,15 @@ export const authService = {
 
     // Hash de la contraseña
     const hashedPassword = await authService.hashPassword(password);
+    const hasRecoveryConfig = Boolean(recoveryQuestion && recoveryAnswer);
+
+    if ((recoveryQuestion && !recoveryAnswer) || (!recoveryQuestion && recoveryAnswer)) {
+      throw new AppError('Debes enviar pregunta y respuesta de recuperación juntas', 400);
+    }
+
+    const recoveryAnswerHash = hasRecoveryConfig
+      ? await authService.hashPassword(authService.normalizeRecoveryAnswer(recoveryAnswer))
+      : null;
 
     // Crear usuario
     const user = await prisma.user.create({
@@ -70,6 +91,9 @@ export const authService = {
         firstName,
         lastName,
         role,
+        recoveryQuestion: recoveryQuestion || null,
+        recoveryAnswerHash,
+        recoveryUpdatedAt: hasRecoveryConfig ? new Date() : null,
       },
     });
 
@@ -105,6 +129,93 @@ export const authService = {
       token,
       refreshToken,
     };
+  },
+
+  // Obtener pregunta de recuperación por email
+  getRecoveryChallenge: async (email) => {
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        status: true,
+        recoveryQuestion: true,
+        recoveryAnswerHash: true,
+      },
+    });
+
+    if (!user || user.status !== 'ACTIVO' || !user.recoveryQuestion || !user.recoveryAnswerHash) {
+      return {
+        hasChallenge: false,
+      };
+    }
+
+    return {
+      hasChallenge: true,
+      recoveryQuestion: user.recoveryQuestion,
+    };
+  },
+
+  // Restablecer contraseña por recuperación personalizada
+  resetPasswordWithRecovery: async ({ email, recoveryAnswer, newPassword }) => {
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        status: true,
+        password: true,
+        recoveryAnswerHash: true,
+      },
+    });
+
+    if (!user || !user.recoveryAnswerHash) {
+      throw new AppError('No se pudo verificar la recuperación para este usuario', 400);
+    }
+
+    if (user.status !== 'ACTIVO') {
+      throw new AppError('Usuario no activo', 403);
+    }
+
+    const normalizedAnswer = authService.normalizeRecoveryAnswer(recoveryAnswer);
+    const isAnswerValid = await authService.comparePassword(normalizedAnswer, user.recoveryAnswerHash);
+
+    if (!isAnswerValid) {
+      throw new AppError('La respuesta de recuperación no es correcta', 401);
+    }
+
+    const isSamePassword = await authService.comparePassword(newPassword, user.password);
+    if (isSamePassword) {
+      throw new AppError('La nueva contraseña debe ser diferente a la actual', 400);
+    }
+
+    const hashedPassword = await authService.hashPassword(newPassword);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+      },
+    });
+  },
+
+  // Configurar recuperación personalizada para un usuario autenticado
+  configureRecovery: async (userId, { recoveryQuestion, recoveryAnswer }) => {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+
+    if (!user) {
+      throw new AppError('Usuario no encontrado', 404);
+    }
+
+    const normalizedAnswer = authService.normalizeRecoveryAnswer(recoveryAnswer);
+    const recoveryAnswerHash = await authService.hashPassword(normalizedAnswer);
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        recoveryQuestion,
+        recoveryAnswerHash,
+        recoveryUpdatedAt: new Date(),
+      },
+    });
   },
 
   // Login

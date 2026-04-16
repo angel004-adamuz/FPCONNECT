@@ -33,6 +33,34 @@ export const authService = {
   },
 
   /**
+   * Obtener pregunta de recuperación por email
+   */
+  getRecoveryChallenge: async (email) => {
+    return apiClient.post('/auth/recovery/challenge', { email });
+  },
+
+  /**
+   * Restablecer contraseña mediante recuperación personalizada
+   */
+  resetPasswordWithRecovery: async ({ email, recoveryAnswer, newPassword }) => {
+    return apiClient.post('/auth/recovery/reset', {
+      email,
+      recoveryAnswer,
+      newPassword,
+    });
+  },
+
+  /**
+   * Configurar pregunta/respuesta de recuperación (usuario autenticado)
+   */
+  configureRecovery: async ({ recoveryQuestion, recoveryAnswer }) => {
+    return apiClient.post('/auth/recovery/configure', {
+      recoveryQuestion,
+      recoveryAnswer,
+    });
+  },
+
+  /**
    * Logout
    */
   logout: async () => {

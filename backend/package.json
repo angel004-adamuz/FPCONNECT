@@ -10,6 +10,7 @@
     "db:setup": "npx prisma migrate dev --name init",
     "db:seed": "node prisma/seed.js",
     "db:generate": "npx prisma generate",
+    "admin:set-recovery": "node scripts/admin-set-recovery.js",
     "lint": "eslint src --fix",
     "test": "jest --coverage"
   },

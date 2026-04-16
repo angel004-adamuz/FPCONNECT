@@ -1,0 +1,767 @@
+%% ============================================================
+%%  FPConnect – Trabajo Fin de Grado
+%%  Técnico Superior en Desarrollo de Aplicaciones Multiplataforma
+%%  Curso 2025–2026
+%% ============================================================
+\documentclass[12pt, a4paper]{report}
+
+%% ── Codificación y lengua ────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+
+%% ── Tipografía ───────────────────────────────────────────────
+\usepackage{lmodern}
+\usepackage{amsmath}
+
+%% ── Márgenes ─────────────────────────────────────────────────
+\usepackage[top=2.5cm, bottom=2.5cm, left=3cm, right=2.5cm]{geometry}
+
+%% ── Interlineado ─────────────────────────────────────────────
+\usepackage{setspace}
+\onehalfspacing
+
+%% ── Colores ──────────────────────────────────────────────────
+\usepackage{xcolor}
+\definecolor{fpgreen}{RGB}{34, 139, 34}
+\definecolor{fpgray}{RGB}{80, 80, 80}
+
+%% ── Tablas ───────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+
+%% ── Gráficos / figuras ───────────────────────────────────────
+\usepackage{graphicx}
+\usepackage{float}
+
+%% ── Hipervínculos ────────────────────────────────────────────
+\usepackage[
+  colorlinks = true,
+  linkcolor  = fpgreen,
+  urlcolor   = fpgreen,
+  citecolor  = fpgreen,
+  pdftitle   = {FPConnect – TFG DAM},
+  pdfauthor  = {Rafael Marcos and Jose Antonio Roda and Angel Amil Cobacho}
+]{hyperref}
+
+%% ── Cabeceras y pies de página ───────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{fpgray}{FPConnect}}
+\fancyhead[R]{\small\textcolor{fpgray}{TFG – DAM 2025–2026}}
+\fancyfoot[C]{\thepage}
+\setlength{\headheight}{14pt}
+\renewcommand{\headrulewidth}{0.4pt}
+
+%% ── Estilo de capítulos ──────────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\chapter}[block]
+  {\normalfont\LARGE\bfseries\color{fpgreen}}
+  {\thechapter.}{0.8em}{}[\vspace{0.2em}\titlerule]
+\titlespacing*{\chapter}{0pt}{30pt}{20pt}
+
+%% ── Código fuente ────────────────────────────────────────────
+\usepackage{listings}
+\lstset{
+  basicstyle   = \ttfamily\small,
+  breaklines   = true,
+  frame        = single,
+  rulecolor    = \color{fpgray},
+  keywordstyle = \color{fpgreen}\bfseries,
+  commentstyle = \color{fpgray}\itshape,
+  stringstyle  = \color{orange},
+}
+
+%% ============================================================
+\begin{document}
+
+%% ── Portada ─────────────────────────────────────────────────
+\begin{titlepage}
+  \centering
+  \vspace*{1.5cm}
+
+  {\Large\bfseries TRABAJO FIN DE GRADO\\[0.4em]
+  Desarrollo de Aplicaciones Multiplataforma}\\[2cm]
+
+  {\Huge\bfseries\color{fpgreen} \(\boldsymbol{\sim}\) FPConnect \(\boldsymbol{\sim}\)}\\[0.8cm]
+
+  {\large Plataforma web para conectar alumnos de FP,\\
+  centros educativos y empresas en Andalucía}\\[2.5cm]
+
+  \begin{tabular}{rl}
+    \textbf{Alumnos:}    & Rafael Marcos, Jose Antonio Roda, Angel Amil Cobacho \\[0.4em]
+    \textbf{Ciclo:}      & Técnico Superior en Desarrollo de Aplicaciones Multiplataforma (DAM) \\[0.4em]
+    \textbf{Curso:}      & 2025 – 2026 \\[0.4em]
+    \textbf{Repositorio:}& \url{https://github.com/rafamarcoss/FPCONNECT} \\
+  \end{tabular}
+
+  \vfill
+  {\small Comunidad Autónoma de Andalucía · 2025}
+\end{titlepage}
+
+%% ── Índice ──────────────────────────────────────────────────
+\tableofcontents
+\clearpage
+
+%% ============================================================
+\chapter{Resumen}
+
+\textbf{FPConnect} es un proyecto intermodular orientado al desarrollo de una plataforma digital para
+conectar a los tres agentes principales de la Formación Profesional: alumnado, centros educativos y
+empresas. La solución se plantea como una aplicación web full-stack con arquitectura cliente-servidor,
+roles diferenciados y servicios en tiempo real para mejorar la comunicación y la empleabilidad en el
+entorno de FP.
+
+La implementación técnica se basa en un frontend con React y Vite, y un backend con Node.js y
+Express, utilizando PostgreSQL como sistema gestor de base de datos y Prisma como ORM. La
+autenticación se resuelve con JWT y refresh tokens, y la capa de comunicación en tiempo real se apoya
+en Socket.io. A nivel de diseño, el sistema aplica una estructura modular por capas (rutas,
+controladores, servicios, middlewares y validadores), facilitando la escalabilidad y el mantenimiento.
+
+El proyecto responde a una necesidad real del sector productivo: reducir la distancia entre el talento
+técnico en formación y las empresas que necesitan perfiles tecnológicos. Para ello, incorpora
+funcionalidades de perfil profesional, conexión entre usuarios, publicación de contenido y gestión de
+información de interés para prácticas y empleo.
+
+Además del desarrollo software, el trabajo integra los resultados de aprendizaje de distintos módulos
+del ciclo DAM: modelado de datos, servicios en red, diseño de interfaces, control de versiones,
+documentación técnica y criterios de sostenibilidad en infraestructura. La memoria recoge metodología,
+resultados, limitaciones y líneas futuras, asegurando trazabilidad entre los objetivos definidos y los
+artefactos desarrollados.
+
+\vspace{1em}
+\begin{table}[H]
+  \centering
+  \caption{Ficha técnica del proyecto}
+  \begin{tabularx}{\textwidth}{lX}
+    \toprule
+    \textbf{Dato} & \textbf{Información} \\
+    \midrule
+    Nombre del proyecto   & FPConnect \\
+    Tipo de aplicación    & Web full-stack con backend propio \\
+    Ámbito geográfico     & Comunidad Autónoma de Andalucía \\
+    Usuarios objetivo     & Alumnos FP, centros educativos, empresas \\
+    Stack principal       & React + Vite + Node.js + Express + PostgreSQL + Prisma + Socket.io \\
+    Año de desarrollo     & 2025 – 2026 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+%% ============================================================
+\chapter{Glosario (ES/EN)}
+
+\begin{table}[H]
+  \centering
+  \caption{Términos clave del proyecto}
+  \begin{tabularx}{\textwidth}{lXX}
+    \toprule
+    \textbf{ES} & \textbf{EN} & \textbf{Definición breve} \\
+    \midrule
+    Autenticación & Authentication & Verificación de identidad del usuario. \\
+    Autorización & Authorization & Control de permisos según rol. \\
+    ORM & Object-Relational Mapping & Mapeo entre objetos de código y tablas relacionales. \\
+    Migración & Migration & Cambio versionado del esquema de base de datos. \\
+    Punto final API & API endpoint & Ruta HTTP para consumir una funcionalidad del backend. \\
+    Tiempo real & Real-time communication & Intercambio de eventos sin refresco manual. \\
+    Despliegue & Deployment & Puesta en producción del sistema. \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+%% ============================================================
+\chapter{Planteamiento del problema y justificación}
+
+\section{Contexto del problema}
+
+La Formación Profesional en España, y en Andalucía en particular, ha experimentado un crecimiento
+notable en los últimos años tanto en número de alumnos matriculados como en la diversificación de
+ciclos formativos ofertados. Sin embargo, la transición del mundo educativo al mercado laboral sigue
+siendo, en muchos casos, un proceso poco transparente y con escasos canales formales de comunicación
+entre las partes implicadas.
+
+Los alumnos de ciclos como DAM, DAW, ASIR o SMR cuentan con un perfil técnico muy demandado, pero
+rara vez disponen de una plataforma especializada donde visibilizar su trabajo y conectar directamente
+con empresas de su entorno. LinkedIn, aunque generalista, no está optimizado para el perfil de un
+alumno en prácticas o recién graduado de FP. Las bolsas de empleo genéricas tampoco cubren bien
+las particularidades del sistema de Formación Profesional.
+
+\section{Motivación del proyecto}
+
+La motivación principal detrás de FPConnect nace de la experiencia propia vivida a lo largo del ciclo
+de DAM: la dificultad de encontrar empresas para realizar las prácticas del módulo de FCT, la falta de
+visibilidad que tienen los proyectos desarrollados durante el ciclo, y la ausencia de un directorio
+actualizado de centros FP en Andalucía con información detallada sobre los ciclos que imparten.
+
+Este proyecto intenta ser una respuesta práctica y funcional a esas carencias, aplicando los
+conocimientos adquiridos durante el ciclo en tecnologías actuales y ampliamente demandadas en el
+mercado.
+
+%% ============================================================
+\chapter{Fundamentación teórica y estado del arte}
+
+El desarrollo de plataformas de empleabilidad educativa se apoya en tres pilares: sistemas de
+información en red, persistencia de datos relacionales y diseño centrado en usuario. En los últimos
+años, el ecosistema JavaScript ha consolidado arquitecturas desacopladas frontend-backend, donde
+React permite construir interfaces componibles y Express facilita la exposición de servicios REST.
+
+En persistencia, PostgreSQL se mantiene como una de las opciones más robustas para aplicaciones
+transaccionales, mientras que Prisma simplifica la trazabilidad entre modelo lógico y consultas de
+aplicación. En comunicación en tiempo real, Socket.io aporta una capa de eventos bidireccionales
+adecuada para mensajería y notificaciones, resolviendo limitaciones de polling tradicional.
+
+Desde la perspectiva funcional, las plataformas generalistas de empleo no cubren completamente las
+necesidades del contexto FP (prácticas, convenios centro-empresa, visibilidad de proyectos académicos),
+por lo que existe oportunidad para una solución específica con segmentación por rol y ciclo formativo.
+
+%% ============================================================
+\chapter{Objetivos}
+
+\begin{enumerate}
+  \item Diseñar e implementar una plataforma web funcional con tres roles diferenciados: alumnado,
+    centro educativo y empresa.
+  \item Modelar una base de datos relacional coherente con los procesos de la aplicación, aplicando
+    criterios de integridad y normalización.
+  \item Implementar un backend con API REST, autenticación segura y comunicación en tiempo real.
+  \item Construir una interfaz usable y \emph{responsive}, con navegación coherente y componentes
+    reutilizables.
+  \item Documentar técnicamente el proyecto y su cumplimiento intermodular, incluyendo límites,
+    riesgos y líneas de mejora.
+\end{enumerate}
+
+%% ============================================================
+\chapter{Planificación temporal y evaluación de coste}
+
+\section{Planificación temporal}
+
+La ejecución del proyecto se ha organizado en fases iterativas para reducir riesgo técnico y facilitar
+la validación continua con el tutor. Cada fase incluye objetivos, entregables y revisión.
+
+\begin{table}[H]
+  \centering
+  \caption{Cronograma resumido por fases}
+  \begin{tabularx}{\textwidth}{lXX}
+    \toprule
+    \textbf{Fase} & \textbf{Contenido principal} & \textbf{Entregables} \\
+    \midrule
+    Fase 1 & Análisis inicial, alcance y definición de arquitectura & Documento de alcance y stack seleccionado \\
+    \addlinespace
+    Fase 2 & Modelado de datos relacional y estructura de backend & Esquema Prisma, migraciones y endpoints base \\
+    \addlinespace
+    Fase 3 & Implementación frontend por roles y navegación & Vistas por rol y componentes reutilizables \\
+    \addlinespace
+    Fase 4 & Integración full-stack y comunicación en tiempo real & API conectada, sockets funcionales y pruebas manuales \\
+    \addlinespace
+    Fase 5 & Ajustes finales, documentación y preparación de defensa & Memoria, presentación y anexos de cumplimiento \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\section{Evaluación de coste (estimación académica)}
+
+El proyecto se ha desarrollado en contexto académico sin coste de licencias propietarias obligatorias,
+priorizando herramientas \emph{open source}. La siguiente estimación representa un escenario de
+producción básico para un piloto real.
+
+\begin{table}[H]
+  \centering
+  \caption{Estimación de coste mensual de operación}
+  \begin{tabularx}{\textwidth}{lXr}
+    \toprule
+    \textbf{Concepto} & \textbf{Descripción} & \textbf{Coste estimado/mes} \\
+    \midrule
+    VPS backend & Servidor Linux con 2 vCPU, 4 GB RAM & 20 - 35 EUR \\
+    \addlinespace
+    Base de datos & PostgreSQL gestionado o autoalojado en VPS & 0 - 30 EUR \\
+    \addlinespace
+    Dominio + TLS & Dominio anual prorrateado + certificados Let's Encrypt & 1 - 2 EUR \\
+    \addlinespace
+    Backups & Almacenamiento incremental para copias diarias & 3 - 8 EUR \\
+    \addlinespace
+    Monitorización & Logs y alertas básicas & 0 - 10 EUR \\
+    \midrule
+    Total estimado & Operación mínima de piloto & 24 - 85 EUR \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+%% ============================================================
+\chapter{Análisis de requisitos}
+
+\section{Requisitos funcionales priorizados}
+
+La priorización se ha realizado por impacto en valor de usuario y dependencia técnica. Se distinguen
+requisitos de tipo \emph{must-have} (imprescindibles para operación) y \emph{should-have}
+(evolutivos de alto valor).
+
+\begin{table}[H]
+  \centering
+  \caption{Priorización funcional}
+  \begin{tabularx}{\textwidth}{lXl}
+    \toprule
+    \textbf{Código} & \textbf{Requisito} & \textbf{Prioridad} \\
+    \midrule
+    RF-01 & Registro e inicio de sesión con roles diferenciados & Must-have \\
+    RF-02 & Gestión de perfil y datos básicos por tipo de usuario & Must-have \\
+    RF-03 & Publicaciones, comentarios e interacciones sociales & Must-have \\
+    RF-04 & Conexiones entre usuarios y visibilidad por rol & Should-have \\
+    RF-05 & Mensajería y eventos en tiempo real & Should-have \\
+    RF-06 & Recuperación personalizada de contraseña & Should-have \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\section{Requisitos técnicos de seguridad y acceso}
+
+\begin{itemize}
+  \item Validación estricta de entrada en backend (Joi) para reducir errores de formato y abuso.
+  \item Autenticación con JWT y renovación controlada con refresh token.
+  \item Contraseñas protegidas mediante hash con bcrypt y política mínima de complejidad.
+  \item Gestión de errores centralizada para no exponer información sensible del sistema.
+  \item Control de acceso por rol en rutas privadas y acciones sensibles.
+\end{itemize}
+
+%% ============================================================
+\chapter{Análisis del Sistema}
+
+\section{Identificación de actores}
+
+Se han identificado tres tipos de usuarios principales que interactúan con la plataforma, cada uno con
+necesidades y funcionalidades específicas:
+
+\vspace{0.5em}
+\begin{table}[H]
+  \centering
+  \caption{Actores del sistema}
+  \begin{tabularx}{\textwidth}{lXX}
+    \toprule
+    \textbf{Actor} & \textbf{Descripción} & \textbf{Necesidades principales} \\
+    \midrule
+    Alumno    & Estudiante de un ciclo formativo de FP en Andalucía
+              & Visibilizar su perfil, encontrar empresas y centros, acceder a noticias del sector \\
+    \addlinespace
+    Centro FP & Instituto o centro educativo que imparte ciclos formativos
+              & Gestionar su comunidad de alumnos, conectar con empresas para convenios de FCT \\
+    \addlinespace
+    Empresa   & Empresa que busca incorporar perfiles técnicos de FP
+              & Buscar y filtrar talento, publicar vacantes, establecer contacto con centros \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\section{Requisitos funcionales}
+
+\subsection{Módulo de autenticación y gestión de roles}
+
+\begin{itemize}
+  \item El sistema debe permitir el registro e inicio de sesión de usuarios diferenciando entre los
+        tres roles disponibles.
+  \item Cada rol debe redirigir al usuario a su \emph{dashboard} correspondiente tras la autenticación.
+  \item Las rutas y funcionalidades deben estar protegidas según el rol del usuario autenticado.
+\end{itemize}
+
+\subsection{Funcionalidades del Alumno}
+
+\begin{itemize}
+  \item Acceso a un \emph{dashboard} personal con estadísticas de perfil y noticias del sector.
+  \item Directorio de centros FP con filtros por ciclo formativo y provincia.
+  \item Visualización de centros y empresas sobre un mapa interactivo de Andalucía.
+  \item Acceso a perfiles públicos de otros alumnos de la plataforma.
+  \item Perfil público propio con información de CV, habilidades técnicas, proyectos y experiencia.
+  \item \emph{Feed} de noticias sobre becas, convocatorias y eventos relevantes para FP.
+\end{itemize}
+
+\subsection{Funcionalidades del Centro FP}
+
+\begin{itemize}
+  \item \emph{Dashboard} con métricas del centro: número de alumnos registrados, empresas
+        colaboradoras, ciclos impartidos.
+  \item Listado y gestión de alumnos registrados en el centro.
+  \item Visualización de empresas colaboradoras actuales y potenciales.
+  \item Perfil público del centro con información de contacto, ciclos y ubicación.
+\end{itemize}
+
+\subsection{Funcionalidades de la Empresa}
+
+\begin{itemize}
+  \item Buscador de talento con filtros por ciclo formativo, ciudad y disponibilidad.
+  \item Acceso al perfil completo de cada alumno, incluyendo \emph{skills} y proyectos.
+  \item Gestión de vacantes de prácticas (FCT) y de empleo.
+  \item Directorio de centros FP para establecer convenios de colaboración.
+  \item Perfil público de empresa con información corporativa.
+\end{itemize}
+
+\section{Requisitos no funcionales}
+
+\begin{table}[H]
+  \centering
+  \caption{Requisitos no funcionales}
+  \begin{tabularx}{\textwidth}{lX}
+    \toprule
+    \textbf{Requisito} & \textbf{Descripción} \\
+    \midrule
+    Usabilidad
+      & La interfaz debe ser intuitiva y consistente. Un usuario nuevo debe poder orientarse sin
+        manual. \\
+    \addlinespace
+    Rendimiento
+      & La aplicación web debe cargar en menos de 3 segundos en condiciones normales de red. \\
+    \addlinespace
+    Multiplataforma
+      & El mismo código base debe funcionar como aplicación web y como aplicación de escritorio
+        nativa. \\
+    \addlinespace
+    Escalabilidad
+      & La arquitectura backend basada en Node.js, PostgreSQL y Prisma debe soportar el crecimiento
+        en número de usuarios sin cambios estructurales en el frontend. \\
+    \addlinespace
+    Seguridad
+      & La autenticación debe basarse en JWT. Los datos sensibles no deben exponerse en el
+        frontend. \\
+    \addlinespace
+    Mantenibilidad
+      & El código debe seguir una estructura modular y estar organizado por componentes
+        reutilizables. \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+%% ============================================================
+\chapter{Diseño del Sistema}
+
+\section{Arquitectura general}
+
+FPConnect sigue una arquitectura cliente-servidor desacoplada. El frontend, desarrollado con React y
+Vite, consume una API REST construida con Node.js y Express. El backend integra autenticación por JWT,
+validación de entrada, acceso a datos mediante Prisma ORM sobre PostgreSQL y servicios en tiempo real
+con Socket.io.
+
+La estructura del backend se organiza por capas (rutas, controladores, servicios, middlewares,
+validadores), lo que permite separar responsabilidades y facilitar el mantenimiento evolutivo.
+
+\vspace{0.5em}
+\begin{table}[H]
+  \centering
+  \caption{Capas tecnológicas de la arquitectura}
+  \begin{tabularx}{\textwidth}{llX}
+    \toprule
+    \textbf{Capa} & \textbf{Tecnología} & \textbf{Responsabilidad} \\
+    \midrule
+    Frontend web    & React + Vite             & Interfaz de usuario, navegación y estado cliente \\
+    Backend API     & Node.js + Express        & Lógica de negocio y exposición de servicios REST \\
+    Datos           & PostgreSQL + Prisma ORM  & Persistencia, relaciones y migraciones \\
+    Tiempo real     & Socket.io                & Eventos y mensajería bidireccional \\
+    Mapas           & Leaflet.js + OpenStreetMap & Visualización geográfica de centros y empresas \\
+    Despliegue      & Linux Server + Nginx + PM2 & Ejecución de backend en entorno productivo \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\section{Estructura de directorios}
+
+El proyecto sigue una organización modular basada en la separación por responsabilidades:
+
+\vspace{0.5em}
+\begin{table}[H]
+  \centering
+  \caption{Estructura de directorios del proyecto}
+  \begin{tabularx}{\textwidth}{lX}
+    \toprule
+    \textbf{Ruta} & \textbf{Contenido} \\
+    \midrule
+    \texttt{src/components/UI.jsx}   & Componentes reutilizables: Badge, Avatar, Card, NavBar, etc. \\
+    \texttt{src/data/datos.js}       & Datos de prueba realistas: centros, alumnos, empresas, noticias \\
+    \texttt{src/pages/LoginPage.jsx} & Pantalla de autenticación con selección de rol \\
+    \texttt{src/pages/AlumnoApp.jsx} & Dashboard completo del perfil de alumno \\
+    \texttt{src/pages/CentroApp.jsx} & Dashboard del centro educativo \\
+    \texttt{src/pages/EmpresaApp.jsx}& Dashboard de la empresa con buscador de talento \\
+    \texttt{src/styles/global.css}   & Reset CSS y estilos globales compartidos \\
+    \texttt{src/App.jsx}             & Router principal con enrutado por rol \\
+    \texttt{src/main.jsx}            & Punto de entrada de la aplicación React \\
+    \texttt{vite.config.js}          & Configuración del bundler Vite \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\section{Modelo de datos}
+
+El modelo de datos está diseñado para su implementación en PostgreSQL mediante Prisma ORM. Se han
+identificado las siguientes entidades principales y sus relaciones:
+
+\vspace{0.5em}
+\begin{table}[H]
+  \centering
+  \caption{Entidades del modelo de datos}
+  \begin{tabularx}{\textwidth}{lXX}
+    \toprule
+    \textbf{Tabla} & \textbf{Campos principales} & \textbf{Relaciones} \\
+    \midrule
+    \texttt{usuarios}
+      & id, email, rol, created\_at
+      & Base de todos los perfiles \\
+    \addlinespace
+    \texttt{alumnos}
+      & id, usuario\_id, nombre, ciclo, centro\_id, ciudad, bio, nota, disponible, cv\_url, foto\_url
+      & N:1 con usuarios, N:1 con centros, N:M con skills \\
+    \addlinespace
+    \texttt{centros}
+      & id, usuario\_id, nombre, ciudad, provincia, descripcion, telefono, email, web, lat, lng
+      & N:1 con usuarios, N:M con ciclos \\
+    \addlinespace
+    \texttt{empresas}
+      & id, usuario\_id, nombre, sector, ciudad, descripcion, empleados, logo\_url
+      & N:1 con usuarios \\
+    \addlinespace
+    \texttt{vacantes}
+      & id, empresa\_id, titulo, tipo, ciclo, estado, created\_at
+      & N:1 con empresas \\
+    \addlinespace
+    \texttt{noticias}
+      & id, titulo, categoria, resumen, fecha, urgente, url
+      & Entidad independiente \\
+    \addlinespace
+    \texttt{intereses}
+      & id, empresa\_id, alumno\_id, created\_at
+      & N:M entre empresas y alumnos \\
+    \addlinespace
+    \texttt{centros\_ciclos}
+      & centro\_id, ciclo
+      & N:M entre centros y ciclos \\
+    \addlinespace
+    \texttt{alumnos\_skills}
+      & alumno\_id, skill
+      & N:M entre alumnos y habilidades \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\section{Diseño de la interfaz de usuario}
+
+La interfaz de FPConnect sigue los principios de diseño limpio y moderno, con una paleta de colores
+basada en verdes y blancos que transmite frescura y profesionalidad. Se han aplicado los siguientes
+criterios de diseño:
+
+\begin{itemize}
+  \item \textbf{Consistencia visual:} todos los \emph{dashboards} comparten los mismos componentes
+        base (Card, Badge, Avatar, NavBar) adaptados a cada rol.
+  \item \textbf{Responsive design:} la aplicación está diseñada para funcionar correctamente tanto en
+        escritorio como en dispositivos móviles.
+  \item \textbf{Tipografía:} se utiliza \emph{DM Sans} de Google Fonts para toda la interfaz, una
+        fuente moderna y de alta legibilidad.
+  \item \textbf{Componentes reutilizables:} la arquitectura de componentes en React permite que
+        elementos como las tarjetas de perfil o las insignias de ciclo sean reutilizados en todos los
+        \emph{dashboards}.
+\end{itemize}
+
+%% ============================================================
+\chapter{Metodología}
+
+La metodología de trabajo ha combinado desarrollo incremental y validación continua, organizada en
+iteraciones cortas:
+
+\begin{enumerate}
+  \item Definición de alcance funcional y diseño preliminar de datos.
+  \item Implementación de base de proyecto (frontend, backend, autenticación y estructura modular).
+  \item Desarrollo de funcionalidades por dominio (usuarios, publicaciones, comentarios y conexiones).
+  \item Integración de comunicación en tiempo real y pruebas manuales de flujos críticos.
+  \item Documentación técnica y mapeo de cumplimiento respecto a criterios intermodulares.
+\end{enumerate}
+
+Para el control de calidad se han aplicado validaciones de entrada, separación de lógica por servicios,
+uso de migraciones versionadas y comprobaciones funcionales en entorno local.
+
+%% ============================================================
+\chapter{Codificación}
+
+\section{Entorno de programación y herramientas}
+
+El desarrollo se ha realizado en Visual Studio Code con control de versiones Git, Node.js LTS y
+gestión de dependencias mediante npm. Para persistencia se utiliza Prisma sobre PostgreSQL y para
+comunicación en tiempo real Socket.io.
+
+\section{Aspectos relevantes de implementación}
+
+\subsection{Validación de datos}
+
+Toda petición de entrada en rutas críticas se valida en middleware con esquemas explícitos,
+interrumpiendo el flujo cuando la carga útil no cumple formato o reglas de negocio básicas.
+
+\subsection{Control de acceso}
+
+Las rutas privadas exigen token válido y, en funcionalidades concretas, se verifica rol y propiedad del
+recurso para evitar accesos no autorizados.
+
+\subsection{Protección de la información}
+
+No se almacenan contraseñas en claro. Los secretos de entorno se externalizan en variables de
+configuración y no se incluyen en repositorio público.
+
+\subsection{Estructura modular del backend}
+
+La lógica se reparte por responsabilidades: rutas para entrada HTTP, controladores para coordinación,
+servicios para reglas de negocio y acceso a datos, y middlewares para capas transversales.
+
+%% ============================================================
+\chapter{Resultados}
+
+\section{Estado actual del desarrollo}
+
+En la versión actual del repositorio se encuentra implementada una base funcional del sistema con
+autenticación, backend operativo, persistencia relacional y frontend por roles. Se han validado los
+flujos principales de acceso, consulta y publicación.
+
+\vspace{0.5em}
+\begin{table}[H]
+  \centering
+  \caption{Estado de implementación – Fase 1}
+  \begin{tabularx}{\textwidth}{lX}
+    \toprule
+    \textbf{Funcionalidad} & \textbf{Descripción} \\
+    \midrule
+    Login multi-rol
+      & Pantalla de inicio de sesión con selección de rol (alumno, centro, empresa). \\
+    \addlinespace
+    Dashboard alumno
+      & Estadísticas, noticias, directorio de centros con filtros, mapa, comunidad y perfil. \\
+    \addlinespace
+    Dashboard centro
+      & Métricas, gestión de alumnos, empresas colaboradoras y perfil del centro. \\
+    \addlinespace
+    Dashboard empresa
+      & Buscador de talento con filtros, gestión de vacantes y directorio de centros. \\
+    \addlinespace
+    Datos y persistencia
+      & Modelo de datos relacional con Prisma y migraciones versionadas. \\
+    \addlinespace
+    Backend API
+      & API REST con Express, validación Joi y autenticación JWT + refresh token. \\
+    \addlinespace
+    Mapa interactivo
+      & Geolocalización real de centros y empresas con Leaflet.js. \\
+    \addlinespace
+    Mensajería
+      & Sistema de mensajería entre empresas y alumnos. \\
+    \addlinespace
+    Recuperación de contraseña
+      & Flujo personalizado de recuperación con pregunta/respuesta de seguridad. \\
+    \addlinespace
+    Tiempo real
+      & Comunicación simultánea cliente-servidor mediante Socket.io. \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+%% ============================================================
+\chapter{Pruebas de ejecución}
+
+\section{Pruebas funcionales}
+
+Se han probado manualmente los recorridos críticos: autenticación, navegación por rol, publicaciones,
+comentarios, conexiones y recuperación de contraseña. También se validó respuesta de endpoints con
+peticiones HTTP controladas.
+
+\section{Pruebas de usabilidad}
+
+La navegación se revisó para minimizar fricción en tareas frecuentes: iniciar sesión, localizar
+información principal, publicar contenido y consultar perfiles.
+
+\section{Pruebas de accesibilidad}
+
+Se ha mantenido contraste visual adecuado en elementos principales, tipografía legible y estructura de
+interacción consistente. Como línea de mejora se plantea auditoría formal con herramientas
+especializadas (por ejemplo TAW o Lighthouse).
+
+\section{Pruebas de seguridad}
+
+Se verificaron casos básicos de denegación por credenciales inválidas, tokens caducados y payloads no
+válidos. La recuperación de contraseña exige verificación previa y actualización segura del hash.
+
+\section{Pruebas de carga (estado actual)}
+
+No se han ejecutado pruebas de carga automatizadas extensivas en esta fase. Se incluye como mejora
+prioritaria incorporar escenarios de concurrencia y umbrales de rendimiento medibles.
+
+%% ============================================================
+\chapter{Manuales de usuario}
+
+\section{Objetivo}
+
+Facilitar a usuarios no técnicos una guía mínima de operación para comenzar a usar la plataforma y
+resolver incidencias comunes.
+
+\section{Requisitos e instalación}
+
+\begin{itemize}
+  \item Frontend: \texttt{npm install} y \texttt{npm run dev} en la raíz del proyecto.
+  \item Backend: \texttt{npm install} en \texttt{backend/}, base de datos PostgreSQL operativa y
+        \texttt{npm run dev}.
+  \item Navegador moderno actualizado para uso del cliente web.
+\end{itemize}
+
+\section{Operaciones habituales}
+
+\begin{enumerate}
+  \item Registro o inicio de sesión con credenciales válidas.
+  \item Selección de rol y acceso al panel correspondiente.
+  \item Gestión de perfil y consulta de información por dominio (alumno, centro o empresa).
+  \item Interacción social mediante publicaciones, comentarios y conexiones.
+\end{enumerate}
+
+\section{Mensajes de error comunes}
+
+\begin{itemize}
+  \item Credenciales inválidas: revisar email/contraseña o usar recuperación.
+  \item Token expirado: repetir autenticación o renovar sesión.
+  \item Error de validación: corregir campos marcados y reenviar formulario.
+\end{itemize}
+
+%% ============================================================
+\chapter{Conclusiones}
+
+\section{Grado de consecución de objetivos}
+
+El proyecto alcanza de forma satisfactoria los objetivos principales definidos: arquitectura full-stack
+operativa, modelo relacional implementado, servicios de autenticación y capa de interfaz por roles.
+Además, se han integrado funcionalidades de valor añadido como comunicación en tiempo real y
+recuperación de contraseña personalizada.
+
+\section{Limitaciones}
+
+Las limitaciones más relevantes han sido el tiempo disponible para ampliar cobertura de pruebas
+automatizadas y la falta de empaquetado móvil nativo en esta fase. También existen mejoras pendientes
+en observabilidad avanzada y escalado de infraestructura para alta concurrencia.
+
+\section{Futuras líneas de trabajo}
+
+\begin{itemize}
+  \item Implementar cliente móvil nativo (React Native o Flutter) reutilizando la API existente.
+  \item Incorporar analítica de uso y cuadros de mando para centros y empresas.
+  \item Añadir CI/CD completo con ejecución automática de tests y despliegue controlado.
+  \item Fortalecer seguridad con rate limiting y políticas avanzadas de gestión de sesiones.
+\end{itemize}
+
+%% ============================================================
+\chapter{Bibliografía}
+
+\begin{itemize}
+  \item PostgreSQL Global Development Group. (2025). \emph{PostgreSQL Documentation}. https://www.postgresql.org/docs/
+  \item Prisma Labs. (2026). \emph{Prisma ORM Documentation}. https://www.prisma.io/docs
+  \item OpenJS Foundation. (2026). \emph{Node.js Documentation}. https://nodejs.org/docs
+  \item Express.js. (2026). \emph{Express Web Framework Documentation}. https://expressjs.com/
+  \item React Team. (2026). \emph{React Documentation}. https://react.dev/
+  \item Socket.IO Authors. (2026). \emph{Socket.IO Documentation}. https://socket.io/docs/
+\end{itemize}
+
+%% ============================================================
+\chapter{Anexos}
+
+\begin{itemize}
+  \item Anexo A: Matriz de cumplimiento intermodular: \path{Requisitos/MATRIZ_CUMPLIMIENTO_INTERMODULAR.md}
+  \item Anexo B: Configuración estructurada del proyecto (YAML): \path{Requisitos/config_proyecto.yaml}
+  \item Anexo C: Plan de despliegue Linux: \path{Requisitos/despliegue_produccion_linux.md}
+  \item Anexo D: Plan de sostenibilidad: \path{Requisitos/plan_sostenibilidad_cpd.md}
+  \item Anexo E: Resumen ejecutivo en inglés y glosario técnico bilingüe.
+\end{itemize}
+
+\end{document}

@@ -34,6 +34,41 @@ router.post(
  * @access  Public
  */
 router.post('/refresh-token', authController.refreshToken);
+router.post('/refresh', authController.refreshToken);
+
+/**
+ * @route   POST /api/auth/recovery/challenge
+ * @desc    Obtener pregunta de recuperación por email
+ * @access  Public
+ */
+router.post(
+  '/recovery/challenge',
+  validate(schemas.recoveryChallenge),
+  authController.getRecoveryChallenge
+);
+
+/**
+ * @route   POST /api/auth/recovery/reset
+ * @desc    Restablecer contraseña usando respuesta de recuperación
+ * @access  Public
+ */
+router.post(
+  '/recovery/reset',
+  validate(schemas.recoveryReset),
+  authController.resetPasswordWithRecovery
+);
+
+/**
+ * @route   POST /api/auth/recovery/configure
+ * @desc    Configurar/actualizar recuperación personalizada
+ * @access  Private
+ */
+router.post(
+  '/recovery/configure',
+  authMiddleware,
+  validate(schemas.recoveryConfigure),
+  authController.configureRecovery
+);
 
 /**
  * @route   GET /api/auth/me

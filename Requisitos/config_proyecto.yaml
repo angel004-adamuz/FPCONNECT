@@ -1,0 +1,42 @@
+proyecto:
+  nombre: FPConnect
+  tipo: Red social formacion profesional
+  curso: 2025-2026
+  ciclo: DAM
+  autores:
+    - Rafael Marcos
+    - Jose Antonio Roda
+    - Angel Amil Cobacho
+
+arquitectura:
+  frontend:
+    framework: React
+    bundler: Vite
+    lenguaje: JavaScript
+  backend:
+    runtime: Node.js
+    framework: Express
+    realtime: Socket.io
+  datos:
+    motor: PostgreSQL
+    orm: Prisma
+
+entornos:
+  desarrollo:
+    frontend_url: http://localhost:5173
+    backend_url: http://localhost:3000
+  produccion:
+    sistema_operativo: Linux Server
+    proxy: Nginx
+    proceso_backend: PM2
+
+seguridad:
+  autenticacion: JWT + Refresh Token
+  hash_password: bcrypt
+  cabeceras: helmet
+  cors: whitelist por origen
+
+objetivos:
+  - Conectar alumnos, centros y empresas.
+  - Facilitar practicas y primer empleo.
+  - Centralizar informacion de FP.

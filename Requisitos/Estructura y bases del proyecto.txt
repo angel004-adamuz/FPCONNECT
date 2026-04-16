@@ -1,0 +1,396 @@
+ 
+ 
+ 
+GUÍA PROYECTO INTERMODULAR 
+DESARROLLO DE APLIACIONES 
+MULTIPLATAFORMA 
+(Curso 2025 / 2026) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Profesor Proyecto Intermodular 
+Jose Antonio Agredano Parra 
+ 
+ 
+ 
+ 
+
+ 
+Índice 
+ 
+1. Temática del Proyecto ......................................................................................................... 3 
+2. Formato y Estructura de la Memoria del Proyecto............................................................. 4 
+2.1 Formato ............................................................................................................................. 4 
+2.2 Estructura .......................................................................................................................... 5 
+3. Tutela y funciones del tutor de Proyecto y de los estudiantes ........................................... 6 
+4. Presentación y Defensa del Proyecto ................................................................................. 7 
+5. Evaluación y Defensa del Proyecto ..................................................................................... 9 
+6. Calificación del Proyecto Intermodular ............................................................................ 10 
+7. Comunicación final de la nota .......................................................................................... 10 
+8. Propuesta de Índice .......................................................................................................... 11 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+1. Temática del Proyecto  
+ La temática del proyecto en principio es libre, aunque debe existir un acuerdo final 
+entre tutor y alumno (grupo de alumnos) en función del trabajo a realizar.  
+ A la hora de elegir proyecto, es importante tener en cuenta los siguientes aspectos:  
+• Identificar necesidades del sector productivo, relacionándolas con proyectos tipo que 
+puedan satisfacerlas. 
+• El proyecto debe estar relacionados con las competencias expresadas en el título, 
+desarrollando explícitamente las fases que lo componen.  
+• Planificar la ejecución del proyecto, determinando el plan de intervención y la 
+documentación asociada.  
+• Definir los procedimientos para el seguimiento y control en la ejecución del proyecto, 
+justificando la selección de variables e instrumentos empleados. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+2. Formato y Estructura de la Memoria 
+del Proyecto  
+ 
+2.1 Formato  
+ No existe un formato preestablecido para el documento final de memoria del proyecto, 
+sin embargo, si son necesarias realizar una serie de aclaraciones o principios fundamentales 
+para la redacción tanto de éste como de cualquier otro trabajo técnico o profesional. 
+ 
+Principio 0. Originalidad del trabajo y autoría. El trabajo debe ser original al 100% y de autoría 
+única y exclusiva de los miembros que compongan los diferentes grupos de trabajo.  
+ 
+Principio 1. Claridad en la presentación y estructura . El texto debe leerse correctamente en 
+cualquier circunstancia e incluso debería resultar atractivo para el lector, ya sea un evaluador, 
+estudiante, cliente, etc. Para ello, algunas RECOMENDACIONES:  
+• Extensión mínima: entre 40 páginas (DIN-A4), sin contar con los anexos.  
+• Tipo y tamaño de fuente: fuente grande y sin serifa, por ejemplo: Arial (11pt).  
+• Interlineado: 1,5.  
+• Márgenes: superior, inferior y derecho 2,5 cm; izquierdo: 3 cm.  
+• Texto justificado.  
+• Páginas numeradas en la parte inferior de cada hoja.  
+ 
+Principio 2. Faltas de ortografía. En continuidad con el principio 1, un trabajo técnico o 
+docente con faltas de ortografía no debe ser aceptado bajo ningún concepto.  
+ 
+Principio 3. La memoria de proyecto NO es un repositorio de código. Puede haber una cierta 
+tendencia o tentación a incluir el código fuente realizado en la memoria del proyecto.  
+Actualmente esa práctica es un error dado que el acceso a dicho código se puede realizar por 
+diferentes medios digitales. No obstante, SÍ puede incluirse código fuente en la memoria o en 
+los anexos siempre que aporten información adicional al contexto. 
+ 
+ 
+ 
+ 
+ 
+2.2 Estructura  
+ La estructura del documento/memoria del PROYECTO deberá incluir los siguientes 
+apartados:  
+a) Portada.  
+b) Índice. Correctamente paginado. Este aspecto de la redacción se recomienda sea 
+automatizada con el editor de texto correspondiente.  
+c) Resumen. Resumen de entre 200 y 300 palabras sobre el proyecto realizado.  
+d) Glosario. Descriptores/palabras clave, en español y en inglés (máximo dos páginas).  
+e) Planteamiento del problema y justificación . Incluyendo en este apartado toda la 
+información que se haya obtenido en el proceso de documentación sobre las necesidades 
+identificadas del sector productivo investigado. 
+f) Fundamentación teórica y estado del arte. Este apartado debe desarrollar el problema a 
+estudiar en base a la literatura/tecnología existente, dotándolo de consistencia teórica. 
+Para ello, puede seguirse un esquema de desarrollo como la revisión de los principales 
+conceptos relacionados con el tema  en cuestión empleando fuentes secundarias (libros, 
+enciclopedias, artículos de revisión…) y profundización en el problema planteado mediante 
+la utilización de fuentes bibliográficas primarias (artículos y libros científicos). No obstante, 
+este esquema es orientativo y, dependiendo del área de conocimiento y el enfoque 
+empleado, la forma en que se desarrolle el marco teórico puede variar. Es aconsejable 
+referenciar tanto los autores más importantes en el tema, como las referencias más 
+actuales.  
+g) Objetivo/s. Una vez presentados los antecedentes bibliográficos en la fundamentación 
+teórica, se definirá de forma concisa el objetivo u objetivos específicos que se pretende 
+alcanzar con el proyecto. Puede haber uno o más objetivos, que pueden clasificarse como 
+principales o secundarios. En caso de haber más de un objetivo, estos deben numerarse.  
+h) Metodología. Descripción de la metodología seguida para la realización del proyecto.  
+i) Resultados. Descripción objetiva de los resultados que se desprendan del trabajo 
+realizado. Se pueden utilizar tablas y figuras insertadas en el texto, y, si es necesario, se 
+incluirá un índice de figuras y tablas.  
+j) Conclusiones. Incluyendo aspectos como:  
+• Grado de consecución de objetivos : relación de los resultados obtenidos con el 
+aprendizaje obtenido durante la realización del ciclo formativo.  
+• Limitaciones: aspectos técnicos, humanos, temporales, etc. Que hayan podido afectar 
+al desarrollo del proyecto.  
+• Futuras líneas de trabajo : con la perspectiva de los resultados obtenidos, este 
+subapartado pretende responder a la pregunta: ¿De qué forma o bajo qué líneas de 
+trabajo /actuación podría seguir desarrollándose el proyecto realizado?  
+ 
+k) Bibliografía. Tanto para las citas en el texto como para las referencias bibliográficas al final 
+del trabajo se recomienda la utilización de las normas APA. En caso de no ceñirse a estas 
+normas, el estudiante deberá consultar a su tutor/a e indicar en qué normativa util izará 
+para la citación. Existen diversos tipos de software que facilitan la labor de citación 
+bibliográfica automatizando el proceso (EndNote, Citavi, ProCite…) y minimizan por tanto 
+los errores, en comparación con la citación manual.  
+l) Anexos. Incluidos al final del trabajo, recogerán toda aquella información de interés que se 
+considere pertinente en relación a código fuente, ejemplos, etc. Los anexos no cuentan 
+para cumplir con el número de páginas exigido y no deben superar las 10 páginas, con  
+posibilidad de añadir otros apéndices mediante plataformas del tipo Google Drive, GitHub, 
+etc. Siempre con acceso público para facilitar el trabajo de los evaluadores. 
+ 
+ 
+ 
+3. Tutela y funciones del tutor de 
+Proyecto y de los estudiantes  
+ 
+Funciones del tutor:  
+• Concretar con el estudiante el tema/tecnologías/objetivos del proyecto, dentro de las 
+líneas de trabajo relacionadas con el Grado en Desarrollo de Aplicaciones 
+Multiplataforma.  
+• Orientar al estudiante y elaborar de forma conjunta un plan de trabajo acorde al 
+calendario de entrega y exposición del proyecto.  
+• Hacer un seguimiento del proceso de elaboración del trabajo con reuniones periódicas, 
+estableciendo además la sesión de anteproyecto.  
+ 
+Compromisos del estudiante:  
+• Ya sea un estudiante individual o grupo de estudiantes, todos deben aceptar los 
+siguientes compromisos de manera intrínseca:  
+• Realizar un trabajo 100% original y sin copia.  
+• Responder al calendario y a los objetivos parciales de trabajo acordados con el tutor o 
+tutora.  
+• Si fuese necesario, entregar puntualmente las partes del trabajo al tutor/a, con tiempo 
+suficiente, concordado con el tutor, para que pueda ser revisado.  
+• Estar informado a través de las vías de comunicación consensuadas con el tutor.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+4. Presentación y Defensa del Proyecto  
+ La documentación que se deberá aportar para la revisión del tribunal será la siguiente:  
+• Documento del proyecto. Debe entregarse un documento en formato PDF, acorde a 
+los requerimientos indicados en el apartado “Formato y Estructura de la Memoria del 
+Proyecto”.  
+ 
+• Presentación del proyecto. Presentación de PowerPoint (o enlace web en el caso de 
+usar otra herramienta), PDF, con el que se realizará la exposición ante el tribunal.  
+ 
+• Recursos: otros recursos incluidos en el proyecto que permitan su evaluación, como 
+videos, proyectos o manuales de usuario.  
+ 
+ En caso de que el conjunto de documentos tenga un tamaño que no permita su envío 
+por correo electrónico, se incluirá en el correo electrónico un enlace de drive sin restricciones.  
+ No se permitirán modificaciones del proyecto, ni de su documentación, una vez 
+enviados para su evaluación.  
+ Os adjuntamos una serie de recomendaciones que debería ser interesante tener en 
+cuenta de cara a la defensa del trabajo: 
+ 
+a) Aspectos previos:  
+• Recordad que en todo momento estamos realizando un procedimiento evaluador 
+oficial.  
+• Cuidar el modo de vestir: sin ser necesario vestir de modo formal (por ejemplo, los 
+alumnos con chaqueta y corbata), conviene vestir con sobriedad.  
+• Según cada caso, puede ser útil acudir con una botella de agua.  
+ 
+ 
+b) Aspectos de la presentación:  
+• Conviene evitar presentaciones demasiado extensas: el número de transparencias ha 
+de ser moderado.  
+• No cargar de texto las transparencias: carece de sentido reproducir el texto escrito en 
+las transparencias, sino que éstas deben dirigirse a expresar los elementos esenciales 
+del trabajo.  
+• Es aconsejable que en el encabezado o en pie de las transparencias se refleje algún 
+elemento institucional del CES Lope de Vega.  
+ 
+ 
+ 
+ 
+ 
+c) Aspectos de contenido de la intervención:  
+• La finalidad de la defensa NO es reproducir de forma apresurada (cuando no 
+atropellada) el trabajo, el cual ya es conocido por los evaluadores.  
+• Se sugiere centrar la intervención en los aspectos siguientes:  
+o Justificar el tema elegido.  
+o Indicar los objetivos que se han perseguido en el trabajo.  
+o Explicar muy brevemente la metodología seguida.  
+o Centrar la intervención en los temas de mayor interés o relevancia.  
+o Exponer con brevedad las conclusiones alcanzadas en el trabajo, que han de ser 
+propias y no generales.  
+ 
+d) Aspectos formales de la intervención:  
+• Es fundamental dirigirse en todo momento al tribunal respetando el tratamiento de 
+Ud. Y en ningún caso tutear.  
+• Es aconsejable iniciar la intervención con el saludo y presentación (Buenas días, me 
+llamo… y el título de mi trabajo es…).  
+• Hablar de forma clara, procurando cuidar la pronunciación. Sin atropellarse, pero sin 
+lagunas.  
+• No limitarse a leer las transparencias o el texto de apoyo.  
+• Cuidar las posturas corporales (por ejemplo, si se está de pie, no meter las manos en 
+los bolsillos).  
+• Es aconsejable terminar anunciando expresamente la finalización de la intervención y 
+agradeciendo a los evaluadores la atención y poniéndose a disposición de los mismos 
+para recibir las observaciones.  
+ 
+e) Aspectos relacionados con el debate con el tribunal de evaluación  
+• No intervenir hasta que los evaluadores concedan la palabra.  
+• Es importante aceptar las observaciones de buena manera, ya que son 
+puntualizaciones que deben ayudar a mejorar tu desarrollo profesional.  
+• Es conveniente tratar de dar respuesta a todas y cada una de las observaciones, pero 
+debe hacerse con humildad intelectual, sin entrar en un excesivo debate.  
+• Terminar agradeciendo las observaciones recibidas.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+5. Evaluación y Defensa del Proyecto 
+ Se valorarán los siguientes aspectos relacionados con el proyecto:  
+• Contenido (25%):  contenido bien expresado, faltas de ortografía, vocabulario 
+apropiado.  
+• Organización (20%): proyecto bien estructurado y organizado.  
+• Recursos (10%): grado y calidad de los recursos utilizados en el desarrollo del proyecto.  
+• Innovación (10%): grado de innovación del proyecto.  
+• Dificultad (10%): grado de dificultad del proyecto desarrollado.  
+• Presentación (25%):  organización de la misma, creatividad, bien expresada y 
+ejecutada. Exposición buena, captar la atención de la audiencia, calidad de las 
+conclusiones, etc.  
+ 
+ Dichos aspectos serán valorados utilizando la siguiente rúbrica de evaluación: 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+6. Calificación del Proyecto 
+Intermodular 
+ Los proyectos se calificarán en función de la siguiente escala numérica de 0 a 10 sin 
+expresión decimal, tras aplicar la rúbrica de evaluación, redondeando al entero superior 
+siempre que la parte decimal sea superior a 0,75 y al entero inferior en caso contrario, es decir:  
+• 6’75 es equivalente a 7.  
+• 4,74 es equivalente a 4.  
+ 
+ La nota final de la asignatura se calculará en función de los siguientes porcentajes: 
+ 
+ 
+ 
+ 
+7. Comunicación final de la nota  
+ La comunicación oficial de la nota se realizará en la evaluación de Junio. 
+ 
+ 
+ 
+
+8. Propuesta de Índice  
+ 
+1. Introducción 
+• Objetivo 
+• Justificación 
+• Análisis de lo existente 
+• Entrevistas con el cliente (si procede) 
+• Propuesta detallada 
+ 
+2. Planificación temporal y evaluación de coste 
+ 
+3. Fundamentos teóricos (si los hubiera) 
+• Estado del arte y valoración de alternativas 
+ 
+4. Análisis de requisitos 
+ 
+5. Diseño 
+• Diseño arquitectónico 
+• Patrones de diseño 
+• Diseño de datos 
+• Diseño de la interacción 
+ 
+6. Codificación 
+• Entorno de programación 
+• Lenguajes y herramientas 
+• Aspectos relevantes de la implementación. No incluir todo el código fuente, sólo aquello que se 
+considere importante o novedoso. Además de los aspectos particulares del sistema concreto, deben 
+incluirse los siguientes apartados generales: 
+o Validación de datos 
+o Control de acceso 
+o Protección de la información 
+ 
+ 
+ 
+ 
+7. Pruebas de ejecución 
+• Pruebas funcionales 
+• Pruebas de usabilidad 
+• Pruebas de accesibilidad (se recomienda el uso de herramientas de verificación de la accesibilidad 
+como el TAW, disponible gratuitamente en www.tawdis.net) 
+• Pruebas de seguridad 
+• Pruebas de carga 
+ 
+8. Manuales de usuario  
+• Objetivo 
+• Requisitos e instalación 
+• Descripción del funcionamiento del sistema (mediante un tutorial o una descripción de las 
+operaciones más habituales) 
+• Mensajes de error 
+ 
+9.Conclusiones 
+• Conclusiones sobre el trabajo realizado 
+• Conclusiones sobre el sistema desarrollado 
+• Conclusiones personales 
+• Posibles ampliaciones y mejoras 
+ 
+10.Bibliografía 
+• Libros, artículos y apuntes 
+• Direcciones web 
+ 
+11. Anexos (Si procede) 
+ 

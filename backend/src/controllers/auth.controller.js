@@ -54,6 +54,55 @@ export const authController = {
     });
   }),
 
+  // POST /auth/recovery/challenge
+  getRecoveryChallenge: asyncHandler(async (req, res) => {
+    const { email } = req.body;
+    const result = await authService.getRecoveryChallenge(email);
+
+    res.status(200).json({
+      success: true,
+      message: result.hasChallenge
+        ? 'Pregunta de recuperación encontrada'
+        : 'No se pudo preparar la recuperación para este usuario',
+      data: result,
+    });
+  }),
+
+  // POST /auth/recovery/reset
+  resetPasswordWithRecovery: asyncHandler(async (req, res) => {
+    const { email, recoveryAnswer, newPassword } = req.body;
+
+    await authService.resetPasswordWithRecovery({
+      email,
+      recoveryAnswer,
+      newPassword,
+    });
+
+    logger.info(`🔁 Contraseña restablecida por recuperación para ${email}`);
+
+    res.status(200).json({
+      success: true,
+      message: 'Contraseña restablecida correctamente',
+    });
+  }),
+
+  // POST /auth/recovery/configure
+  configureRecovery: asyncHandler(async (req, res) => {
+    const { recoveryQuestion, recoveryAnswer } = req.body;
+
+    await authService.configureRecovery(req.userId, {
+      recoveryQuestion,
+      recoveryAnswer,
+    });
+
+    logger.info(`🔐 Recuperación personalizada configurada para ${req.userId}`);
+
+    res.status(200).json({
+      success: true,
+      message: 'Sistema de recuperación configurado',
+    });
+  }),
+
   // GET /auth/me
   getMe: asyncHandler(async (req, res) => {
     const user = await authService.getUserById(req.userId);
