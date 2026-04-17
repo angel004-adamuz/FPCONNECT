@@ -8,6 +8,9 @@ import { usersService } from '../services';
 export default function AlumnoApp() {
   const { user: authUser, logout } = useAuthStore();
   const [activeTab, setActiveTab] = useState('feed');
+  const [exploreSubTab, setExploreSubTab] = useState('centers'); // centers, enterprises, students
+  
+  // Búsqueda para Centros
   const [centerQuery, setCenterQuery] = useState('');
   const [gradeFilter, setGradeFilter] = useState('ALL');
   const [provinceFilter, setProvinceFilter] = useState('ALL');
@@ -15,6 +18,14 @@ export default function AlumnoApp() {
   const [linkingCenterId, setLinkingCenterId] = useState('');
   const [unlinkingCenter, setUnlinkingCenter] = useState(false);
   const [linkError, setLinkError] = useState('');
+
+  // Búsqueda para Empresas
+  const [enterpriseQuery, setEnterpriseQuery] = useState('');
+  const [enterpriseIndustryFilter, setEnterpriseIndustryFilter] = useState('ALL');
+
+  // Búsqueda para Alumnos
+  const [studentQuery, setStudentQuery] = useState('');
+  const [studentCicleFilter, setStudentCicleFilter] = useState('ALL');
 
   const { posts, loadFeed, loading: feedLoading } = useFeed();
   const {
@@ -95,7 +106,10 @@ export default function AlumnoApp() {
       loadFollowing();
     } else if (activeTab === 'explore') {
       loadRecommendations();
+      // Cargar centros, empresas y alumnos
       search('*', 1, 50, 'CENTRO');
+      search('*', 1, 50, 'EMPRESA');
+      search('*', 1, 50, 'ALUMNO');
       loadLinkedCenter();
     }
   }, [activeTab, loadFeed, loadFollowers, loadFollowing, loadRecommendations, search]);
@@ -404,221 +418,466 @@ export default function AlumnoApp() {
         {/* EXPLORE TAB */}
         {activeTab === 'explore' && (
           <div>
-            <h2 style={{ margin: '0 0 14px 0', fontSize: 22 }}>🏫 Centros de FP de Andalucia</h2>
-            <p style={{ margin: '0 0 20px 0', color: '#ffffff99', fontSize: 13 }}>
-              Filtra por grado medio, grado superior o grado de especializacion para encontrar el centro ideal.
-            </p>
-
-            <div
-              style={{
-                border: '1px solid rgba(0, 168, 120, 0.35)',
-                background: 'rgba(0, 168, 120, 0.12)',
-                borderRadius: 12,
-                padding: 14,
-                marginBottom: 18,
-              }}
-            >
-              <div style={{ fontSize: 12, color: '#ffffffaa', marginBottom: 4 }}>Mi centro vinculado</div>
-              {linkedCenter ? (
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center' }}>
-                  <div style={{ fontSize: 14, fontWeight: 600 }}>
-                    ✅ {linkedCenter.centerProfile?.centerName || `${linkedCenter.firstName} ${linkedCenter.lastName}`}
-                  </div>
-                  <button
-                    onClick={handleUnlinkCenter}
-                    disabled={unlinkingCenter}
-                    style={{
-                      border: '1px solid rgba(255, 255, 255, 0.25)',
-                      background: 'rgba(255, 255, 255, 0.08)',
-                      color: '#fff',
-                      borderRadius: 8,
-                      padding: '6px 10px',
-                      fontSize: 12,
-                      cursor: unlinkingCenter ? 'default' : 'pointer',
-                    }}
-                  >
-                    {unlinkingCenter ? 'Desvinculando...' : 'Desvincular'}
-                  </button>
-                </div>
-              ) : (
-                <div style={{ fontSize: 14, color: '#ffffffcc' }}>Aun no has vinculado tu centro educativo</div>
-              )}
+            {/* SUBTABS PARA EXPLORE */}
+            <div style={{ display: 'flex', gap: 8, marginBottom: 24, borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 12 }}>
+              {[
+                { id: 'centers', label: '🏫 Centros Educativos', icon: '🏫' },
+                { id: 'enterprises', label: '🏢 Empresas', icon: '🏢' },
+                { id: 'students', label: '👨‍🎓 Alumnos', icon: '👨‍🎓' },
+              ].map(subTab => (
+                <button
+                  key={subTab.id}
+                  onClick={() => setExploreSubTab(subTab.id)}
+                  style={{
+                    padding: '10px 16px',
+                    borderRadius: 8,
+                    border: 'none',
+                    background: exploreSubTab === subTab.id
+                      ? 'linear-gradient(135deg, #00A878, #007A57)'
+                      : 'rgba(255,255,255,0.08)',
+                    color: '#fff',
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                    fontSize: 14,
+                    transition: 'all 0.3s',
+                  }}
+                >
+                  {subTab.label}
+                </button>
+              ))}
             </div>
 
-            {linkError && (
-              <div style={{ color: '#ff9f9f', fontSize: 13, marginBottom: 14 }}>
-                {linkError}
+            {/* CENTROS */}
+            {exploreSubTab === 'centers' && (
+              <div>
+                <h2 style={{ margin: '0 0 14px 0', fontSize: 22 }}>🏫 Centros de FP de Andalucia</h2>
+                <p style={{ margin: '0 0 20px 0', color: '#ffffff99', fontSize: 13 }}>
+                  Filtra por grado medio, grado superior o grado de especializacion para encontrar el centro ideal.
+                </p>
+
+                <div
+                  style={{
+                    border: '1px solid rgba(0, 168, 120, 0.35)',
+                    background: 'rgba(0, 168, 120, 0.12)',
+                    borderRadius: 12,
+                    padding: 14,
+                    marginBottom: 18,
+                  }}
+                >
+                  <div style={{ fontSize: 12, color: '#ffffffaa', marginBottom: 4 }}>Mi centro vinculado</div>
+                  {linkedCenter ? (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center' }}>
+                      <div style={{ fontSize: 14, fontWeight: 600 }}>
+                        ✅ {linkedCenter.centerProfile?.centerName || `${linkedCenter.firstName} ${linkedCenter.lastName}`}
+                      </div>
+                      <button
+                        onClick={handleUnlinkCenter}
+                        disabled={unlinkingCenter}
+                        style={{
+                          border: '1px solid rgba(255, 255, 255, 0.25)',
+                          background: 'rgba(255, 255, 255, 0.08)',
+                          color: '#fff',
+                          borderRadius: 8,
+                          padding: '6px 10px',
+                          fontSize: 12,
+                          cursor: unlinkingCenter ? 'default' : 'pointer',
+                        }}
+                      >
+                        {unlinkingCenter ? 'Desvinculando...' : 'Desvincular'}
+                      </button>
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: 14, color: '#ffffffcc' }}>Aun no has vinculado tu centro educativo</div>
+                  )}
+                </div>
+
+                {linkError && (
+                  <div style={{ color: '#ff9f9f', fontSize: 13, marginBottom: 14 }}>
+                    {linkError}
+                  </div>
+                )}
+
+                <div style={{ marginBottom: 32 }}>
+                  <input
+                    type="text"
+                    placeholder="Buscar centros por nombre, ciudad o provincia..."
+                    value={centerQuery}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setCenterQuery(value);
+                      search(value.trim() || '*', 1, 50, 'CENTRO');
+                    }}
+                    style={{
+                      width: '100%',
+                      maxWidth: 500,
+                      padding: '14px 18px',
+                      borderRadius: 12,
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      color: '#fff',
+                      fontSize: 14,
+                      fontFamily: 'inherit',
+                      transition: 'all 0.2s',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = 'rgba(0, 168, 120, 0.5)';
+                      e.target.style.background = 'rgba(0, 168, 120, 0.08)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                      e.target.style.background = 'rgba(255, 255, 255, 0.05)';
+                    }}
+                  />
+
+                  <div style={{ display: 'flex', gap: 10, marginTop: 14, flexWrap: 'wrap' }}>
+                    {[
+                      { key: 'ALL', label: 'Todos' },
+                      { key: 'GM', label: 'Grado Medio' },
+                      { key: 'GS', label: 'Grado Superior' },
+                      { key: 'GE', label: 'Especializacion' },
+                    ].map((item) => (
+                      <button
+                        key={item.key}
+                        onClick={() => setGradeFilter(item.key)}
+                        style={{
+                          padding: '8px 12px',
+                          borderRadius: 999,
+                          border: gradeFilter === item.key
+                            ? '1px solid rgba(0, 168, 120, 0.8)'
+                            : '1px solid rgba(255, 255, 255, 0.18)',
+                          background: gradeFilter === item.key
+                            ? 'rgba(0, 168, 120, 0.2)'
+                            : 'rgba(255, 255, 255, 0.05)',
+                          color: '#fff',
+                          fontSize: 12,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div style={{ marginTop: 12 }}>
+                    <select
+                      value={provinceFilter}
+                      onChange={(e) => setProvinceFilter(e.target.value)}
+                      style={{
+                        width: '100%',
+                        maxWidth: 280,
+                        padding: '10px 12px',
+                        borderRadius: 10,
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        background: 'rgba(255,255,255,0.05)',
+                        color: '#fff',
+                        fontSize: 12,
+                      }}
+                    >
+                      <option value="ALL" style={{ color: '#111' }}>Todas las provincias</option>
+                      {availableProvinces.map((province) => (
+                        <option key={province} value={province} style={{ color: '#111' }}>{province}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div style={{ marginTop: 10, fontSize: 12, color: '#ffffffb3' }}>
+                    Mostrando {filteredCenters.length} de {(searchResults || []).filter((user) => user.role === 'CENTRO').length} centros
+                  </div>
+                </div>
+
+                {searchLoading ? (
+                  <p style={{ color: '#ffffff66', textAlign: 'center', padding: 40 }}>
+                    ⏳ Buscando...
+                  </p>
+                ) : (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
+                    {filteredCenters.length === 0 && (
+                      <p style={{ color: '#ffffff66', gridColumn: '1 / -1', textAlign: 'center', padding: 40 }}>
+                        🔍 No hay centros para el filtro seleccionado
+                      </p>
+                    )}
+
+                    {filteredCenters.map((searchUser) => {
+                      const cicles = parseCicles(searchUser.centerProfile?.cicles);
+                      return (
+                        <div key={searchUser.id} style={{ display: 'grid', gap: 10 }}>
+                          <UserCard
+                            user={searchUser}
+                            actions={false}
+                          />
+
+                          <div
+                            style={{
+                              border: '1px solid rgba(255,255,255,0.1)',
+                              background: 'rgba(255,255,255,0.03)',
+                              borderRadius: 10,
+                              padding: 10,
+                            }}
+                          >
+                            <div style={{ fontSize: 12, color: '#ffffffcc', marginBottom: 6 }}>
+                              📍 {searchUser.centerProfile?.city || 'Ciudad no indicada'}
+                              {searchUser.centerProfile?.province ? `, ${searchUser.centerProfile.province}` : ''}
+                            </div>
+                            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                              {cicles.length > 0 ? cicles.map((cicle) => (
+                                <span
+                                  key={cicle}
+                                  style={{
+                                    fontSize: 11,
+                                    padding: '4px 8px',
+                                    borderRadius: 999,
+                                    background: 'rgba(0, 168, 120, 0.18)',
+                                    border: '1px solid rgba(0, 168, 120, 0.35)',
+                                  }}
+                                >
+                                  {cicle}
+                                </span>
+                              )) : (
+                                <span style={{ fontSize: 11, color: '#ffffff88' }}>Sin ciclos registrados</span>
+                              )}
+                            </div>
+
+                            <button
+                              onClick={() => handleLinkToCenter(searchUser)}
+                              disabled={linkingCenterId === searchUser.id || linkedCenter?.id === searchUser.id}
+                              style={{
+                                marginTop: 10,
+                                width: '100%',
+                                padding: '9px 10px',
+                                borderRadius: 8,
+                                border: 'none',
+                                background: linkedCenter?.id === searchUser.id
+                                  ? 'rgba(255, 255, 255, 0.15)'
+                                  : 'linear-gradient(135deg, #00A878, #007A57)',
+                                color: '#fff',
+                                cursor: linkingCenterId === searchUser.id || linkedCenter?.id === searchUser.id ? 'default' : 'pointer',
+                                fontWeight: 700,
+                                fontSize: 12,
+                              }}
+                            >
+                              {linkedCenter?.id === searchUser.id
+                                ? 'Centro vinculado'
+                                : linkingCenterId === searchUser.id
+                                  ? 'Vinculando...'
+                                  : 'Vincularme a este centro'}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
 
-            <div style={{ marginBottom: 32 }}>
-              <input
-                type="text"
-                placeholder="Buscar centros por nombre, ciudad o provincia..."
-                value={centerQuery}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setCenterQuery(value);
-                  search(value.trim() || '*', 1, 50, 'CENTRO');
-                }}
-                style={{
-                  width: '100%',
-                  maxWidth: 500,
-                  padding: '14px 18px',
-                  borderRadius: 12,
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  color: '#fff',
-                  fontSize: 14,
-                  fontFamily: 'inherit',
-                  transition: 'all 0.2s',
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = 'rgba(0, 168, 120, 0.5)';
-                  e.target.style.background = 'rgba(0, 168, 120, 0.08)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                  e.target.style.background = 'rgba(255, 255, 255, 0.05)';
-                }}
-              />
+            {/* EMPRESAS */}
+            {exploreSubTab === 'enterprises' && (
+              <div>
+                <h2 style={{ margin: '0 0 14px 0', fontSize: 22 }}>🏢 Empresas Colaboradoras</h2>
+                <p style={{ margin: '0 0 20px 0', color: '#ffffff99', fontSize: 13 }}>
+                  Descubre empresas de Andalucía que ofrecen oportunidades de prácticas y formación profesional.
+                </p>
 
-              <div style={{ display: 'flex', gap: 10, marginTop: 14, flexWrap: 'wrap' }}>
-                {[
-                  { key: 'ALL', label: 'Todos' },
-                  { key: 'GM', label: 'Grado Medio' },
-                  { key: 'GS', label: 'Grado Superior' },
-                  { key: 'GE', label: 'Especializacion' },
-                ].map((item) => (
-                  <button
-                    key={item.key}
-                    onClick={() => setGradeFilter(item.key)}
-                    style={{
-                      padding: '8px 12px',
-                      borderRadius: 999,
-                      border: gradeFilter === item.key
-                        ? '1px solid rgba(0, 168, 120, 0.8)'
-                        : '1px solid rgba(255, 255, 255, 0.18)',
-                      background: gradeFilter === item.key
-                        ? 'rgba(0, 168, 120, 0.2)'
-                        : 'rgba(255, 255, 255, 0.05)',
-                      color: '#fff',
-                      fontSize: 12,
-                      cursor: 'pointer',
+                <div style={{ marginBottom: 32 }}>
+                  <input
+                    type="text"
+                    placeholder="Buscar empresas por nombre, sector o ciudad..."
+                    value={enterpriseQuery}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setEnterpriseQuery(value);
+                      search(value.trim() || '*', 1, 50, 'EMPRESA');
                     }}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
+                    style={{
+                      width: '100%',
+                      maxWidth: 500,
+                      padding: '14px 18px',
+                      borderRadius: 12,
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      color: '#fff',
+                      fontSize: 14,
+                      fontFamily: 'inherit',
+                      transition: 'all 0.2s',
+                      marginBottom: 14,
+                    }}
+                  />
 
-              <div style={{ marginTop: 12 }}>
-                <select
-                  value={provinceFilter}
-                  onChange={(e) => setProvinceFilter(e.target.value)}
-                  style={{
-                    width: '100%',
-                    maxWidth: 280,
-                    padding: '10px 12px',
-                    borderRadius: 10,
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    background: 'rgba(255,255,255,0.05)',
-                    color: '#fff',
-                    fontSize: 12,
-                  }}
-                >
-                  <option value="ALL" style={{ color: '#111' }}>Todas las provincias</option>
-                  {availableProvinces.map((province) => (
-                    <option key={province} value={province} style={{ color: '#111' }}>{province}</option>
-                  ))}
-                </select>
-              </div>
+                  <div style={{ fontSize: 12, color: '#ffffffb3' }}>
+                    Mostrando {(searchResults || []).filter((user) => user.role === 'EMPRESA').length} empresas disponibles
+                  </div>
+                </div>
 
-              <div style={{ marginTop: 10, fontSize: 12, color: '#ffffffb3' }}>
-                Mostrando {filteredCenters.length} de {(searchResults || []).filter((user) => user.role === 'CENTRO').length} centros
-              </div>
-            </div>
-
-            {searchLoading ? (
-              <p style={{ color: '#ffffff66', textAlign: 'center', padding: 40 }}>
-                ⏳ Buscando...
-              </p>
-            ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
-                {filteredCenters.length === 0 && (
-                  <p style={{ color: '#ffffff66', gridColumn: '1 / -1', textAlign: 'center', padding: 40 }}>
-                    🔍 No hay centros para el filtro seleccionado
+                {searchLoading ? (
+                  <p style={{ color: '#ffffff66', textAlign: 'center', padding: 40 }}>
+                    ⏳ Buscando empresas...
                   </p>
-                )}
+                ) : (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
+                    {(searchResults || []).filter((user) => user.role === 'EMPRESA').length === 0 && (
+                      <p style={{ color: '#ffffff66', gridColumn: '1 / -1', textAlign: 'center', padding: 40 }}>
+                        🔍 No hay empresas disponibles
+                      </p>
+                    )}
 
-                {filteredCenters.map((searchUser) => {
-                  const cicles = parseCicles(searchUser.centerProfile?.cicles);
-                  return (
-                    <div key={searchUser.id} style={{ display: 'grid', gap: 10 }}>
-                      <UserCard
-                        user={searchUser}
-                        actions={false}
-                      />
+                    {(searchResults || []).filter((user) => user.role === 'EMPRESA').map((enterprise) => (
+                      <div key={enterprise.id} style={{ display: 'grid', gap: 10 }}>
+                        <UserCard user={enterprise} actions={false} />
 
-                      <div
-                        style={{
-                          border: '1px solid rgba(255,255,255,0.1)',
-                          background: 'rgba(255,255,255,0.03)',
-                          borderRadius: 10,
-                          padding: 10,
-                        }}
-                      >
-                        <div style={{ fontSize: 12, color: '#ffffffcc', marginBottom: 6 }}>
-                          📍 {searchUser.centerProfile?.city || 'Ciudad no indicada'}
-                          {searchUser.centerProfile?.province ? `, ${searchUser.centerProfile.province}` : ''}
-                        </div>
-                        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                          {cicles.length > 0 ? cicles.map((cicle) => (
-                            <span
-                              key={cicle}
-                              style={{
-                                fontSize: 11,
-                                padding: '4px 8px',
-                                borderRadius: 999,
-                                background: 'rgba(0, 168, 120, 0.18)',
-                                border: '1px solid rgba(0, 168, 120, 0.35)',
-                              }}
-                            >
-                              {cicle}
-                            </span>
-                          )) : (
-                            <span style={{ fontSize: 11, color: '#ffffff88' }}>Sin ciclos registrados</span>
-                          )}
-                        </div>
-
-                        <button
-                          onClick={() => handleLinkToCenter(searchUser)}
-                          disabled={linkingCenterId === searchUser.id || linkedCenter?.id === searchUser.id}
+                        <div
                           style={{
-                            marginTop: 10,
-                            width: '100%',
-                            padding: '9px 10px',
-                            borderRadius: 8,
-                            border: 'none',
-                            background: linkedCenter?.id === searchUser.id
-                              ? 'rgba(255, 255, 255, 0.15)'
-                              : 'linear-gradient(135deg, #00A878, #007A57)',
-                            color: '#fff',
-                            cursor: linkingCenterId === searchUser.id || linkedCenter?.id === searchUser.id ? 'default' : 'pointer',
-                            fontWeight: 700,
-                            fontSize: 12,
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            background: 'rgba(255,255,255,0.03)',
+                            borderRadius: 10,
+                            padding: 10,
                           }}
                         >
-                          {linkedCenter?.id === searchUser.id
-                            ? 'Centro vinculado'
-                            : linkingCenterId === searchUser.id
-                              ? 'Vinculando...'
-                              : 'Vincularme a este centro'}
-                        </button>
+                          <div style={{ fontSize: 12, color: '#ffffffcc', marginBottom: 6 }}>
+                            🏭 {enterprise.enterpriseProfile?.industry || 'Sector no indicado'}
+                          </div>
+                          <div style={{ fontSize: 12, color: '#ffffffcc', marginBottom: 8 }}>
+                            📍 {enterprise.enterpriseProfile?.city || 'Ciudad no indicada'}
+                          </div>
+                          <div style={{ fontSize: 13, color: '#ffffffaa', marginBottom: 10, lineHeight: 1.4 }}>
+                            {enterprise.enterpriseProfile?.description || 'Descripción no disponible'}
+                          </div>
+
+                          <button
+                            onClick={() => handleFollowUser(enterprise.id)}
+                            style={{
+                              width: '100%',
+                              padding: '9px 10px',
+                              borderRadius: 8,
+                              border: 'none',
+                              background: following?.find(u => u.id === enterprise.id)
+                                ? 'rgba(255, 255, 255, 0.15)'
+                                : 'linear-gradient(135deg, #00A878, #007A57)',
+                              color: '#fff',
+                              cursor: 'pointer',
+                              fontWeight: 700,
+                              fontSize: 12,
+                            }}
+                          >
+                            {following?.find(u => u.id === enterprise.id) ? '✓ Siguiendo' : '+ Seguir Empresa'}
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ALUMNOS */}
+            {exploreSubTab === 'students' && (
+              <div>
+                <h2 style={{ margin: '0 0 14px 0', fontSize: 22 }}>👨‍🎓 Conecta con Otros Alumnos</h2>
+                <p style={{ margin: '0 0 20px 0', color: '#ffffff99', fontSize: 13 }}>
+                  Descubre y conecta con otros estudiantes de FP en Andalucía.
+                </p>
+
+                <div style={{ marginBottom: 32 }}>
+                  <input
+                    type="text"
+                    placeholder="Buscar alumnos por nombre, ciclo o especialidad..."
+                    value={studentQuery}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setStudentQuery(value);
+                      search(value.trim() || '*', 1, 50, 'ALUMNO');
+                    }}
+                    style={{
+                      width: '100%',
+                      maxWidth: 500,
+                      padding: '14px 18px',
+                      borderRadius: 12,
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      color: '#fff',
+                      fontSize: 14,
+                      fontFamily: 'inherit',
+                      transition: 'all 0.2s',
+                      marginBottom: 14,
+                    }}
+                  />
+
+                  <div style={{ fontSize: 12, color: '#ffffffb3' }}>
+                    Mostrando {(searchResults || []).filter((user) => user.role === 'ALUMNO').length} alumnos disponibles
+                  </div>
+                </div>
+
+                {searchLoading ? (
+                  <p style={{ color: '#ffffff66', textAlign: 'center', padding: 40 }}>
+                    ⏳ Buscando alumnos...
+                  </p>
+                ) : (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
+                    {(searchResults || []).filter((user) => user.role === 'ALUMNO').length === 0 && (
+                      <p style={{ color: '#ffffff66', gridColumn: '1 / -1', textAlign: 'center', padding: 40 }}>
+                        🔍 No hay alumnos disponibles
+                      </p>
+                    )}
+
+                    {(searchResults || []).filter((user) => user.role === 'ALUMNO').map((student) => (
+                      <div key={student.id} style={{ display: 'grid', gap: 10 }}>
+                        <UserCard user={student} actions={false} />
+
+                        <div
+                          style={{
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            background: 'rgba(255,255,255,0.03)',
+                            borderRadius: 10,
+                            padding: 10,
+                          }}
+                        >
+                          <div style={{ fontSize: 12, color: '#ffffffcc', marginBottom: 6 }}>
+                            📚 {student.studentProfile?.cicle || 'Ciclo no indicado'}
+                          </div>
+                          <div style={{ fontSize: 12, color: '#ffffffcc', marginBottom: 8 }}>
+                            📍 {student.location || 'Ubicación no indicada'}
+                          </div>
+                          {student.studentProfile?.skills && JSON.parse(student.studentProfile.skills).length > 0 && (
+                            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
+                              {JSON.parse(student.studentProfile.skills).slice(0, 3).map((skill) => (
+                                <span
+                                  key={skill}
+                                  style={{
+                                    fontSize: 11,
+                                    padding: '4px 8px',
+                                    borderRadius: 999,
+                                    background: 'rgba(0, 168, 120, 0.18)',
+                                    border: '1px solid rgba(0, 168, 120, 0.35)',
+                                  }}
+                                >
+                                  {skill}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          <button
+                            onClick={() => handleFollowUser(student.id)}
+                            style={{
+                              width: '100%',
+                              padding: '9px 10px',
+                              borderRadius: 8,
+                              border: 'none',
+                              background: following?.find(u => u.id === student.id)
+                                ? 'rgba(255, 255, 255, 0.15)'
+                                : 'linear-gradient(135deg, #00A878, #007A57)',
+                              color: '#fff',
+                              cursor: 'pointer',
+                              fontWeight: 700,
+                              fontSize: 12,
+                            }}
+                          >
+                            {following?.find(u => u.id === student.id) ? '✓ Siguiendo' : '+ Seguir Alumno'}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>

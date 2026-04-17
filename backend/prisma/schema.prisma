@@ -62,7 +62,6 @@ model User {
   // Mensajería
   sentMessages      Message[]    @relation("sender")
   receivedMessages  Message[]    @relation("receiver")
-  conversations     Conversation[]
 
   // Actividades
   activities        Activity[]
@@ -256,7 +255,6 @@ model Conversation {
   id                String       @id @default(cuid())
   
   participantIds    String[]     // Array de user IDs
-  participants      User[]       // Relación many-to-many implícita
 
   messages          Message[]
 
