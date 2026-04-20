@@ -265,10 +265,10 @@ src/
 - [ ] CI/CD (GitHub Actions)
 
 ### Fase 5 — Deploy + App Escritorio
-- [ ] Deploy backend (Railway/Render)
-- [ ] Deploy frontend (Vercel)
-- [ ] Tauri app para Windows
-- [ ] Chatbot IA (OpenAI/Gemini)
+- [ ] Deploy backend
+- [ ] Deploy frontend
+- [ ] App para Windows
+- [ ] Si da tiempo Chatbot IA (OpenAI/Gemini)
 ---
 
 ## 🚀 Setup Backend
