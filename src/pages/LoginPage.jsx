@@ -171,83 +171,42 @@ export default function LoginPage() {
 
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: 'linear-gradient(160deg, #0c1a14 0%, #0f1f2e 50%, #14101f 100%)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontFamily: "'Inter', sans-serif",
-        padding: 20,
-        position: 'relative',
-        overflow: 'hidden',
-      }}
-    >
-      {/* Ambient orbs */}
-      <div
-        style={{
-          position: 'absolute',
-          top: -120,
-          right: -120,
-          width: 500,
-          height: 500,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, #00A87818 0%, transparent 65%)',
-          pointerEvents: 'none',
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          bottom: -100,
-          left: -100,
-          width: 400,
-          height: 400,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, #7C3AED12 0%, transparent 65%)',
-          pointerEvents: 'none',
-        }}
-      />
-
-      <div style={{ width: '100%', maxWidth: 500, position: 'relative' }}>
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: 36 }}>
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 60,
-              height: 60,
-              borderRadius: 16,
-              background: 'linear-gradient(135deg, #00A878, #007A57)',
-              fontSize: 28,
-              marginBottom: 16,
-              boxShadow: '0 8px 32px #00A87850',
-            }}
-          >
-            🌿
-          </div>
-          <h1 style={{ margin: '0 0 6px', fontSize: 30, fontWeight: 800, color: '#fff' }}>
-            FP<span style={{ color: '#00A878' }}>Connect</span>
+    <div className="fp-login-shell">
+      <div className="fp-login-card">
+        <section className="fp-login-hero" aria-label="Presentación FPConnect">
+          <div className="fp-login-kicker">Red FP para estudiar, conectar y encontrar oportunidades</div>
+          <h1 className="fp-login-title">
+            Tu red profesional empieza antes del primer contrato
           </h1>
-          <p style={{ color: '#ffffff55', fontSize: 14, margin: 0 }}>
-            Conecta alumnos, centros y empresas de FP
+          <p className="fp-login-copy">
+            Explora centros, descubre empresas, comparte proyectos y crea una red que acompañe tu etapa de FP sin parecer una plataforma aburrida.
           </p>
-        </div>
+          <div className="fp-login-metrics" aria-label="Ventajas principales">
+            <div className="fp-login-metric">
+              <strong>3 roles</strong>
+              <span>Alumnos, centros y empresas en el mismo espacio.</span>
+            </div>
+            <div className="fp-login-metric">
+              <strong>Feed vivo</strong>
+              <span>Publicaciones, comentarios y perfiles para explorar.</span>
+            </div>
+            <div className="fp-login-metric">
+              <strong>FP real</strong>
+              <span>Centros, prácticas, noticias y talento técnico.</span>
+            </div>
+          </div>
+        </section>
 
-        {/* Main Card */}
-        <div
-          style={{
-            background: 'rgba(255,255,255,0.05)',
-            backdropFilter: 'blur(24px)',
-            borderRadius: 22,
-            border: '1px solid rgba(255,255,255,0.10)',
-            padding: '32px 28px',
-            boxShadow: '0 24px 60px rgba(0,0,0,0.35)',
-          }}
-        >
+        <section className="fp-auth-panel" aria-label="Acceso a FPConnect">
+          <div style={{ marginBottom: 24 }}>
+            <div className="fp-brand" style={{ marginBottom: 10 }}>
+              <span className="fp-brand__mark">FP</span>
+              <span>FP<span className="fp-brand__accent">Connect</span></span>
+            </div>
+            <p style={{ color: 'var(--fp-muted)', fontSize: 14, lineHeight: 1.5, margin: 0 }}>
+              Entra y sigue explorando comunidad, centros y oportunidades.
+            </p>
+          </div>
           {/* Mode Toggle */}
           <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
             <button
@@ -791,12 +750,11 @@ export default function LoginPage() {
             )}
           </form>
           )}
-        </div>
+          <p style={{ textAlign: 'center', color: 'var(--fp-soft)', fontSize: 12, marginTop: 20 }}>
+            Plataforma social para FP desde Andalucía
+          </p>
+        </section>
 
-        {/* Footer */}
-        <p style={{ textAlign: 'center', color: '#ffffff33', fontSize: 12, marginTop: 20 }}>
-          Plataforma social para FP desde Andalucía 🚀
-        </p>
       </div>
     </div>
   );

@@ -79,53 +79,52 @@ export default function UserCard({ user, onFollow, onUnfollow, isFollowing, acti
 
   return (
     <div
+      className="fp-user-card"
       style={{
-        background: 'rgba(255, 255, 255, 0.05)',
-        backdropFilter: 'blur(10px)',
-        borderRadius: 12,
-        border: '1px solid rgba(255, 255, 255, 0.1)',
         padding: 16,
         display: 'flex',
         flexDirection: 'column',
         gap: 12,
         height: '100%',
         boxSizing: 'border-box',
+        transition: 'transform 0.18s ease, border-color 0.18s ease, background 0.18s ease',
       }}
     >
       <div style={{ display: 'flex', gap: 12 }}>
         {/* Avatar */}
         <div
-          style={{
-            width: 48,
-            height: 48,
-            borderRadius: '50%',
-            background: `linear-gradient(135deg, #00A878, #007A57)`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#fff',
-            fontSize: 16,
-            fontWeight: 700,
-            flexShrink: 0,
-          }}
-        >
+	          style={{
+	            width: 52,
+	            height: 52,
+	            borderRadius: 16,
+	            background: 'linear-gradient(135deg, var(--fp-accent), #08795c)',
+	            display: 'flex',
+	            alignItems: 'center',
+	            justifyContent: 'center',
+	            color: '#fff',
+	            fontSize: 16,
+	            fontWeight: 900,
+	            flexShrink: 0,
+              boxShadow: '0 12px 28px rgba(0, 201, 139, 0.22)',
+	          }}
+	        >
           {initials}
         </div>
 
         {/* Info */}
         <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ color: '#fff', fontWeight: 600, fontSize: 14, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <div style={{ color: '#fff', fontWeight: 800, fontSize: 15, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {user.firstName} {user.lastName}
           </div>
-          <div style={{ color: '#ffffff66', fontSize: 12, marginBottom: 8 }}>
-            {user.role === 'ALUMNO' && '👨‍🎓 Estudiante'}
-            {user.role === 'CENTRO' && '🏫 Centro FP'}
-            {user.role === 'EMPRESA' && '💼 Empresa'}
+          <div style={{ color: 'var(--fp-muted)', fontSize: 12, marginBottom: 8, fontWeight: 700 }}>
+            {user.role === 'ALUMNO' && 'Estudiante'}
+            {user.role === 'CENTRO' && 'Centro FP'}
+            {user.role === 'EMPRESA' && 'Empresa'}
           </div>
           <p
             style={{
-              color: '#ffffffaa',
-              fontSize: 12,
+	              color: 'rgba(248, 250, 252, 0.72)',
+	              fontSize: 12,
               margin: '0 0 12px 0',
               display: '-webkit-box',
               WebkitLineClamp: 4,
@@ -136,27 +135,16 @@ export default function UserCard({ user, onFollow, onUnfollow, isFollowing, acti
               minHeight: '67px',
             }}
           >
-            {user.bio || 'Sin descripcion disponible.'}
+	            {user.bio || 'Sin descripción disponible.'}
           </p>
 
           <div style={{ marginTop: 'auto' }}>
             <button
               onClick={handleViewProfile}
               disabled={loadingProfile}
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                borderRadius: 8,
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                background: 'rgba(255, 255, 255, 0.05)',
-                color: '#fff',
-                cursor: loadingProfile ? 'not-allowed' : 'pointer',
-                fontWeight: 600,
-                fontSize: 12,
-                whiteSpace: 'nowrap',
-                opacity: loadingProfile ? 0.7 : 1,
-              }}
-            >
+	              className="fp-button fp-button--ghost"
+	              style={{ width: '100%', fontSize: 12, whiteSpace: 'nowrap', opacity: loadingProfile ? 0.7 : 1 }}
+	            >
               {loadingProfile ? 'Cargando...' : 'Ver perfil completo'}
             </button>
           </div>
@@ -167,22 +155,9 @@ export default function UserCard({ user, onFollow, onUnfollow, isFollowing, acti
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flexShrink: 0 }}>
             <button
               onClick={() => (isFollowing ? onUnfollow(user.id) : onFollow(user.id))}
-              style={{
-                padding: '8px 16px',
-                borderRadius: 8,
-                border: 'none',
-                background: isFollowing
-                  ? 'rgba(255, 255, 255, 0.1)'
-                  : 'linear-gradient(135deg, #00A878, #007A57)',
-                color: '#fff',
-                cursor: 'pointer',
-                fontWeight: 600,
-                fontSize: 12,
-                transition: 'all 0.2s',
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
-              }}
-            >
+	              className={`fp-button ${isFollowing ? 'fp-button--ghost' : ''}`}
+	              style={{ fontSize: 12, whiteSpace: 'nowrap', flexShrink: 0 }}
+	            >
               {isFollowing ? '✓ Siguiendo' : '+ Seguir'}
             </button>
           </div>

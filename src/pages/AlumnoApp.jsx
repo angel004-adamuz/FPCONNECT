@@ -307,36 +307,21 @@ export default function AlumnoApp() {
   const recommendedByInterests = (recommendations || []).filter((user) => !followingIds.has(user.id));
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(160deg, #0c1a14 0%, #0f1f2e 50%, #14101f 100%)',
-      color: '#fff',
-      fontFamily: "'Inter', sans-serif",
-    }}>
+    <div className="fp-app-shell">
       {/* TOP NAV */}
-      <nav style={{
-        background: 'rgba(255,255,255,0.05)',
-        backdropFilter: 'blur(10px)',
-        borderBottom: '1px solid rgba(255,255,255,0.1)',
-        padding: '16px 24px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        position: 'sticky',
-        top: 0,
-        zIndex: 100,
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          <h1 style={{ margin: 0, fontSize: 20, fontWeight: 800 }}>
-            FP<span style={{ color: '#00A878' }}>Connect</span>
-          </h1>
+      <nav className="fp-topbar">
+        <div className="fp-topbar__left">
+          <div className="fp-brand">
+            <span className="fp-brand__mark">FP</span>
+            <span>FP<span className="fp-brand__accent">Connect</span></span>
+          </div>
 
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div className="fp-tabs">
             {[
-              { id: 'feed', label: '📝 Feed' },
-              { id: 'network', label: '🔗 Conexiones' },
-              { id: 'explore', label: '🔍 Explorar' },
-              { id: 'news', label: '📰 Noticias FP' },
+              { id: 'feed', label: 'Feed' },
+              { id: 'network', label: 'Conexiones' },
+              { id: 'explore', label: 'Explorar' },
+              { id: 'news', label: 'Noticias FP' },
             ].map(tab => (
               <button
                 key={tab.id}
@@ -344,19 +329,7 @@ export default function AlumnoApp() {
                   setViewedProfileId(null);
                   setActiveTab(tab.id);
                 }}
-                style={{
-                  padding: '8px 16px',
-                  borderRadius: 8,
-                  border: 'none',
-                  background: activeTab === tab.id
-                    ? 'linear-gradient(135deg, #00A878, #007A57)'
-                    : 'rgba(255,255,255,0.08)',
-                  color: '#fff',
-                  cursor: 'pointer',
-                  fontWeight: 600,
-                  transition: 'all 0.3s',
-                  fontSize: 14,
-                }}
+                className={`fp-tab ${activeTab === tab.id ? 'is-active' : ''}`}
               >
                 {tab.label}
               </button>
@@ -364,37 +337,25 @@ export default function AlumnoApp() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div className="fp-topbar__right">
           <div style={{ textAlign: 'right', fontSize: 12 }}>
             <div style={{ fontWeight: 600 }}>
               {authUser?.firstName} {authUser?.lastName}
             </div>
-            <div style={{ color: '#ffffff66' }}>👨‍🎓 Alumno</div>
+            <div style={{ color: 'var(--fp-muted)' }}>Alumno</div>
           </div>
 
           <button
             onClick={handleLogout}
-            style={{
-              padding: '8px 16px',
-              borderRadius: 8,
-              border: 'none',
-              background: 'rgba(255,0,0,0.2)',
-              color: '#ff6b6b',
-              cursor: 'pointer',
-              fontWeight: 600,
-              fontSize: 13,
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={(e) => e.target.style.background = 'rgba(255,0,0,0.3)'}
-            onMouseLeave={(e) => e.target.style.background = 'rgba(255,0,0,0.2)'}
+            className="fp-button fp-button--danger"
           >
-            🚪 Salir
+            Salir
           </button>
         </div>
       </nav>
 
       {/* CONTENT */}
-      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '24px' }}>
+      <div className="fp-content">
         {/* FEED TAB */}
         {viewedProfileId ? (
           <PublicProfileView
@@ -405,7 +366,7 @@ export default function AlumnoApp() {
             onUnfollow={handleUnfollowUser}
           />
         ) : activeTab === 'feed' && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 24 }}>
+          <div className="fp-feed-layout">
             {feedLoading ? (
               <div style={{ textAlign: 'center', padding: '40px', color: '#ffffff66' }}>
                 ⏳ Cargando feed...
@@ -421,18 +382,9 @@ export default function AlumnoApp() {
             )}
 
             {/* SIDEBAR - RECOMENDACIONES */}
-            <div style={{
-              background: 'rgba(255, 255, 255, 0.05)',
-              backdropFilter: 'blur(10px)',
-              borderRadius: 16,
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              padding: 20,
-              height: 'fit-content',
-              position: 'sticky',
-              top: 80,
-            }}>
-              <h3 style={{ margin: '0 0 16px 0', fontSize: 14, fontWeight: 700 }}>
-                👥 Sugerencias
+            <aside className="fp-sidebar fp-card">
+              <h3 style={{ margin: '0 0 16px 0', fontSize: 15, fontWeight: 800 }}>
+                Sugerencias para ampliar tu red
               </h3>
 
               {connectionsLoading ? (
@@ -511,7 +463,7 @@ export default function AlumnoApp() {
                   )}
                 </div>
               )}
-            </div>
+            </aside>
           </div>
         )}
 

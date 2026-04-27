@@ -110,7 +110,7 @@ export default function PublicProfileView({ userId, onBack, isFollowing = false,
 
   if (error || !profile || !profileMeta) {
     return (
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: 24 }}>
+      <div className="fp-public-profile">
         <button
           onClick={onBack}
           style={{
@@ -131,7 +131,7 @@ export default function PublicProfileView({ userId, onBack, isFollowing = false,
   }
 
   return (
-    <div style={{ maxWidth: 1100, margin: '0 auto', padding: 24 }}>
+    <div className="fp-public-profile">
       <button
         onClick={onBack}
         style={{
@@ -226,7 +226,7 @@ export default function PublicProfileView({ userId, onBack, isFollowing = false,
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(260px, 1fr)', gap: 18 }}>
+      <div className="fp-public-profile__body">
         <div style={{ display: 'grid', gap: 18 }}>
           <section style={cardStyle}>
             <h3 style={sectionTitleStyle}>Acerca de</h3>

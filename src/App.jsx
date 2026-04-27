@@ -67,7 +67,9 @@ export default function App() {
   return (
     <>
       <GlobalToast />
-      {renderApp()}
+      <main className="fp-root-main">
+        {renderApp()}
+      </main>
     </>
   );
 }

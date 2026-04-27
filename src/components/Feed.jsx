@@ -5,10 +5,15 @@ import { useFeed, useCreatePost, useLike } from '../hooks';
 import { commentsService, postsService } from '../services';
 import UserCard from './UserCard';
 
-/**
- * Componente Feed
- * Muestra posts del usuario y sus conexiones
- */
+const getInitials = (user) => `${user?.firstName?.[0] || ''}${user?.lastName?.[0] || ''}`.toUpperCase() || 'FP';
+
+const formatPostDate = (date) => new Date(date).toLocaleDateString('es-ES', {
+  day: 'numeric',
+  month: 'short',
+  hour: '2-digit',
+  minute: '2-digit',
+});
+
 export default function Feed({ recommendations = [], following = [], onFollow, onUnfollow, onOpenProfile }) {
   const { user: authUser } = useAuthStore();
   const { showToast } = useUIStore();
@@ -22,10 +27,9 @@ export default function Feed({ recommendations = [], following = [], onFollow, o
   const [commentLoadingByPost, setCommentLoadingByPost] = useState({});
   const [likeLoadingByPost, setLikeLoadingByPost] = useState({});
 
-  // Cargar feed al montar
   useEffect(() => {
     loadFeed();
-  }, []);
+  }, [loadFeed]);
 
   const handleCreatePost = async (e) => {
     e.preventDefault();
@@ -61,15 +65,11 @@ export default function Feed({ recommendations = [], following = [], onFollow, o
           likeCount: (prevPost.likeCount || 0) + 1,
         }));
       }
-    } catch (err) {
-      // Like/unlike should be visually silent for UX consistency.
+    } catch {
+      // Keep the like action quiet. The feed state remains unchanged on failure.
     } finally {
       setLikeLoadingByPost((prev) => ({ ...prev, [postId]: false }));
     }
-  };
-
-  const handleChangeComment = (postId, value) => {
-    setCommentInputs((prev) => ({ ...prev, [postId]: value }));
   };
 
   const handleCreateComment = async (postId) => {
@@ -112,120 +112,91 @@ export default function Feed({ recommendations = [], following = [], onFollow, o
   };
 
   return (
-    <div style={{ maxWidth: 600, margin: '0 auto', padding: '20px' }}>
-      {/* Create Post Card */}
-      <div
-        style={{
-          background: 'rgba(255, 255, 255, 0.05)',
-          backdropFilter: 'blur(10px)',
-          borderRadius: 16,
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          padding: 20,
-          marginBottom: 20,
-        }}
-      >
+    <div className="fp-feed">
+      <section className="fp-composer" aria-label="Crear publicación">
         <form onSubmit={handleCreatePost}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+            <div style={{
+              width: 42,
+              height: 42,
+              borderRadius: 14,
+              display: 'grid',
+              placeItems: 'center',
+              background: 'linear-gradient(135deg, var(--fp-accent), #08795c)',
+              fontWeight: 900,
+              boxShadow: '0 12px 30px rgba(0, 201, 139, 0.24)',
+            }}>
+              {getInitials(authUser)}
+            </div>
+            <div>
+              <div style={{ fontWeight: 800, color: '#fff' }}>Comparte algo útil</div>
+              <div style={{ color: 'var(--fp-muted)', fontSize: 13 }}>Ideas, dudas, proyectos, ofertas o centros que molan.</div>
+            </div>
+          </div>
+
           <textarea
+            className="fp-textarea"
             value={postContent}
             onChange={(e) => setPostContent(e.target.value)}
-            placeholder="¿Qué tenéis en mente? 💭"
-            style={{
-              width: '100%',
-              minHeight: 100,
-              padding: 12,
-              borderRadius: 12,
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              background: 'rgba(255, 255, 255, 0.05)',
-              color: '#fff',
-              fontSize: 14,
-              fontFamily: 'inherit',
-              resize: 'none',
-              outline: 'none',
-              marginBottom: 12,
-            }}
+            placeholder="Cuenta qué estás aprendiendo, qué buscas o qué has descubierto..."
           />
 
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginTop: 12, flexWrap: 'wrap' }}>
             <select
+              className="fp-select"
               value={visibility}
               onChange={(e) => setVisibility(e.target.value)}
-              style={{
-                padding: '8px 12px',
-                borderRadius: 8,
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                background: 'rgba(255, 255, 255, 0.05)',
-                color: '#fff',
-                cursor: 'pointer',
-              }}
+              style={{ width: 'auto', minWidth: 150 }}
+              aria-label="Visibilidad de la publicación"
             >
-              <option value="PUBLIC" style={{ color: '#fff', backgroundColor: '#1f2937' }}>🌍 Público</option>
-              <option value="PRIVATE" style={{ color: '#fff', backgroundColor: '#1f2937' }}>🔒 Privado</option>
+              <option value="PUBLIC">Público</option>
+              <option value="PRIVATE">Privado</option>
+              <option value="FRIENDS_ONLY">Solo conexiones</option>
             </select>
 
             <button
+              className="fp-button"
               type="submit"
               disabled={creatingPost || !postContent.trim()}
-              style={{
-                marginLeft: 'auto',
-                padding: '10px 20px',
-                borderRadius: 8,
-                border: 'none',
-                background: 'linear-gradient(135deg, #00A878, #007A57)',
-                color: '#fff',
-                fontWeight: 600,
-                cursor: creatingPost || !postContent.trim() ? 'not-allowed' : 'pointer',
-                opacity: creatingPost || !postContent.trim() ? 0.5 : 1,
-              }}
+              style={{ marginLeft: 'auto' }}
             >
-              {creatingPost ? '⏳ Publicando...' : '✨ Publicar'}
+              {creatingPost ? 'Publicando...' : 'Publicar'}
             </button>
           </div>
         </form>
-      </div>
+      </section>
 
-      {/* Error */}
       {error && (
-        <div
-          style={{
-            background: 'rgba(239, 68, 68, 0.1)',
-            border: '1px solid rgba(239, 68, 68, 0.5)',
-            borderRadius: 8,
-            padding: 12,
-            color: '#fca5a5',
-            marginBottom: 20,
-          }}
-        >
-          ❌ {error}
+        <div className="fp-empty" style={{ borderColor: 'rgba(251, 113, 133, 0.32)', color: '#fecdd3' }}>
+          {error}
         </div>
       )}
 
-      {/* Loading */}
       {loading && (
-        <div style={{ textAlign: 'center', padding: 40, color: '#ffffff88' }}>
-          ⏳ Cargando posts...
-        </div>
+        <div className="fp-empty">Cargando actividad...</div>
       )}
 
-      {/* Posts List */}
       {posts.length === 0 && !loading && (
-        <div style={{ textAlign: 'center', padding: 40, color: '#ffffff88', background: 'rgba(255, 255, 255, 0.05)', borderRadius: 16 }}>
-          <div style={{ fontSize: 24, marginBottom: 16 }}>📭</div>
-          <div style={{ marginBottom: 24 }}>No hay posts en tu feed. ¡Sé el primero en compartir algo o conecta con la comunidad!</div>
-          
+        <section className="fp-empty">
+          <h3 style={{ marginBottom: 8, color: '#fff' }}>Tu feed está esperando movimiento</h3>
+          <p style={{ maxWidth: 520, margin: '0 auto', lineHeight: 1.55 }}>
+            Publica algo o sigue perfiles para que FPConnect empiece a parecerse a tu red real.
+          </p>
+
           {recommendations?.length > 0 && (
-            <div style={{ textAlign: 'left', marginTop: 32 }}>
-              <h3 style={{ fontSize: 16, color: '#fff', marginBottom: 16 }}>Sugerencias para ti</h3>
+            <div style={{ textAlign: 'left', marginTop: 28 }}>
+              <h3 style={{ fontSize: 15, color: '#fff', marginBottom: 14 }}>Perfiles para empezar</h3>
               <div style={{ display: 'grid', gap: 12 }}>
-                {recommendations.slice(0, 5).map(recommendedUser => {
-                  const isFollowing = following?.find(u => u.id === recommendedUser.id);
+                {recommendations.slice(0, 4).map((recommendedUser) => {
+                  const isFollowing = following?.find((u) => u.id === recommendedUser.id);
                   return (
                     <UserCard
                       key={recommendedUser.id}
                       user={recommendedUser}
-                      actions={true}
+                      actions
                       isFollowing={!!isFollowing}
-                      onFollow={() => onFollow && onFollow(recommendedUser.id)}
-                      onUnfollow={() => onUnfollow && onUnfollow(recommendedUser.id)}
+                      onFollow={() => onFollow?.(recommendedUser.id)}
+                      onUnfollow={() => onUnfollow?.(recommendedUser.id)}
                       onOpenProfile={onOpenProfile}
                     />
                   );
@@ -233,148 +204,101 @@ export default function Feed({ recommendations = [], following = [], onFollow, o
               </div>
             </div>
           )}
-        </div>
+        </section>
       )}
 
       {posts.map((post) => (
-        <div
-          key={post.id}
-          style={{
-            background: 'rgba(255, 255, 255, 0.05)',
-            backdropFilter: 'blur(10px)',
-            borderRadius: 16,
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            padding: 20,
-            marginBottom: 16,
-          }}
-        >
-          {/* Post Header */}
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 12 }}>
-            <div
+        <article className="fp-post" key={post.id}>
+          <header style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+            <button
+              type="button"
+              onClick={() => post.author?.id && onOpenProfile?.(post.author.id)}
+              title="Ver perfil"
               style={{
-                width: 44,
-                height: 44,
-                borderRadius: '50%',
-                background: `linear-gradient(135deg, #00A878, #007A57)`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                width: 46,
+                height: 46,
+                borderRadius: 15,
+                border: '1px solid rgba(255,255,255,0.14)',
+                background: 'linear-gradient(135deg, var(--fp-accent), #08795c)',
+                display: 'grid',
+                placeItems: 'center',
                 color: '#fff',
-                fontSize: 18,
-                fontWeight: 700,
-                marginRight: 12,
+                fontSize: 16,
+                fontWeight: 900,
+                cursor: post.author?.id && onOpenProfile ? 'pointer' : 'default',
+                flexShrink: 0,
               }}
             >
-              {post.author?.firstName?.[0]?.toUpperCase()}
-            </div>
+              {getInitials(post.author)}
+            </button>
 
-            <div>
-              <div style={{ color: '#fff', fontWeight: 600, fontSize: 14 }}>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ color: '#fff', fontWeight: 800, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {post.author?.firstName} {post.author?.lastName}
               </div>
-              <div style={{ color: '#ffffff66', fontSize: 12 }}>
-                {new Date(post.createdAt).toLocaleDateString('es-ES', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
+              <div style={{ color: 'var(--fp-soft)', fontSize: 12 }}>
+                {post.author?.role || 'FPConnect'} · {formatPostDate(post.createdAt)}
               </div>
             </div>
-          </div>
 
-          {/* Post Content */}
-          <p style={{ color: '#ffffffdd', fontSize: 14, lineHeight: 1.6, margin: '0 0 16px 0' }}>
+            <span className="fp-chip" style={{ marginLeft: 'auto', cursor: 'default' }}>
+              {post.visibility === 'PRIVATE' ? 'Privado' : post.visibility === 'FRIENDS_ONLY' ? 'Conexiones' : 'Público'}
+            </span>
+          </header>
+
+          <p style={{ color: 'rgba(248, 250, 252, 0.9)', fontSize: 15, lineHeight: 1.68, margin: '0 0 16px' }}>
             {post.content}
           </p>
 
-          {/* Post Footer - Stats */}
-          <div style={{ display: 'flex', gap: 16, padding: '12px 0', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
-            <div style={{ color: '#ffffff66', fontSize: 12 }}>
-              ❤️ {post.likeCount} likes
-            </div>
-            <div style={{ color: '#ffffff66', fontSize: 12 }}>
-              💬 {post.commentCount} comentarios
-            </div>
+          <div style={{
+            display: 'flex',
+            gap: 14,
+            padding: '12px 0',
+            borderTop: '1px solid rgba(255,255,255,0.1)',
+            color: 'var(--fp-muted)',
+            fontSize: 13,
+          }}>
+            <span>{post.likeCount || 0} me gusta</span>
+            <span>{post.commentCount || 0} comentarios</span>
           </div>
 
-          {/* Post Actions */}
-          <div style={{ display: 'flex', gap: 12, marginTop: 12 }}>
+          <div className={`fp-post-actions ${post.author?.id === authUser?.id ? 'fp-post-actions--owner' : 'fp-post-actions--default'}`}>
             <button
+              className={`fp-button ${post.isLiked ? '' : 'fp-button--ghost'}`}
               onClick={() => handleLike(post.id, post.isLiked)}
               disabled={!!likeLoadingByPost[post.id]}
-              style={{
-                flex: 1,
-                padding: '8px 12px',
-                borderRadius: 8,
-                border: 'none',
-                background: post.isLiked ? 'rgba(255, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.05)',
-                color: post.isLiked ? '#ff6b6b' : '#ffffff88',
-                cursor: likeLoadingByPost[post.id] ? 'default' : 'pointer',
-                transition: 'all 0.2s',
-                fontSize: 13,
-                fontWeight: 500,
-                opacity: likeLoadingByPost[post.id] ? 0.7 : 1,
-              }}
+              type="button"
             >
-              {likeLoadingByPost[post.id] ? '⏳ Procesando...' : (post.isLiked ? '❤️ Me gusta' : '🤍 Me gusta')}
+              {likeLoadingByPost[post.id] ? 'Procesando...' : post.isLiked ? 'Te gusta' : 'Me gusta'}
             </button>
 
             <button
+              className="fp-button fp-button--ghost"
               onClick={() => handleCreateComment(post.id)}
               disabled={!!commentLoadingByPost[post.id]}
-              style={{
-                flex: 1,
-                padding: '8px 12px',
-                borderRadius: 8,
-                border: 'none',
-                background: 'rgba(255, 255, 255, 0.05)',
-                color: '#ffffff88',
-                cursor: commentLoadingByPost[post.id] ? 'default' : 'pointer',
-                fontSize: 13,
-                fontWeight: 500,
-                opacity: commentLoadingByPost[post.id] ? 0.7 : 1,
-              }}
+              type="button"
             >
-              {commentLoadingByPost[post.id] ? '⏳ Enviando...' : '💬 Comentar'}
+              {commentLoadingByPost[post.id] ? 'Enviando...' : 'Comentar'}
             </button>
 
             {post.author?.id === authUser?.id && (
               <button
+                className="fp-button fp-button--danger"
                 onClick={() => handleDeletePost(post.id)}
-                style={{
-                  flex: 1,
-                  padding: '8px 12px',
-                  borderRadius: 8,
-                  border: 'none',
-                  background: 'rgba(239, 68, 68, 0.1)',
-                  color: '#fca5a5',
-                  cursor: 'pointer',
-                  fontSize: 13,
-                  fontWeight: 500,
-                }}
+                type="button"
               >
-                🗑️ Eliminar
+                Eliminar
               </button>
             )}
           </div>
 
-          <div style={{ marginTop: 10 }}>
+          <div style={{ marginTop: 12 }}>
             <input
+              className="fp-input"
               type="text"
               value={commentInputs[post.id] || ''}
-              onChange={(e) => handleChangeComment(post.id, e.target.value)}
-              placeholder="Escribe un comentario y pulsa Comentar"
-              style={{
-                width: '100%',
-                padding: '10px 12px',
-                borderRadius: 8,
-                border: '1px solid rgba(255,255,255,0.16)',
-                background: 'rgba(255,255,255,0.04)',
-                color: '#fff',
-                fontSize: 13,
-              }}
+              onChange={(e) => setCommentInputs((prev) => ({ ...prev, [post.id]: e.target.value }))}
+              placeholder="Escribe una respuesta rápida..."
             />
           </div>
 
@@ -384,21 +308,21 @@ export default function Feed({ recommendations = [], following = [], onFollow, o
                 <div
                   key={comment.id}
                   style={{
-                    padding: '8px 10px',
-                    borderRadius: 8,
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    padding: '10px 12px',
+                    borderRadius: 12,
+                    background: 'rgba(255,255,255,0.055)',
+                    border: '1px solid rgba(255,255,255,0.09)',
                   }}
                 >
-                  <div style={{ fontSize: 12, color: '#ffffffaa', marginBottom: 4 }}>
+                  <div style={{ fontSize: 12, color: 'var(--fp-muted)', marginBottom: 4, fontWeight: 700 }}>
                     {comment.author?.firstName} {comment.author?.lastName}
                   </div>
-                  <div style={{ fontSize: 13, color: '#ffffffdd' }}>{comment.content}</div>
+                  <div style={{ fontSize: 13, color: 'rgba(248, 250, 252, 0.86)', lineHeight: 1.5 }}>{comment.content}</div>
                 </div>
               ))}
             </div>
           )}
-        </div>
+        </article>
       ))}
     </div>
   );

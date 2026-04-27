@@ -46,53 +46,26 @@ export default function EmpresaApp() {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(160deg, #1a0f2e 0%, #2e0f1f 50%, #1f1014 100%)',
-      color: '#fff',
-      fontFamily: "'Inter', sans-serif",
-    }}>
+    <div className="fp-app-shell fp-app-shell--company">
       {/* TOP NAV */}
-      <nav style={{
-        background: 'rgba(255,255,255,0.05)',
-        backdropFilter: 'blur(10px)',
-        borderBottom: '1px solid rgba(255,255,255,0.1)',
-        padding: '16px 24px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        position: 'sticky',
-        top: 0,
-        zIndex: 100,
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          <h1 style={{ margin: 0, fontSize: 20, fontWeight: 800 }}>
-            FP<span style={{ color: '#EC4899' }}>Connect</span>
-          </h1>
+      <nav className="fp-topbar">
+        <div className="fp-topbar__left">
+          <div className="fp-brand">
+            <span className="fp-brand__mark" style={{ background: 'linear-gradient(135deg, var(--fp-pink), #be185d)' }}>FP</span>
+            <span>FP<span style={{ color: 'var(--fp-pink)' }}>Connect</span></span>
+          </div>
 
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div className="fp-tabs">
             {[
-              { id: 'dashboard', label: '📊 Panel' },
-              { id: 'students', label: '🎓 Talento' },
-              { id: 'network', label: '🤝 Red' },
-              { id: 'profile', label: '🏢 Empresa' },
+              { id: 'dashboard', label: 'Panel' },
+              { id: 'students', label: 'Talento' },
+              { id: 'network', label: 'Red' },
+              { id: 'profile', label: 'Empresa' },
             ].map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                style={{
-                  padding: '8px 16px',
-                  borderRadius: 8,
-                  border: 'none',
-                  background: activeTab === tab.id
-                    ? 'linear-gradient(135deg, #EC4899, #be185d)'
-                    : 'rgba(255,255,255,0.08)',
-                  color: '#fff',
-                  cursor: 'pointer',
-                  fontWeight: 600,
-                  transition: 'all 0.3s',
-                  fontSize: 14,
-                }}
+                className={`fp-tab fp-tab--pink ${activeTab === tab.id ? 'is-active' : ''}`}
               >
                 {tab.label}
               </button>
@@ -100,37 +73,25 @@ export default function EmpresaApp() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div className="fp-topbar__right">
           <div style={{ textAlign: 'right', fontSize: 12 }}>
             <div style={{ fontWeight: 600 }}>
               {authUser?.firstName} {authUser?.lastName}
             </div>
-            <div style={{ color: '#ffffff66' }}>🏢 Empresa</div>
+            <div style={{ color: 'var(--fp-muted)' }}>Empresa</div>
           </div>
 
           <button
             onClick={handleLogout}
-            style={{
-              padding: '8px 16px',
-              borderRadius: 8,
-              border: 'none',
-              background: 'rgba(255,0,0,0.2)',
-              color: '#ff6b6b',
-              cursor: 'pointer',
-              fontWeight: 600,
-              fontSize: 13,
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={(e) => e.target.style.background = 'rgba(255,0,0,0.3)'}
-            onMouseLeave={(e) => e.target.style.background = 'rgba(255,0,0,0.2)'}
+            className="fp-button fp-button--danger"
           >
-            🚪 Salir
+            Salir
           </button>
         </div>
       </nav>
 
       {/* CONTENT */}
-      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '24px' }}>
+      <div className="fp-content">
         {/* DASHBOARD TAB */}
         {activeTab === 'dashboard' && (
           <div>
