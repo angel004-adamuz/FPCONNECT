@@ -6,6 +6,7 @@ import Feed from '../components/Feed';
 import UserCard from '../components/UserCard';
 import PublicProfileView from '../components/PublicProfileView';
 import { usersService } from '../services';
+import ProfileEditor from '../components/ProfileEditor';
 
 const ANDALUCIA_PROVINCES = [
   'ALMERIA',
@@ -322,6 +323,7 @@ export default function AlumnoApp() {
               { id: 'network', label: 'Conexiones' },
               { id: 'explore', label: 'Explorar' },
               { id: 'news', label: 'Noticias FP' },
+              { id: 'profile', label: 'Mi Perfil' },
             ].map(tab => (
               <button
                 key={tab.id}
@@ -1160,6 +1162,10 @@ export default function AlumnoApp() {
             </div>
           </div>
         )}
+        {/* PROFILE TAB */}
+{!viewedProfileId && activeTab === 'profile' && (
+  <ProfileEditor user={authUser} role="ALUMNO" />
+)}
       </div>
     </div>
   );
