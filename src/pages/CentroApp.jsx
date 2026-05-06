@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { useFeed, useConnections, useUserSearch } from '../hooks';
 import UserCard from '../components/UserCard';
+import ProfileEditor from '../components/ProfileEditor';
 
 export default function CentroApp() {
   const { user: authUser, logout } = useAuthStore();
@@ -74,20 +75,29 @@ export default function CentroApp() {
         </div>
 
         <div className="fp-topbar__right">
-          <div style={{ textAlign: 'right', fontSize: 12 }}>
-            <div style={{ fontWeight: 600 }}>
-              {authUser?.firstName} {authUser?.lastName}
-            </div>
-            <div style={{ color: 'var(--fp-muted)' }}>Centro FP</div>
-          </div>
-
-          <button
-            onClick={handleLogout}
-            className="fp-button fp-button--danger"
-          >
-            Salir
-          </button>
-        </div>
+  {activeTab === 'profile' && (
+    <button
+      onClick={() => window.dispatchEvent(new CustomEvent('fp-edit-profile'))}
+      style={{
+        padding: '8px 16px',
+        borderRadius: 10,
+        border: 'none',
+        background: 'linear-gradient(135deg, #EC4899, #be185d)',
+        color: '#fff',
+        fontWeight: 700,
+        cursor: 'pointer',
+        fontSize: 13,
+      }}
+    >
+      ✏️ Editar perfil
+    </button>
+  )}
+  <div style={{ textAlign: 'right', fontSize: 12 }}>
+    <div style={{ fontWeight: 600 }}>{authUser?.firstName} {authUser?.lastName}</div>
+    <div style={{ color: 'var(--fp-muted)' }}>Empresa</div>
+  </div>
+  <button onClick={handleLogout} className="fp-button fp-button--danger">Salir</button>
+</div>
       </nav>
 
       {/* CONTENT */}
@@ -284,7 +294,9 @@ export default function CentroApp() {
         )}
 
         {/* PROFILE TAB */}
-        {activeTab === 'profile' && (
+{activeTab === 'profile' && (
+  <ProfileEditor user={authUser} role="EMPRESA" />
+)}
           <div
             style={{
               background: 'rgba(255, 255, 255, 0.05)',

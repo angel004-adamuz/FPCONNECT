@@ -340,20 +340,29 @@ export default function AlumnoApp() {
         </div>
 
         <div className="fp-topbar__right">
-          <div style={{ textAlign: 'right', fontSize: 12 }}>
-            <div style={{ fontWeight: 600 }}>
-              {authUser?.firstName} {authUser?.lastName}
-            </div>
-            <div style={{ color: 'var(--fp-muted)' }}>Alumno</div>
-          </div>
-
-          <button
-            onClick={handleLogout}
-            className="fp-button fp-button--danger"
-          >
-            Salir
-          </button>
-        </div>
+  {activeTab === 'profile' && (
+    <button
+      onClick={() => window.dispatchEvent(new CustomEvent('fp-edit-profile'))}
+      style={{
+        padding: '8px 16px',
+        borderRadius: 10,
+        border: 'none',
+        background: 'linear-gradient(135deg, #00A878, #007A57)',
+        color: '#fff',
+        fontWeight: 700,
+        cursor: 'pointer',
+        fontSize: 13,
+      }}
+    >
+      ✏️ Editar perfil
+    </button>
+  )}
+  <div style={{ textAlign: 'right', fontSize: 12 }}>
+    <div style={{ fontWeight: 600 }}>{authUser?.firstName} {authUser?.lastName}</div>
+    <div style={{ color: 'var(--fp-muted)' }}>Alumno</div>
+  </div>
+  <button onClick={handleLogout} className="fp-button fp-button--danger">Salir</button>
+</div>
       </nav>
 
       {/* CONTENT */}
