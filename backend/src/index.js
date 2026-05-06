@@ -22,6 +22,7 @@ import postRoutes from './routes/post.routes.js';
 import commentRoutes from './routes/comment.routes.js';
 import userRoutes from './routes/user.routes.js';
 import connectionRoutes from './routes/connection.routes.js';
+import jobOfferRoutes from './routes/jobOffer.routes.js';
 
 // ============ INICIALIZACIÓN ============
 
@@ -100,6 +101,7 @@ app.use('/api/posts', postRoutes);
 app.use('/api/posts/:postId/comments', commentRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/connections', connectionRoutes);
+app.use('/api/job-offers', jobOfferRoutes);
 
 // Rutas temporales de demostración
 app.get('/api', (req, res) => {

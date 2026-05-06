@@ -312,10 +312,22 @@ export const usersService = {
     });
   },
 
-  /**
-   * Obtener estadísticas del usuario actual
-   */
   getStats: async () => {
     return apiClient.get('/users/stats');
+  },
+};
+
+/**
+ * Servicios de Ofertas de Empleo
+ */
+export const jobOffersService = {
+  getAll: async () => {
+    return apiClient.get('/job-offers');
+  },
+  create: async (data) => {
+    return apiClient.post('/job-offers', data);
+  },
+  delete: async (id) => {
+    return apiClient.delete(`/job-offers/${id}`);
   },
 };

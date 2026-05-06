@@ -1,17 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { usersService } from '../services';
 import { useAuthStore } from '../store/authStore';
 import { useUIStore } from '../store/uiStore';
 
-export default function ProfileEditor({ user, role }) {
+export default function ProfileEditor({ user, role, accentColor = '#00A878' }) {
   const { fetchMe } = useAuthStore();
   const { showToast } = useUIStore();
 
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-
   const [form, setForm] = useState({
-    // Campos comunes
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
     bio: user?.bio || '',
@@ -24,22 +22,20 @@ export default function ProfileEditor({ user, role }) {
       ? JSON.parse(user.studentProfile.skills).join(', ')
       : '',
     // Empresa
+    companyName: user?.enterpriseProfile?.companyName || '',
     industry: user?.enterpriseProfile?.industry || '',
-    description: user?.enterpriseProfile?.description || '',
     website: user?.enterpriseProfile?.website || '',
+    description: user?.enterpriseProfile?.description || '',
+    city: user?.enterpriseProfile?.city || '',
     // Centro
     centerName: user?.centerProfile?.centerName || '',
-    province: user?.centerProfile?.province || '',
+    centerCity: user?.centerProfile?.city || '',
+    centerProvince: user?.centerProfile?.province || '',
+    director: user?.centerProfile?.director || '',
     cicles: user?.centerProfile?.cicles
       ? JSON.parse(user.centerProfile.cicles).join(', ')
       : '',
   });
-
-  useEffect(() => {
-    const handler = () => setEditing(true);
-    window.addEventListener('fp-edit-profile', handler);
-    return () => window.removeEventListener('fp-edit-profile', handler);
-  }, []);
 
   const handleChange = (e) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -68,18 +64,20 @@ export default function ProfileEditor({ user, role }) {
 
       if (role === 'EMPRESA') {
         updates.enterpriseProfile = {
+          companyName: form.companyName,
           industry: form.industry,
-          description: form.description,
-          city: form.location,
           website: form.website,
+          description: form.description,
+          city: form.city,
         };
       }
 
       if (role === 'CENTRO') {
         updates.centerProfile = {
           centerName: form.centerName,
-          province: form.province,
-          city: form.location,
+          city: form.centerCity,
+          province: form.centerProvince,
+          director: form.director,
           cicles: JSON.stringify(
             form.cicles.split(',').map(s => s.trim()).filter(Boolean)
           ),
@@ -96,6 +94,9 @@ export default function ProfileEditor({ user, role }) {
       setSaving(false);
     }
   };
+
+  const roleLabel = role === 'ALUMNO' ? '🎓 Alumno' : role === 'EMPRESA' ? '💼 Empresa' : '🏫 Centro FP';
+  const roleIcon = role === 'ALUMNO' ? '👤' : role === 'EMPRESA' ? '🏢' : '🏫';
 
   const fieldStyle = {
     width: '100%',
@@ -118,47 +119,43 @@ export default function ProfileEditor({ user, role }) {
     marginBottom: 6,
   };
 
-  const roleColor = role === 'EMPRESA' ? '#EC4899' : role === 'CENTRO' ? '#2563EB' : '#00A878';
-  const roleLabel = role === 'EMPRESA' ? '🏢 Empresa' : role === 'CENTRO' ? '🏫 Centro FP' : '🎓 Alumno';
-
   return (
     <div style={{ maxWidth: 700 }}>
+      {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
-        <h2 style={{ margin: 0, fontSize: 24, fontWeight: 800 }}>👤 Mi Perfil</h2>
-        {editing && (
+        <h2 style={{ margin: 0, fontSize: 24, fontWeight: 800 }}>{roleIcon} Mi Perfil</h2>
+        {!editing ? (
+          <button onClick={() => setEditing(true)} style={{
+            padding: '10px 20px', borderRadius: 10, border: 'none',
+            background: `linear-gradient(135deg, ${accentColor}, ${accentColor}cc)`,
+            color: '#fff', fontWeight: 700, cursor: 'pointer', fontSize: 14,
+          }}>
+            ✏️ Editar perfil
+          </button>
+        ) : (
           <div style={{ display: 'flex', gap: 10 }}>
-            <button
-              onClick={() => setEditing(false)}
-              style={{
-                padding: '10px 20px', borderRadius: 10,
-                border: '1px solid rgba(255,255,255,0.2)',
-                background: 'transparent', color: '#fff',
-                fontWeight: 700, cursor: 'pointer', fontSize: 14,
-              }}
-            >
+            <button onClick={() => setEditing(false)} style={{
+              padding: '10px 20px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.2)',
+              background: 'transparent', color: '#fff', fontWeight: 700, cursor: 'pointer', fontSize: 14,
+            }}>
               Cancelar
             </button>
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              style={{
-                padding: '10px 20px', borderRadius: 10, border: 'none',
-                background: saving ? 'rgba(0,168,120,0.5)' : `linear-gradient(135deg, ${roleColor}, ${roleColor}cc)`,
-                color: '#fff', fontWeight: 700,
-                cursor: saving ? 'not-allowed' : 'pointer', fontSize: 14,
-              }}
-            >
+            <button onClick={handleSave} disabled={saving} style={{
+              padding: '10px 20px', borderRadius: 10, border: 'none',
+              background: saving ? 'rgba(0,168,120,0.5)' : `linear-gradient(135deg, ${accentColor}, ${accentColor}cc)`,
+              color: '#fff', fontWeight: 700, cursor: saving ? 'not-allowed' : 'pointer', fontSize: 14,
+            }}>
               {saving ? '⏳ Guardando...' : '💾 Guardar'}
             </button>
           </div>
         )}
       </div>
 
-      {/* Avatar */}
+      {/* Avatar + info básica */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 32 }}>
         <div style={{
           width: 80, height: 80, borderRadius: '50%',
-          background: `linear-gradient(135deg, ${roleColor}, ${roleColor}99)`,
+          background: `linear-gradient(135deg, ${accentColor}, ${accentColor}99)`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 32, fontWeight: 700, flexShrink: 0,
         }}>
@@ -167,7 +164,7 @@ export default function ProfileEditor({ user, role }) {
         <div>
           <div style={{ fontSize: 20, fontWeight: 700 }}>{user?.firstName} {user?.lastName}</div>
           <div style={{ color: '#ffffff88', fontSize: 14 }}>{user?.email}</div>
-          <div style={{ color: roleColor, fontSize: 13, marginTop: 4 }}>{roleLabel}</div>
+          <div style={{ color: accentColor, fontSize: 13, marginTop: 4 }}>{roleLabel}</div>
         </div>
       </div>
 
@@ -185,11 +182,8 @@ export default function ProfileEditor({ user, role }) {
 
       <div style={{ marginBottom: 18 }}>
         <label style={labelStyle}>Bio</label>
-        <textarea
-          name="bio" value={form.bio} onChange={handleChange}
-          disabled={!editing} rows={3} placeholder="Cuéntanos algo..."
-          style={{ ...fieldStyle, resize: 'vertical' }}
-        />
+        <textarea name="bio" value={form.bio} onChange={handleChange} disabled={!editing} rows={3}
+          placeholder="Cuéntanos algo..." style={{ ...fieldStyle, resize: 'vertical' }} />
       </div>
 
       <div style={{ marginBottom: 18 }}>
@@ -200,25 +194,13 @@ export default function ProfileEditor({ user, role }) {
       {/* Campos específicos ALUMNO */}
       {role === 'ALUMNO' && (
         <>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18, marginBottom: 18 }}>
-            <div>
-              <label style={labelStyle}>Ciclo formativo</label>
-              <input name="cicle" value={form.cicle} onChange={handleChange} disabled={!editing} placeholder="Ej: DAM, DAW, ASIR..." style={fieldStyle} />
-            </div>
-            <div>
-              <label style={labelStyle}>Skills (separadas por comas)</label>
-              <input name="skills" value={form.skills} onChange={handleChange} disabled={!editing} placeholder="Ej: React, Java, Python..." style={fieldStyle} />
-            </div>
+          <div style={{ marginBottom: 18 }}>
+            <label style={labelStyle}>Ciclo formativo</label>
+            <input name="cicle" value={form.cicle} onChange={handleChange} disabled={!editing} placeholder="Ej: DAM, DAW, ASIR..." style={fieldStyle} />
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18, marginBottom: 18 }}>
-            <div>
-              <label style={labelStyle}>LinkedIn</label>
-              <input name="linkedinUrl" value={form.linkedinUrl} onChange={handleChange} disabled={!editing} placeholder="https://linkedin.com/in/..." style={fieldStyle} />
-            </div>
-            <div>
-              <label style={labelStyle}>Portfolio</label>
-              <input name="portfolioUrl" value={form.portfolioUrl} onChange={handleChange} disabled={!editing} placeholder="https://tuportfolio.com" style={fieldStyle} />
-            </div>
+          <div style={{ marginBottom: 18 }}>
+            <label style={labelStyle}>Skills (separadas por comas)</label>
+            <input name="skills" value={form.skills} onChange={handleChange} disabled={!editing} placeholder="Ej: React, Java, Python..." style={fieldStyle} />
           </div>
         </>
       )}
@@ -226,23 +208,28 @@ export default function ProfileEditor({ user, role }) {
       {/* Campos específicos EMPRESA */}
       {role === 'EMPRESA' && (
         <>
+          <div style={{ marginBottom: 18 }}>
+            <label style={labelStyle}>Nombre de la empresa</label>
+            <input name="companyName" value={form.companyName} onChange={handleChange} disabled={!editing} placeholder="Ej: Tech Solutions SL" style={fieldStyle} />
+          </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18, marginBottom: 18 }}>
             <div>
-              <label style={labelStyle}>Sector / Industria</label>
-              <input name="industry" value={form.industry} onChange={handleChange} disabled={!editing} placeholder="Ej: Tecnología, Logística..." style={fieldStyle} />
+              <label style={labelStyle}>Sector</label>
+              <input name="industry" value={form.industry} onChange={handleChange} disabled={!editing} placeholder="Ej: Tecnología, Salud..." style={fieldStyle} />
             </div>
             <div>
-              <label style={labelStyle}>Web corporativa</label>
-              <input name="website" value={form.website} onChange={handleChange} disabled={!editing} placeholder="https://tuempresa.com" style={fieldStyle} />
+              <label style={labelStyle}>Ciudad</label>
+              <input name="city" value={form.city} onChange={handleChange} disabled={!editing} placeholder="Ej: Málaga" style={fieldStyle} />
             </div>
           </div>
           <div style={{ marginBottom: 18 }}>
-            <label style={labelStyle}>Descripción de la empresa</label>
-            <textarea
-              name="description" value={form.description} onChange={handleChange}
-              disabled={!editing} rows={3} placeholder="Describe tu empresa..."
-              style={{ ...fieldStyle, resize: 'vertical' }}
-            />
+            <label style={labelStyle}>Web</label>
+            <input name="website" value={form.website} onChange={handleChange} disabled={!editing} placeholder="https://tuempresa.com" style={fieldStyle} />
+          </div>
+          <div style={{ marginBottom: 18 }}>
+            <label style={labelStyle}>Descripción</label>
+            <textarea name="description" value={form.description} onChange={handleChange} disabled={!editing} rows={3}
+              placeholder="Describe tu empresa..." style={{ ...fieldStyle, resize: 'vertical' }} />
           </div>
         </>
       )}
@@ -250,22 +237,42 @@ export default function ProfileEditor({ user, role }) {
       {/* Campos específicos CENTRO */}
       {role === 'CENTRO' && (
         <>
+          <div style={{ marginBottom: 18 }}>
+            <label style={labelStyle}>Nombre del centro</label>
+            <input name="centerName" value={form.centerName} onChange={handleChange} disabled={!editing} placeholder="Ej: IES Mediterráneo" style={fieldStyle} />
+          </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18, marginBottom: 18 }}>
             <div>
-              <label style={labelStyle}>Nombre del centro</label>
-              <input name="centerName" value={form.centerName} onChange={handleChange} disabled={!editing} placeholder="Ej: IES Mediterráneo" style={fieldStyle} />
+              <label style={labelStyle}>Ciudad</label>
+              <input name="centerCity" value={form.centerCity} onChange={handleChange} disabled={!editing} placeholder="Ej: Almería" style={fieldStyle} />
             </div>
             <div>
               <label style={labelStyle}>Provincia</label>
-              <input name="province" value={form.province} onChange={handleChange} disabled={!editing} placeholder="Ej: Sevilla, Málaga..." style={fieldStyle} />
+              <input name="centerProvince" value={form.centerProvince} onChange={handleChange} disabled={!editing} placeholder="Ej: Almería" style={fieldStyle} />
             </div>
           </div>
           <div style={{ marginBottom: 18 }}>
-            <label style={labelStyle}>Ciclos impartidos (separados por comas)</label>
+            <label style={labelStyle}>Director/a</label>
+            <input name="director" value={form.director} onChange={handleChange} disabled={!editing} placeholder="Nombre del director/a" style={fieldStyle} />
+          </div>
+          <div style={{ marginBottom: 18 }}>
+            <label style={labelStyle}>Ciclos que se imparten (separados por comas)</label>
             <input name="cicles" value={form.cicles} onChange={handleChange} disabled={!editing} placeholder="Ej: DAM, DAW, ASIR, SMR..." style={fieldStyle} />
           </div>
         </>
       )}
+
+      {/* Links comunes */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
+        <div>
+          <label style={labelStyle}>LinkedIn</label>
+          <input name="linkedinUrl" value={form.linkedinUrl} onChange={handleChange} disabled={!editing} placeholder="https://linkedin.com/in/..." style={fieldStyle} />
+        </div>
+        <div>
+          <label style={labelStyle}>Portfolio / Web</label>
+          <input name="portfolioUrl" value={form.portfolioUrl} onChange={handleChange} disabled={!editing} placeholder="https://tuportfolio.com" style={fieldStyle} />
+        </div>
+      </div>
     </div>
   );
 }
