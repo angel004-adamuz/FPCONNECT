@@ -38,7 +38,7 @@ export const connectionController = {
   followUser: asyncHandler(async (req, res) => {
     const { userId } = req.params;
 
-    const result = await connectionService.followUser(req.userId, userId);
+    const result = await connectionService.followUser(req.userId, userId, req.app.get('io'));
 
     res.status(200).json({
       success: true,

@@ -2,10 +2,11 @@
 import prisma from '../config/prisma.js';
 import logger from '../config/logger.js';
 import { AppError } from '../middlewares/errorHandler.js';
+import notificationService from './notification.service.js';
 
 export const commentService = {
   // Crear comentario
-  createComment: async (postId, userId, content) => {
+  createComment: async (postId, userId, content, io = null) => {
     // Verificar que el post existe
     const post = await prisma.post.findUnique({
       where: { id: postId },
@@ -42,6 +43,18 @@ export const commentService = {
     });
 
     logger.info(`💬 Comentario creado en post ${postId} por ${userId}`);
+
+    const actorName = await notificationService.getActorName(userId);
+    await notificationService.createNotificationIfRecipientIsDifferent({
+      userId: post.authorId,
+      type: 'comment',
+      title: 'Nuevo comentario',
+      message: `${actorName} comentó en tu publicación`,
+      actorId: userId,
+      targetId: postId,
+      relatedData: { postId, commentId: comment.id },
+    }, userId, io);
+
     return comment;
   },
 

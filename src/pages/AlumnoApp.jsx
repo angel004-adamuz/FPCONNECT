@@ -7,6 +7,8 @@ import UserCard from '../components/UserCard';
 import PublicProfileView from '../components/PublicProfileView';
 import { usersService, jobOffersService } from '../services';
 import ProfileEditor from '../components/ProfileEditor';
+import MessagesPanel from '../components/MessagesPanel';
+import NotificationsBell from '../components/NotificationsBell';
 
 const ANDALUCIA_PROVINCES = ['ALMERIA','CADIZ','CORDOBA','GRANADA','HUELVA','JAEN','MALAGA','SEVILLA'];
 
@@ -19,6 +21,29 @@ const FP_NEWS_ITEMS = [
 ];
 
 const normalizeText = (value = '') => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+
+const APPLICATION_LABELS = {
+  PENDING: 'Pendiente',
+  REVIEWED: 'Revisado',
+  ACCEPTED: 'Aceptado',
+  REJECTED: 'Rechazado',
+};
+
+const APPLICATION_COLORS = {
+  PENDING: ['rgba(234,179,8,0.18)', 'rgba(234,179,8,0.45)', '#fef3c7'],
+  REVIEWED: ['rgba(59,130,246,0.18)', 'rgba(59,130,246,0.45)', '#bfdbfe'],
+  ACCEPTED: ['rgba(34,197,94,0.18)', 'rgba(34,197,94,0.45)', '#bbf7d0'],
+  REJECTED: ['rgba(239,68,68,0.18)', 'rgba(239,68,68,0.45)', '#fecaca'],
+};
+
+const ApplicationBadge = ({ status }) => {
+  const colors = APPLICATION_COLORS[status] || APPLICATION_COLORS.PENDING;
+  return (
+    <span style={{ fontSize: 12, padding: '5px 10px', borderRadius: 999, background: colors[0], border: `1px solid ${colors[1]}`, color: colors[2], fontWeight: 800 }}>
+      {APPLICATION_LABELS[status] || status}
+    </span>
+  );
+};
 
 export default function AlumnoApp() {
   const { user: authUser, logout } = useAuthStore();
@@ -38,7 +63,9 @@ export default function AlumnoApp() {
   const [enterpriseQuery, setEnterpriseQuery] = useState('');
   const [studentQuery, setStudentQuery] = useState('');
   const [offers, setOffers] = useState([]);
+  const [applications, setApplications] = useState([]);
   const [offersLoading, setOffersLoading] = useState(false);
+  const [applyingOfferId, setApplyingOfferId] = useState('');
 
   const { posts, loadFeed, loading: feedLoading } = useFeed();
   const { followers, following, recommendations, loadFollowers, loadFollowing, loadRecommendations, followUser, unfollowUser, loading: connectionsLoading } = useConnections();
@@ -99,6 +126,11 @@ export default function AlumnoApp() {
     finally { setOffersLoading(false); }
   };
 
+  const loadApplications = async () => {
+    try { const r = await jobOffersService.getMyApplications(); setApplications(r.data || []); }
+    catch (err) { console.error(err); }
+  };
+
   useEffect(() => {
     if (activeTab === 'feed') { loadFeed(); loadRecommendations(); loadFollowing(1, 200); }
     else if (activeTab === 'network') { loadFollowers(); loadFollowing(1, 200); loadRecommendations(); loadFeed(); }
@@ -108,7 +140,7 @@ export default function AlumnoApp() {
       else if (exploreSubTab === 'enterprises') search(enterpriseQuery.trim() || 'all', 1, 50, 'EMPRESA');
       else if (exploreSubTab === 'students') search(studentQuery.trim() || 'all', 1, 50, 'ALUMNO');
     }
-    else if (activeTab === 'offers') { loadOffers(); }
+    else if (activeTab === 'offers' || activeTab === 'applications') { loadOffers(); loadApplications(); }
   }, [activeTab, exploreSubTab, loadFeed, loadFollowers, loadFollowing, loadRecommendations, search]);
 
   useEffect(() => { loadLinkedCenter(); }, []);
@@ -147,6 +179,23 @@ export default function AlumnoApp() {
     try { await loadFollowing(1, 200); } catch {}
   };
 
+  const handleApplyOffer = async (offerId) => {
+    setApplyingOfferId(offerId);
+    try {
+      const response = await jobOffersService.apply(offerId);
+      const application = response.data;
+      setApplications((prev) => [application, ...prev.filter((item) => item.id !== application.id)]);
+      setOffers((prev) => prev.map((offer) => (
+        offer.id === offerId ? { ...offer, applications: [application] } : offer
+      )));
+      showToast('Aplicacion enviada correctamente', 'success');
+    } catch (err) {
+      showToast(err.message || 'No se pudo aplicar a la oferta', 'error');
+    } finally {
+      setApplyingOfferId('');
+    }
+  };
+
   const isViewedProfileFollowing = viewedProfileId ? !!following?.find(u => u.id === viewedProfileId) : false;
   const followingIds = new Set((following || []).map(u => u.id));
   const followingPosts = (posts || []).filter(p => followingIds.has(p.author?.id));
@@ -166,6 +215,7 @@ export default function AlumnoApp() {
               { id: 'network', label: 'Conexiones' },
               { id: 'explore', label: 'Explorar' },
               { id: 'offers', label: 'Ofertas' },
+              { id: 'applications', label: 'Mis Aplicaciones' },
               { id: 'news', label: 'Noticias FP' },
               { id: 'profile', label: 'Mi Perfil' },
             ].map(tab => (
@@ -181,6 +231,8 @@ export default function AlumnoApp() {
             <div style={{ fontWeight: 600 }}>{authUser?.firstName} {authUser?.lastName}</div>
             <div style={{ color: 'var(--fp-muted)' }}>Alumno</div>
           </div>
+          <NotificationsBell user={authUser} />
+          <MessagesPanel user={authUser} />
           <button onClick={handleLogout} className="fp-button fp-button--danger">Salir</button>
         </div>
       </nav>
@@ -426,25 +478,72 @@ export default function AlumnoApp() {
             {offersLoading ? <p style={{ color: '#ffffff66', textAlign: 'center', padding: 40 }}>⏳ Cargando ofertas...</p> :
               offers.length === 0 ? <p style={{ color: '#ffffff66', textAlign: 'center', padding: 40 }}>📭 No hay ofertas disponibles por ahora</p> : (
                 <div style={{ display: 'grid', gap: 16 }}>
-                  {offers.map(offer => (
-                    <div key={offer.id} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 14, border: '1px solid rgba(255,255,255,0.1)', padding: 24 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                        <div>
-                          <h3 style={{ margin: '0 0 8px', fontSize: 20 }}>{offer.title}</h3>
-                          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-                            <span style={{ fontSize: 12, padding: '4px 10px', borderRadius: 999, background: 'rgba(0,168,120,0.2)', border: '1px solid rgba(0,168,120,0.4)' }}>{offer.type}</span>
-                            {offer.location && <span style={{ fontSize: 12, color: '#ffffff99' }}>📍 {offer.location}</span>}
-                            {offer.salary && <span style={{ fontSize: 12, color: '#ffffff99' }}>💰 {offer.salary}</span>}
-                            <span style={{ fontSize: 12, color: '#ffffff66' }}>🏢 {offer.enterprise?.user?.firstName} {offer.enterprise?.user?.lastName}</span>
+                  {offers.map(offer => {
+                    const application = offer.applications?.[0] || applications.find((item) => item.jobOfferId === offer.id);
+                    return (
+                      <div key={offer.id} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 14, border: '1px solid rgba(255,255,255,0.1)', padding: 24 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                          <div>
+                            <h3 style={{ margin: '0 0 8px', fontSize: 20 }}>{offer.title}</h3>
+                            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+                              <span style={{ fontSize: 12, padding: '4px 10px', borderRadius: 999, background: 'rgba(0,168,120,0.2)', border: '1px solid rgba(0,168,120,0.4)' }}>{offer.type}</span>
+                              {offer.location && <span style={{ fontSize: 12, color: '#ffffff99' }}>📍 {offer.location}</span>}
+                              {offer.salary && <span style={{ fontSize: 12, color: '#ffffff99' }}>💰 {offer.salary}</span>}
+                              <span style={{ fontSize: 12, color: '#ffffff66' }}>🏢 {offer.enterprise?.user?.firstName} {offer.enterprise?.user?.lastName}</span>
+                            </div>
                           </div>
+                          <span style={{ fontSize: 11, color: '#ffffff66', whiteSpace: 'nowrap' }}>{new Date(offer.createdAt).toLocaleDateString()}</span>
                         </div>
-                        <span style={{ fontSize: 11, color: '#ffffff66', whiteSpace: 'nowrap' }}>{new Date(offer.createdAt).toLocaleDateString()}</span>
+                        <p style={{ margin: 0, color: '#ffffffcc', fontSize: 14, lineHeight: 1.6 }}>{offer.description}</p>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginTop: 18, flexWrap: 'wrap' }}>
+                          {application ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <span style={{ color: '#ffffff99', fontSize: 13 }}>Estado de aplicacion:</span>
+                              <ApplicationBadge status={application.status} />
+                            </div>
+                          ) : <span style={{ color: '#ffffff80', fontSize: 13 }}>Aun no has aplicado a esta oferta.</span>}
+                          <button
+                            onClick={() => handleApplyOffer(offer.id)}
+                            disabled={!!application || applyingOfferId === offer.id}
+                            className="fp-button"
+                            style={{ opacity: application ? 0.65 : 1, cursor: application ? 'default' : 'pointer' }}
+                          >
+                            {application ? 'Aplicacion enviada' : applyingOfferId === offer.id ? 'Enviando...' : 'Aplicar'}
+                          </button>
+                        </div>
                       </div>
-                      <p style={{ margin: 0, color: '#ffffffcc', fontSize: 14, lineHeight: 1.6 }}>{offer.description}</p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
+          </div>
+        )}
+
+        {!viewedProfileId && activeTab === 'applications' && (
+          <div>
+            <h2 style={{ margin: '0 0 8px', fontSize: 24 }}>Mis Aplicaciones</h2>
+            <p style={{ color: '#ffffff99', fontSize: 13, marginBottom: 24 }}>Seguimiento de tus candidaturas enviadas a empresas.</p>
+            {applications.length === 0 ? (
+              <p style={{ color: '#ffffff66', textAlign: 'center', padding: 40 }}>Todavia no has aplicado a ninguna oferta.</p>
+            ) : (
+              <div style={{ display: 'grid', gap: 14 }}>
+                {applications.map((application) => (
+                  <article key={application.id} style={{ border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.05)', borderRadius: 14, padding: 18, display: 'grid', gap: 10 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+                      <div>
+                        <h3 style={{ margin: '0 0 6px', fontSize: 18 }}>{application.jobOffer?.title}</h3>
+                        <div style={{ color: '#ffffff99', fontSize: 13 }}>
+                          {application.jobOffer?.enterprise?.user?.firstName} {application.jobOffer?.enterprise?.user?.lastName}
+                          {application.jobOffer?.location ? ` · ${application.jobOffer.location}` : ''}
+                        </div>
+                      </div>
+                      <ApplicationBadge status={application.status} />
+                    </div>
+                    <div style={{ color: '#ffffff80', fontSize: 12 }}>Enviada el {new Date(application.appliedAt).toLocaleDateString()}</div>
+                  </article>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

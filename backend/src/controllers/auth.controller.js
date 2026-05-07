@@ -1,5 +1,6 @@
 // Controlador de autenticación
 import authService from '../services/auth.service.js';
+import userService from '../services/user.service.js';
 import { asyncHandler } from '../middlewares/errorHandler.js';
 import logger from '../config/logger.js';
 
@@ -105,11 +106,11 @@ export const authController = {
 
   // GET /auth/me
   getMe: asyncHandler(async (req, res) => {
-    const user = await authService.getUserById(req.userId);
+    const user = await userService.getUserById(req.userId);
 
     res.status(200).json({
       success: true,
-      data: user,
+      data: { user },
     });
   }),
 

@@ -68,7 +68,7 @@ export const authService = {
     });
 
     if (existingUser) {
-      throw new AppError('El email ya está registrado', 400);
+      throw new AppError('El email ya está registrado', 409);
     }
 
     // Hash de la contraseña
@@ -226,7 +226,7 @@ export const authService = {
     });
 
     if (!user) {
-      throw new AppError('Email o contraseña incorrectos', 401);
+      throw new AppError('Usuario no encontrado', 404);
     }
 
     // Verificar contraseña

@@ -2,6 +2,9 @@
   "name": "fp-connect",
   "version": "1.0.0",
   "main": "main.js",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
     "dev": "vite",
     "dev:desktop": "concurrently \"vite\" \"wait-on tcp:5173 && electron . --no-sandbox\"",

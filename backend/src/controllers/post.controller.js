@@ -96,7 +96,7 @@ export const postController = {
   likePost: asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    const result = await postService.likePost(id, req.userId);
+    const result = await postService.likePost(id, req.userId, req.app.get('io'));
 
     res.status(200).json({
       success: true,

@@ -1,6 +1,7 @@
 // Rutas de Usuarios
 import express from 'express';
 import userController from '../controllers/user.controller.js';
+import connectionController from '../controllers/connection.controller.js';
 import { authMiddleware } from '../middlewares/auth.js';
 
 const router = express.Router();
@@ -67,10 +68,10 @@ router.get(
 router.get(
   '/:id/followers',
   (req, res, next) => {
-    // Redirigir a la ruta de conexiones
     req.params.userId = req.params.id;
     next();
-  }
+  },
+  connectionController.getFollowers
 );
 
 /**
@@ -81,10 +82,10 @@ router.get(
 router.get(
   '/:id/following',
   (req, res, next) => {
-    // Redirigir a la ruta de conexiones
     req.params.userId = req.params.id;
     next();
-  }
+  },
+  connectionController.getFollowing
 );
 
 /**

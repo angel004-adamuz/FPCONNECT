@@ -3,6 +3,8 @@ import { useAuthStore } from '../store/authStore';
 import { useFeed, useConnections, useUserSearch } from '../hooks';
 import UserCard from '../components/UserCard';
 import ProfileEditor from '../components/ProfileEditor';
+import MessagesPanel from '../components/MessagesPanel';
+import NotificationsBell from '../components/NotificationsBell';
 
 export default function CentroApp() {
   const { user: authUser, logout } = useAuthStore();
@@ -58,6 +60,8 @@ export default function CentroApp() {
             <div style={{ fontWeight: 600 }}>{authUser?.firstName} {authUser?.lastName}</div>
             <div style={{ color: 'var(--fp-muted)' }}>Centro FP</div>
           </div>
+          <NotificationsBell user={authUser} accentColor="#2563EB" />
+          <MessagesPanel user={authUser} accentColor="#2563EB" />
           <button onClick={handleLogout} className="fp-button fp-button--danger">Salir</button>
         </div>
       </nav>

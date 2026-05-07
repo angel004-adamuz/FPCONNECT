@@ -2,6 +2,7 @@
 import prisma from '../config/prisma.js';
 import logger from '../config/logger.js';
 import { AppError } from '../middlewares/errorHandler.js';
+import notificationService from './notification.service.js';
 
 export const postService = {
   // Crear post
@@ -288,9 +289,18 @@ export const postService = {
   },
 
   // Like a post
-  likePost: async (postId, userId) => {
+  likePost: async (postId, userId, io = null) => {
     const post = await prisma.post.findUnique({
       where: { id: postId },
+      include: {
+        author: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
     });
 
     if (!post) {
@@ -324,6 +334,17 @@ export const postService = {
     });
 
     logger.info(`👍 Like en post ${postId} por ${userId}`);
+
+    const actorName = await notificationService.getActorName(userId);
+    await notificationService.createNotificationIfRecipientIsDifferent({
+      userId: post.authorId,
+      type: 'like',
+      title: 'Nuevo me gusta',
+      message: `${actorName} le dio me gusta a tu publicación`,
+      actorId: userId,
+      targetId: postId,
+      relatedData: { postId },
+    }, userId, io);
 
     return { message: 'Like agregado' };
   },

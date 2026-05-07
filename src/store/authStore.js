@@ -15,6 +15,7 @@ export const useAuthStore = create((set, get) => ({
   token: localStorage.getItem('token'),
   refreshToken: localStorage.getItem('refreshToken'),
   isLoading: false,
+  isInitializing: true,
   error: null,
   isAuthenticated: !!localStorage.getItem('token'),
 
@@ -26,17 +27,20 @@ export const useAuthStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await authService.login(email, password);
-      const { user, token, refreshToken } = response.data;
+      const { user: authUser, token, refreshToken } = response.data;
 
       // Guardar en localStorage
       localStorage.setItem('token', token);
       localStorage.setItem('refreshToken', refreshToken);
+      const meResponse = await authService.getMe();
+      const user = meResponse.data?.user || authUser;
 
       set({
         user,
         token,
         refreshToken,
         isAuthenticated: true,
+        isInitializing: false,
         isLoading: false,
       });
 
@@ -58,17 +62,20 @@ export const useAuthStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await authService.register(userData);
-      const { user, token, refreshToken } = response.data;
+      const { user: authUser, token, refreshToken } = response.data;
 
       // Guardar en localStorage
       localStorage.setItem('token', token);
       localStorage.setItem('refreshToken', refreshToken);
+      const meResponse = await authService.getMe();
+      const user = meResponse.data?.user || authUser;
 
       set({
         user,
         token,
         refreshToken,
         isAuthenticated: true,
+        isInitializing: false,
         isLoading: false,
       });
 
@@ -142,6 +149,7 @@ export const useAuthStore = create((set, get) => ({
       token: null,
       refreshToken: null,
       isAuthenticated: false,
+      isInitializing: false,
       error: null,
     });
   },
@@ -181,16 +189,47 @@ export const useAuthStore = create((set, get) => ({
   /**
    * Inicializador desde localStorage (llamar en mount de App)
    */
-  initialize: () => {
+  initialize: async () => {
     const token = localStorage.getItem('token');
     const refreshToken = localStorage.getItem('refreshToken');
 
     if (token && refreshToken) {
-      set({
-        token,
-        refreshToken,
-        isAuthenticated: true,
-      });
+      set({ token, refreshToken, isInitializing: true });
+
+      try {
+        const response = await authService.getMe();
+        const user = response.data?.user || response.data;
+
+        set({
+          user,
+          token: localStorage.getItem('token'),
+          refreshToken: localStorage.getItem('refreshToken'),
+          isAuthenticated: true,
+          isInitializing: false,
+          error: null,
+        });
+      } catch (error) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+
+        set({
+          user: null,
+          token: null,
+          refreshToken: null,
+          isAuthenticated: false,
+          isInitializing: false,
+          error: null,
+        });
+      }
+      return;
     }
+
+    set({
+      user: null,
+      token: null,
+      refreshToken: null,
+      isAuthenticated: false,
+      isInitializing: false,
+    });
   },
 }));

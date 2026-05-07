@@ -9,7 +9,7 @@ export const commentController = {
     const { postId } = req.params;
     const { content } = req.body;
 
-    const comment = await commentService.createComment(postId, req.userId, content);
+    const comment = await commentService.createComment(postId, req.userId, content, req.app.get('io'));
 
     res.status(201).json({
       success: true,

@@ -142,8 +142,8 @@ export const postsService = {
    * Buscar posts
    */
   searchPosts: async (query, page = 1, limit = 10) => {
-    return apiClient.get('/posts/search', {
-      params: { query, page, limit },
+    return apiClient.get(`/posts/search/${encodeURIComponent(query)}`, {
+      params: { page, limit },
     });
   },
 };
@@ -312,8 +312,8 @@ export const usersService = {
     });
   },
 
-  getStats: async () => {
-    return apiClient.get('/users/stats');
+  getStats: async (userId) => {
+    return apiClient.get(`/users/${userId}/stats`);
   },
 };
 
@@ -322,12 +322,59 @@ export const usersService = {
  */
 export const jobOffersService = {
   getAll: async () => {
-    return apiClient.get('/job-offers');
+    return apiClient.get('/offers');
   },
   create: async (data) => {
-    return apiClient.post('/job-offers', data);
+    return apiClient.post('/offers', data);
   },
   delete: async (id) => {
-    return apiClient.delete(`/job-offers/${id}`);
+    return apiClient.delete(`/offers/${id}`);
+  },
+  apply: async (offerId, coverLetter = '') => {
+    return apiClient.post(`/offers/${offerId}/apply`, { coverLetter });
+  },
+  getApplications: async (offerId) => {
+    return apiClient.get(`/offers/${offerId}/applications`);
+  },
+  updateApplicationStatus: async (offerId, applicationId, status) => {
+    return apiClient.patch(`/offers/${offerId}/applications/${applicationId}`, { status });
+  },
+  getMyApplications: async () => {
+    return apiClient.get('/offers/my-applications');
+  },
+};
+
+export const conversationsService = {
+  createOrGet: async (recipientId) => {
+    return apiClient.post('/conversations', { recipientId });
+  },
+  getAll: async () => {
+    return apiClient.get('/conversations');
+  },
+  getMessages: async (conversationId, page = 1, limit = 30) => {
+    return apiClient.get(`/conversations/${conversationId}/messages`, {
+      params: { page, limit },
+    });
+  },
+  sendMessage: async (conversationId, content) => {
+    return apiClient.post(`/conversations/${conversationId}/messages`, { content });
+  },
+  markRead: async (conversationId) => {
+    return apiClient.patch(`/conversations/${conversationId}/read`);
+  },
+};
+
+export const notificationsService = {
+  create: async (data) => {
+    return apiClient.post('/notifications', data);
+  },
+  getAll: async () => {
+    return apiClient.get('/notifications');
+  },
+  markRead: async (notificationId) => {
+    return apiClient.patch(`/notifications/${notificationId}/read`);
+  },
+  markAllRead: async () => {
+    return apiClient.patch('/notifications/read-all');
   },
 };

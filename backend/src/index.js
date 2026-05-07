@@ -23,12 +23,15 @@ import commentRoutes from './routes/comment.routes.js';
 import userRoutes from './routes/user.routes.js';
 import connectionRoutes from './routes/connection.routes.js';
 import jobOfferRoutes from './routes/jobOffer.routes.js';
+import conversationRoutes from './routes/conversation.routes.js';
+import notificationRoutes from './routes/notification.routes.js';
 
 // ============ INICIALIZACIÓN ============
 
 const app = express();
 const server = http.createServer(app);
 const io = initializeSocket(server, config);
+app.set('io', io);
 
 const isPrivateIpv4Host = (hostname) => {
   if (!hostname) return false;
@@ -101,7 +104,10 @@ app.use('/api/posts', postRoutes);
 app.use('/api/posts/:postId/comments', commentRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/connections', connectionRoutes);
+app.use('/api/offers', jobOfferRoutes);
 app.use('/api/job-offers', jobOfferRoutes);
+app.use('/api/conversations', conversationRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Rutas temporales de demostración
 app.get('/api', (req, res) => {
@@ -196,6 +202,8 @@ process.on('unhandledRejection', (reason, promise) => {
 
 // ============ EXPORTAR ============
 
-startServer();
+if (config.node_env !== 'test') {
+  startServer();
+}
 
 export { app, server, io };

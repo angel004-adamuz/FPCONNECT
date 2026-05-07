@@ -3,6 +3,40 @@ import prisma from '../config/prisma.js';
 import logger from '../config/logger.js';
 import { AppError } from '../middlewares/errorHandler.js';
 
+const fullUserSelect = {
+  id: true,
+  email: true,
+  firstName: true,
+  lastName: true,
+  phone: true,
+  role: true,
+  status: true,
+  profileImage: true,
+  bio: true,
+  location: true,
+  birthDate: true,
+  linkedinUrl: true,
+  portfolioUrl: true,
+  createdAt: true,
+  updatedAt: true,
+  lastLogin: true,
+  studentProfile: true,
+  enterpriseProfile: true,
+  centerProfile: true,
+};
+
+const pickDefined = (source, allowedFields) => {
+  const result = {};
+
+  allowedFields.forEach((field) => {
+    if (Object.prototype.hasOwnProperty.call(source, field) && source[field] !== undefined) {
+      result[field] = source[field];
+    }
+  });
+
+  return result;
+};
+
 export const userService = {
   // Obtener el centro al que esta vinculado el alumno autenticado
   getMyLinkedCenter: async (userId) => {
@@ -222,28 +256,152 @@ export const userService = {
 
   // Actualizar perfil de usuario
   updateProfile: async (userId, updateData) => {
-    const allowedFields = ['firstName', 'lastName', 'bio', 'location', 'profileImage'];
-    const filteredData = {};
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, role: true },
+    });
 
-    Object.keys(updateData).forEach((key) => {
-      if (allowedFields.includes(key)) {
-        filteredData[key] = updateData[key];
+    if (!existingUser) {
+      throw new AppError('Usuario no encontrado', 404);
+    }
+
+    const userData = pickDefined(updateData, [
+      'firstName',
+      'lastName',
+      'phone',
+      'bio',
+      'location',
+      'profileImage',
+      'birthDate',
+      'linkedinUrl',
+      'portfolioUrl',
+    ]);
+
+    if (userData.birthDate) {
+      userData.birthDate = new Date(userData.birthDate);
+    }
+
+    const requestedCenterId = updateData.studentProfile?.centerId || updateData.studentProfile?.centroId;
+
+    await prisma.$transaction(async (tx) => {
+      if (Object.keys(userData).length > 0) {
+        await tx.user.update({
+          where: { id: userId },
+          data: userData,
+        });
+      }
+
+      if (existingUser.role === 'ALUMNO' && updateData.studentProfile) {
+        const studentProfileData = {
+          ...pickDefined(updateData.studentProfile, [
+            'cicle',
+            'specialization',
+            'courseYear',
+            'graduationYear',
+            'experience',
+            'skills',
+            'projects',
+            'cvUrl',
+            'certificatesUrl',
+            'seekingJob',
+            'jobPreferences',
+          ]),
+        };
+
+        if (Object.prototype.hasOwnProperty.call(updateData.studentProfile, 'ciclo')) {
+          studentProfileData.cicle = updateData.studentProfile.ciclo;
+        }
+        if (Object.prototype.hasOwnProperty.call(updateData.studentProfile, 'disponibilidad')) {
+          studentProfileData.seekingJob = Boolean(updateData.studentProfile.disponibilidad);
+        }
+
+        if (Object.keys(studentProfileData).length > 0) {
+          await tx.studentProfile.upsert({
+            where: { userId },
+            update: studentProfileData,
+            create: {
+              userId,
+              ...studentProfileData,
+            },
+          });
+        }
+      }
+
+      if (existingUser.role === 'EMPRESA' && updateData.enterpriseProfile) {
+        const enterpriseProfileData = {
+          ...pickDefined(updateData.enterpriseProfile, [
+            'companyName',
+            'industry',
+            'website',
+            'employees',
+            'description',
+            'address',
+            'city',
+            'province',
+            'coordinates',
+          ]),
+        };
+
+        if (Object.prototype.hasOwnProperty.call(updateData.enterpriseProfile, 'sector')) {
+          enterpriseProfileData.industry = updateData.enterpriseProfile.sector;
+        }
+        if (Object.prototype.hasOwnProperty.call(updateData.enterpriseProfile, 'size')) {
+          enterpriseProfileData.employees = Number(updateData.enterpriseProfile.size) || null;
+        }
+
+        if (Object.keys(enterpriseProfileData).length > 0) {
+          await tx.enterpriseProfile.upsert({
+            where: { userId },
+            update: enterpriseProfileData,
+            create: {
+              userId,
+              companyName: enterpriseProfileData.companyName || '',
+              ...enterpriseProfileData,
+            },
+          });
+        }
+      }
+
+      if (existingUser.role === 'CENTRO' && updateData.centerProfile) {
+        const centerProfileData = {
+          ...pickDefined(updateData.centerProfile, [
+            'centerName',
+            'code',
+            'address',
+            'city',
+            'province',
+            'coordinates',
+            'cicles',
+            'director',
+          ]),
+        };
+
+        if (Object.prototype.hasOwnProperty.call(updateData.centerProfile, 'provincia')) {
+          centerProfileData.province = updateData.centerProfile.provincia;
+        }
+        if (Object.prototype.hasOwnProperty.call(updateData.centerProfile, 'ciclos')) {
+          centerProfileData.cicles = updateData.centerProfile.ciclos;
+        }
+
+        if (Object.keys(centerProfileData).length > 0) {
+          await tx.centerProfile.upsert({
+            where: { userId },
+            update: centerProfileData,
+            create: {
+              userId,
+              centerName: centerProfileData.centerName || '',
+              ...centerProfileData,
+            },
+          });
+        }
       }
     });
 
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: filteredData,
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        bio: true,
-        location: true,
-        profileImage: true,
-      },
-    });
+    if (existingUser.role === 'ALUMNO' && requestedCenterId) {
+      await userService.linkMeToCenter(userId, requestedCenterId);
+    }
+
+    const updatedUser = await userService.getUserById(userId);
 
     logger.info(`✏️ Perfil actualizado: ${userId}`);
     return updatedUser;
@@ -334,6 +492,28 @@ export const userService = {
       followersCount,
       followingCount,
       likesCount,
+    };
+  },
+
+  // Obtener usuario autenticado con perfiles especificos
+  getUserById: async (userId) => {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: fullUserSelect,
+    });
+
+    if (!user) {
+      throw new AppError('Usuario no encontrado', 404);
+    }
+
+    if (user.role !== 'ALUMNO') {
+      return user;
+    }
+
+    const linkedCenter = await userService.getMyLinkedCenter(userId);
+    return {
+      ...user,
+      linkedCenter,
     };
   },
 };

@@ -2,10 +2,11 @@
 import prisma from '../config/prisma.js';
 import logger from '../config/logger.js';
 import { AppError } from '../middlewares/errorHandler.js';
+import notificationService from './notification.service.js';
 
 export const connectionService = {
   // Seguir a un usuario
-  followUser: async (followerId, followingId) => {
+  followUser: async (followerId, followingId, io = null) => {
     // Validar que no sea el mismo usuario
     if (followerId === followingId) {
       throw new AppError('No puedes seguirte a ti mismo', 400);
@@ -42,6 +43,17 @@ export const connectionService = {
     });
 
     logger.info(`👥 ${followerId} ahora sigue a ${followingId}`);
+
+    const actorName = await notificationService.getActorName(followerId);
+    await notificationService.createNotificationIfRecipientIsDifferent({
+      userId: followingId,
+      type: 'follow',
+      title: 'Nuevo seguidor',
+      message: `${actorName} te ha empezado a seguir`,
+      actorId: followerId,
+      targetId: followingId,
+      relatedData: { followerId },
+    }, followerId, io);
 
     return {
       message: 'Usuario seguido exitosamente',

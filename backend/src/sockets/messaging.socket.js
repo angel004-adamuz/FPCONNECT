@@ -3,6 +3,19 @@ import { Server } from 'socket.io';
 import logger from '../config/logger.js';
 import prisma from '../config/prisma.js';
 
+const userSelect = {
+  id: true,
+  firstName: true,
+  lastName: true,
+  email: true,
+  profileImage: true,
+  role: true,
+};
+
+const getOtherParticipantId = (conversation, userId) => {
+  return conversation.participantIds.find((participantId) => participantId !== userId);
+};
+
 export const initializeSocket = (server, config) => {
   const io = new Server(server, {
     cors: {
@@ -13,85 +26,126 @@ export const initializeSocket = (server, config) => {
     transports: ['websocket', 'polling'],
   });
 
-  // Almacenar usuarios conectados
   const connectedUsers = new Map();
 
   io.on('connection', (socket) => {
-    logger.debug(`🔌 Socket conectado: ${socket.id}`);
-
-    // ============ EVENTOS DE CONEXIÓN ============
+    logger.debug(`Socket conectado: ${socket.id}`);
 
     socket.on('user:connect', (userId) => {
+      if (!userId) return;
+
       connectedUsers.set(userId, socket.id);
-      logger.debug(`👤 Usuario ${userId} conectado (socket: ${socket.id})`);
-      
-      // Broadcast: usuario en línea
+      socket.join(userId);
+      socket.data.userId = userId;
+      logger.debug(`Usuario ${userId} conectado (socket: ${socket.id})`);
       io.emit('user:online', { userId });
     });
 
-    // ============ MENSAJERÍA ============
-
-    socket.on('message:send', async (data) => {
+    socket.on('message:send', async (data, ack) => {
       try {
-        const { conversationId, recipientId, content, senderId } = data;
+        const senderId = socket.data.userId || data.senderId;
+        const { conversationId, content } = data;
 
-        logger.debug(`💬 Mensaje de ${senderId} a ${recipientId}`);
+        if (!senderId || !conversationId || !content?.trim()) {
+          socket.emit('message:error', { error: 'Datos de mensaje incompletos' });
+          ack?.({ success: false, error: 'Datos de mensaje incompletos' });
+          return;
+        }
 
-        // Guardar en BD
-        const message = await prisma.message.create({
-          data: {
-            conversationId,
-            senderId,
-            recipientId,
-            content,
+        const conversation = await prisma.conversation.findFirst({
+          where: {
+            id: conversationId,
+            participantIds: { has: senderId },
           },
         });
 
-        // Enviar al destinatario si está en línea
-        const recipientSocketId = connectedUsers.get(recipientId);
-        if (recipientSocketId) {
-          io.to(recipientSocketId).emit('message:received', {
-            id: message.id,
-            conversationId,
-            senderId,
-            content,
-            createdAt: message.createdAt,
-          });
+        if (!conversation) {
+          socket.emit('message:error', { error: 'Conversacion no encontrada' });
+          ack?.({ success: false, error: 'Conversacion no encontrada' });
+          return;
         }
 
-        socket.emit('message:sent', {
-          id: message.id,
-          status: 'sent',
+        const recipientId = getOtherParticipantId(conversation, senderId);
+
+        if (!recipientId) {
+          socket.emit('message:error', { error: 'Destinatario no encontrado' });
+          ack?.({ success: false, error: 'Destinatario no encontrado' });
+          return;
+        }
+
+        const message = await prisma.$transaction(async (tx) => {
+          const createdMessage = await tx.message.create({
+            data: {
+              conversationId,
+              senderId,
+              recipientId,
+              content: content.trim(),
+            },
+            include: {
+              sender: { select: userSelect },
+              recipient: { select: userSelect },
+            },
+          });
+
+          await tx.conversation.update({
+            where: { id: conversationId },
+            data: { lastMessageAt: createdMessage.createdAt },
+          });
+
+          return createdMessage;
         });
+
+        io.to(recipientId).emit('new_message', { conversationId, message });
+        io.to(senderId).emit('new_message', { conversationId, message });
+        socket.emit('message:sent', { id: message.id, status: 'sent' });
+        ack?.({ success: true, data: message });
       } catch (error) {
         logger.error('Error al enviar mensaje:', error);
         socket.emit('message:error', { error: 'Error al enviar mensaje' });
+        ack?.({ success: false, error: 'Error al enviar mensaje' });
       }
     });
 
-    // Marcar mensaje como leído
     socket.on('message:read', async (data) => {
       try {
-        const { messageId } = data;
+        const readerId = socket.data.userId || data.userId;
+        const { conversationId } = data;
 
-        await prisma.message.update({
-          where: { id: messageId },
-          data: { isRead: true, readAt: new Date() },
+        if (!readerId || !conversationId) return;
+
+        const conversation = await prisma.conversation.findFirst({
+          where: {
+            id: conversationId,
+            participantIds: { has: readerId },
+          },
         });
 
-        io.emit('message:updated', { messageId, isRead: true });
+        if (!conversation) return;
+
+        await prisma.message.updateMany({
+          where: {
+            conversationId,
+            recipientId: readerId,
+            isRead: false,
+          },
+          data: {
+            isRead: true,
+            readAt: new Date(),
+          },
+        });
+
+        const otherParticipantId = getOtherParticipantId(conversation, readerId);
+        io.to(otherParticipantId).emit('message_read', { conversationId, readerId });
+        io.to(readerId).emit('message_read', { conversationId, readerId });
       } catch (error) {
         logger.error('Error al marcar como leído:', error);
       }
     });
 
-    // ============ NOTIFICACIONES ============
-
     socket.on('notification:send', async (data) => {
       try {
         const { userId, type, title, message } = data;
 
-        // Guardar notificación en BD
         const notification = await prisma.notification.create({
           data: {
             userId,
@@ -101,27 +155,24 @@ export const initializeSocket = (server, config) => {
           },
         });
 
-        // Enviar al usuario si está en línea
-        const userSocketId = connectedUsers.get(userId);
-        if (userSocketId) {
-          io.to(userSocketId).emit('notification:received', {
-            id: notification.id,
-            type,
-            title,
-            message,
-            createdAt: notification.createdAt,
-          });
-        }
+        io.to(userId).emit('notification:received', {
+          id: notification.id,
+          userId: notification.userId,
+          type,
+          title,
+          message,
+          createdAt: notification.createdAt,
+          isRead: notification.isRead,
+        });
+        io.to(userId).emit('new_notification', notification);
       } catch (error) {
         logger.error('Error al enviar notificación:', error);
       }
     });
 
-    // ============ ACTIVIDADES EN VIVO ============
-
     socket.on('post:created', (data) => {
       io.emit('post:new', data);
-      logger.debug(`📝 Post creado: ${data.id}`);
+      logger.debug(`Post creado: ${data.id}`);
     });
 
     socket.on('post:liked', (data) => {
@@ -132,31 +183,20 @@ export const initializeSocket = (server, config) => {
       io.emit('comment:new', data);
     });
 
-    // ============ DESCONEXIÓN ============
-
     socket.on('disconnect', () => {
-      // Buscar y eliminar usuario
-      let disconnectedUserId;
-      for (const [userId, socketId] of connectedUsers.entries()) {
-        if (socketId === socket.id) {
-          disconnectedUserId = userId;
-          connectedUsers.delete(userId);
-          break;
-        }
-      }
+      const disconnectedUserId = socket.data.userId;
 
       if (disconnectedUserId) {
-        logger.debug(`👤 Usuario ${disconnectedUserId} desconectado`);
+        connectedUsers.delete(disconnectedUserId);
+        logger.debug(`Usuario ${disconnectedUserId} desconectado`);
         io.emit('user:offline', { userId: disconnectedUserId });
       }
 
-      logger.debug(`🔌 Socket desconectado: ${socket.id}`);
+      logger.debug(`Socket desconectado: ${socket.id}`);
     });
 
-    // ============ MANEJO DE ERRORES ============
-
     socket.on('error', (error) => {
-      logger.error(`❌ Error de socket ${socket.id}:`, error);
+      logger.error(`Error de socket ${socket.id}:`, error);
     });
   });
 

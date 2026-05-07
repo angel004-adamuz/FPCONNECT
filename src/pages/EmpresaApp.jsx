@@ -4,7 +4,27 @@ import { useUIStore } from '../store/uiStore';
 import { useFeed, useConnections, useUserSearch } from '../hooks';
 import UserCard from '../components/UserCard';
 import ProfileEditor from '../components/ProfileEditor';
+import MessagesPanel from '../components/MessagesPanel';
+import NotificationsBell from '../components/NotificationsBell';
 import { jobOffersService } from '../services';
+
+const APPLICATION_LABELS = {
+  PENDING: 'Pendiente',
+  REVIEWED: 'Revisado',
+  ACCEPTED: 'Aceptado',
+  REJECTED: 'Rechazado',
+};
+
+const parseJsonArray = (value) => {
+  if (!value) return [];
+  if (Array.isArray(value)) return value;
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
 
 export default function EmpresaApp() {
   const { user: authUser, logout } = useAuthStore();
@@ -13,6 +33,9 @@ export default function EmpresaApp() {
   const [offers, setOffers] = useState([]);
   const [offersLoading, setOffersLoading] = useState(false);
   const [newOffer, setNewOffer] = useState({ title: '', description: '', type: 'EMPLEO', location: '', salary: '' });
+  const [expandedOfferId, setExpandedOfferId] = useState('');
+  const [applicationsByOffer, setApplicationsByOffer] = useState({});
+  const [applicationsLoadingByOffer, setApplicationsLoadingByOffer] = useState({});
 
   const { posts, loadFeed, loading: feedLoading } = useFeed();
   const { followers, following, loadFollowers, loadFollowing, followUser, unfollowUser, loading: connectionsLoading } = useConnections();
@@ -68,6 +91,38 @@ export default function EmpresaApp() {
     }
   };
 
+  const toggleApplicants = async (offerId) => {
+    if (expandedOfferId === offerId) {
+      setExpandedOfferId('');
+      return;
+    }
+
+    setExpandedOfferId(offerId);
+    setApplicationsLoadingByOffer(prev => ({ ...prev, [offerId]: true }));
+    try {
+      const response = await jobOffersService.getApplications(offerId);
+      setApplicationsByOffer(prev => ({ ...prev, [offerId]: response.data || [] }));
+    } catch (err) {
+      showToast(err.message || 'No se pudieron cargar candidatos', 'error');
+    } finally {
+      setApplicationsLoadingByOffer(prev => ({ ...prev, [offerId]: false }));
+    }
+  };
+
+  const handleApplicationStatusChange = async (offerId, applicationId, status) => {
+    try {
+      const response = await jobOffersService.updateApplicationStatus(offerId, applicationId, status);
+      const updated = response.data;
+      setApplicationsByOffer(prev => ({
+        ...prev,
+        [offerId]: (prev[offerId] || []).map(app => app.id === applicationId ? updated : app),
+      }));
+      showToast('Estado actualizado', 'success');
+    } catch (err) {
+      showToast(err.message || 'No se pudo actualizar el estado', 'error');
+    }
+  };
+
   return (
     <div className="fp-app-shell fp-app-shell--company">
       <nav className="fp-topbar">
@@ -96,6 +151,8 @@ export default function EmpresaApp() {
             <div style={{ fontWeight: 600 }}>{authUser?.firstName} {authUser?.lastName}</div>
             <div style={{ color: 'var(--fp-muted)' }}>Empresa</div>
           </div>
+          <NotificationsBell user={authUser} accentColor="#EC4899" />
+          <MessagesPanel user={authUser} accentColor="#EC4899" />
           <button onClick={handleLogout} className="fp-button fp-button--danger">Salir</button>
         </div>
       </nav>
@@ -236,12 +293,58 @@ export default function EmpresaApp() {
                           {offer.salary && <span style={{ fontSize: 12, color: '#ffffff99' }}>💰 {offer.salary}</span>}
                         </div>
                       </div>
-                      <button onClick={() => handleDeleteOffer(offer.id)}
-                        style={{ padding: '6px 12px', borderRadius: 8, border: 'none', background: 'rgba(239,68,68,0.2)', color: '#fca5a5', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
-                        Eliminar
-                      </button>
+                      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                        <button onClick={() => toggleApplicants(offer.id)}
+                          style={{ padding: '6px 12px', borderRadius: 8, border: 'none', background: 'rgba(236,72,153,0.2)', color: '#fbcfe8', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
+                          {expandedOfferId === offer.id ? 'Ocultar candidatos' : 'Ver candidatos'}
+                        </button>
+                        <button onClick={() => handleDeleteOffer(offer.id)}
+                          style={{ padding: '6px 12px', borderRadius: 8, border: 'none', background: 'rgba(239,68,68,0.2)', color: '#fca5a5', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
+                          Eliminar
+                        </button>
+                      </div>
                     </div>
                     <p style={{ margin: 0, color: '#ffffffcc', fontSize: 14, lineHeight: 1.5 }}>{offer.description}</p>
+                    {expandedOfferId === offer.id && (
+                      <div style={{ marginTop: 18, borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 16 }}>
+                        <h4 style={{ margin: '0 0 12px', fontSize: 15 }}>Candidatos</h4>
+                        {applicationsLoadingByOffer[offer.id] ? (
+                          <p style={{ color: '#ffffff80', fontSize: 13 }}>Cargando candidatos...</p>
+                        ) : (applicationsByOffer[offer.id] || []).length === 0 ? (
+                          <p style={{ color: '#ffffff80', fontSize: 13 }}>Esta oferta aun no tiene aplicaciones.</p>
+                        ) : (
+                          <div style={{ display: 'grid', gap: 10 }}>
+                            {(applicationsByOffer[offer.id] || []).map(application => {
+                              const student = application.student;
+                              const skills = parseJsonArray(student?.skills);
+                              return (
+                                <div key={application.id} style={{ border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: 12, display: 'grid', gap: 10 }}>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+                                    <div>
+                                      <strong>{student?.user?.firstName} {student?.user?.lastName}</strong>
+                                      <div style={{ color: '#ffffff80', fontSize: 12 }}>{student?.cicle || 'Ciclo no indicado'}{student?.user?.location ? ` · ${student.user.location}` : ''}</div>
+                                      <div style={{ color: student?.seekingJob ? '#bbf7d0' : '#ffffff80', fontSize: 12, marginTop: 4 }}>
+                                        {student?.seekingJob ? 'Disponible para oportunidades' : 'Disponibilidad no indicada'}
+                                      </div>
+                                    </div>
+                                    <select
+                                      value={application.status}
+                                      onChange={(event) => handleApplicationStatusChange(offer.id, application.id, event.target.value)}
+                                      style={{ height: 36, borderRadius: 8, border: '1px solid rgba(255,255,255,0.18)', background: '#1a1a2e', color: '#fff', padding: '0 10px' }}
+                                    >
+                                      {Object.entries(APPLICATION_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                                    </select>
+                                  </div>
+                                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                                    {skills.length > 0 ? skills.map(skill => <span key={skill} style={{ fontSize: 11, padding: '4px 8px', borderRadius: 999, background: 'rgba(236,72,153,0.18)', border: '1px solid rgba(236,72,153,0.35)' }}>{skill}</span>) : <span style={{ color: '#ffffff70', fontSize: 12 }}>Sin skills registradas</span>}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

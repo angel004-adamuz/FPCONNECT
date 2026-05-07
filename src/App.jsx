@@ -32,7 +32,7 @@ const GlobalToast = () => {
 };
 
 export default function App() {
-  const { isAuthenticated, user, initialize, logout } = useAuthStore();
+  const { isAuthenticated, isInitializing, user, initialize, logout } = useAuthStore();
 
   // Inicializar auth desde localStorage
   useEffect(() => {
@@ -40,6 +40,24 @@ export default function App() {
   }, [initialize]);
 
   const renderApp = () => {
+    if (isInitializing) {
+      return (
+        <div style={{
+          minHeight: '100vh',
+          display: 'grid',
+          placeItems: 'center',
+          color: '#fff',
+          fontFamily: "'Inter', sans-serif",
+          background: 'var(--fp-bg, #080f14)',
+        }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontWeight: 800, marginBottom: 8 }}>FPConnect</div>
+            <div style={{ color: 'var(--fp-muted, #94a3b8)', fontSize: 14 }}>Cargando sesión...</div>
+          </div>
+        </div>
+      );
+    }
+
     // Si no está autenticado, mostrar login
     if (!isAuthenticated || !user) {
       return <LoginPage />;
