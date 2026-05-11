@@ -26,6 +26,15 @@ const parseJsonArray = (value) => {
   }
 };
 
+const getOfferImage = (type) => {
+  const images = {
+    PRACTICAS: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&q=80',
+    EMPLEO: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&q=80',
+    BECA: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=80',
+  };
+  return images[type] || images.EMPLEO;
+};
+
 export default function EmpresaApp() {
   const { user: authUser, logout } = useAuthStore();
   const { showToast } = useUIStore();
@@ -92,11 +101,7 @@ export default function EmpresaApp() {
   };
 
   const toggleApplicants = async (offerId) => {
-    if (expandedOfferId === offerId) {
-      setExpandedOfferId('');
-      return;
-    }
-
+    if (expandedOfferId === offerId) { setExpandedOfferId(''); return; }
     setExpandedOfferId(offerId);
     setApplicationsLoadingByOffer(prev => ({ ...prev, [offerId]: true }));
     try {
@@ -162,10 +167,29 @@ export default function EmpresaApp() {
         {/* DASHBOARD */}
         {activeTab === 'dashboard' && (
           <div>
-            <div style={{ background: 'linear-gradient(135deg, #EC4899 0%, #be185d 100%)', borderRadius: 16, padding: 32, marginBottom: 32, color: '#fff' }}>
-              <h1 style={{ margin: '0 0 12px', fontSize: 28, fontWeight: 800 }}>Bienvenido, {authUser?.firstName}</h1>
-              <p style={{ margin: 0, fontSize: 14, opacity: 0.9 }}>Encuentra y conecta con talento técnico joven</p>
+            {/* Banner con imagen de fondo */}
+            <div style={{ borderRadius: 16, overflow: 'hidden', marginBottom: 32, position: 'relative', height: 180 }}>
+              <img
+                src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1200&q=80"
+                alt="Banner empresa"
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+              <div style={{
+                position: 'absolute', inset: 0,
+                background: 'linear-gradient(90deg, rgba(190,24,93,0.92) 0%, rgba(236,72,153,0.6) 60%, rgba(0,0,0,0.2) 100%)',
+                display: 'flex', alignItems: 'center', padding: '0 36px',
+              }}>
+                <div>
+                  <h1 style={{ margin: '0 0 8px', fontSize: 28, fontWeight: 800, color: '#fff' }}>
+                    Bienvenido, {authUser?.firstName} 👋
+                  </h1>
+                  <p style={{ margin: 0, fontSize: 14, color: '#ffffffdd' }}>
+                    Encuentra y conecta con talento técnico joven de FP
+                  </p>
+                </div>
+              </div>
             </div>
+
             {feedLoading ? (
               <div style={{ textAlign: 'center', padding: 40, color: '#ffffff66' }}>⏳ Cargando actividad...</div>
             ) : (
@@ -175,9 +199,11 @@ export default function EmpresaApp() {
                   {posts?.slice(0, 3).map(post => (
                     <div key={post.id} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', padding: 20 }}>
                       <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
-                        <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'linear-gradient(135deg, #EC4899, #be185d)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700 }}>
-                          {post.author?.firstName?.[0]?.toUpperCase()}
-                        </div>
+                        <img
+                          src={`https://ui-avatars.com/api/?name=${encodeURIComponent((post.author?.firstName || '') + ' ' + (post.author?.lastName || ''))}&background=EC4899&color=fff&size=40&bold=true&rounded=true`}
+                          alt=""
+                          style={{ width: 40, height: 40, borderRadius: '50%' }}
+                        />
                         <div>
                           <div style={{ fontWeight: 600, fontSize: 14 }}>{post.author?.firstName} {post.author?.lastName}</div>
                           <div style={{ fontSize: 12, color: '#ffffff66' }}>{new Date(post.createdAt).toLocaleDateString()}</div>
@@ -195,8 +221,25 @@ export default function EmpresaApp() {
         {/* TALENTO */}
         {activeTab === 'students' && (
           <div>
-            <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>🎓 Busca Talento</h2>
-            <p style={{ color: '#ffffff99', fontSize: 13, marginBottom: 24 }}>Alumnos disponibles para prácticas o empleo</p>
+            {/* Banner talento */}
+            <div style={{ borderRadius: 16, overflow: 'hidden', marginBottom: 24, position: 'relative', height: 140 }}>
+              <img
+                src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&q=80"
+                alt="Talento"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 30%' }}
+              />
+              <div style={{
+                position: 'absolute', inset: 0,
+                background: 'linear-gradient(90deg, rgba(190,24,93,0.88) 0%, rgba(0,0,0,0.3) 100%)',
+                display: 'flex', alignItems: 'center', padding: '0 28px',
+              }}>
+                <div>
+                  <h2 style={{ margin: '0 0 4px', fontSize: 22, fontWeight: 800, color: '#fff' }}>🎓 Busca Talento</h2>
+                  <p style={{ margin: 0, fontSize: 13, color: '#ffffffdd' }}>Alumnos disponibles para prácticas o empleo</p>
+                </div>
+              </div>
+            </div>
+
             <div style={{ marginBottom: 24 }}>
               <input type="text" placeholder="Busca por nombre, ciclo o habilidad..."
                 onChange={(e) => search(e.target.value.trim() || 'all', 1, 50, 'ALUMNO')}
@@ -281,70 +324,91 @@ export default function EmpresaApp() {
             ) : offers.length === 0 ? (
               <p style={{ color: '#ffffff66', textAlign: 'center', padding: 40 }}>📭 No hay ofertas publicadas aún</p>
             ) : (
-              <div style={{ display: 'grid', gap: 16 }}>
+              <div style={{ display: 'grid', gap: 20 }}>
                 {offers.map(offer => (
-                  <div key={offer.id} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 14, border: '1px solid rgba(255,255,255,0.1)', padding: 20 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
-                      <div>
-                        <h3 style={{ margin: '0 0 6px', fontSize: 18 }}>{offer.title}</h3>
-                        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                          <span style={{ fontSize: 12, padding: '4px 10px', borderRadius: 999, background: 'rgba(236,72,153,0.2)', border: '1px solid rgba(236,72,153,0.4)' }}>{offer.type}</span>
-                          {offer.location && <span style={{ fontSize: 12, color: '#ffffff99' }}>📍 {offer.location}</span>}
-                          {offer.salary && <span style={{ fontSize: 12, color: '#ffffff99' }}>💰 {offer.salary}</span>}
-                        </div>
-                      </div>
-                      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                        <button onClick={() => toggleApplicants(offer.id)}
-                          style={{ padding: '6px 12px', borderRadius: 8, border: 'none', background: 'rgba(236,72,153,0.2)', color: '#fbcfe8', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
-                          {expandedOfferId === offer.id ? 'Ocultar candidatos' : 'Ver candidatos'}
-                        </button>
-                        <button onClick={() => handleDeleteOffer(offer.id)}
-                          style={{ padding: '6px 12px', borderRadius: 8, border: 'none', background: 'rgba(239,68,68,0.2)', color: '#fca5a5', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
-                          Eliminar
-                        </button>
+                  <div key={offer.id} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 14, border: '1px solid rgba(255,255,255,0.1)', overflow: 'hidden' }}>
+                    {/* Imagen de la oferta */}
+                    <div style={{ position: 'relative', height: 110, overflow: 'hidden' }}>
+                      <img
+                        src={getOfferImage(offer.type)}
+                        alt=""
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                      <div style={{
+                        position: 'absolute', inset: 0,
+                        background: 'linear-gradient(90deg, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.3) 100%)',
+                        display: 'flex', alignItems: 'center', padding: '0 20px', gap: 10,
+                      }}>
+                        <span style={{ fontSize: 12, padding: '4px 10px', borderRadius: 999, background: 'rgba(236,72,153,0.85)', color: '#fff', fontWeight: 700 }}>{offer.type}</span>
+                        {offer.location && <span style={{ fontSize: 12, color: '#ffffffcc' }}>📍 {offer.location}</span>}
+                        {offer.salary && <span style={{ fontSize: 12, color: '#ffffffcc' }}>💰 {offer.salary}</span>}
                       </div>
                     </div>
-                    <p style={{ margin: 0, color: '#ffffffcc', fontSize: 14, lineHeight: 1.5 }}>{offer.description}</p>
-                    {expandedOfferId === offer.id && (
-                      <div style={{ marginTop: 18, borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 16 }}>
-                        <h4 style={{ margin: '0 0 12px', fontSize: 15 }}>Candidatos</h4>
-                        {applicationsLoadingByOffer[offer.id] ? (
-                          <p style={{ color: '#ffffff80', fontSize: 13 }}>Cargando candidatos...</p>
-                        ) : (applicationsByOffer[offer.id] || []).length === 0 ? (
-                          <p style={{ color: '#ffffff80', fontSize: 13 }}>Esta oferta aun no tiene aplicaciones.</p>
-                        ) : (
-                          <div style={{ display: 'grid', gap: 10 }}>
-                            {(applicationsByOffer[offer.id] || []).map(application => {
-                              const student = application.student;
-                              const skills = parseJsonArray(student?.skills);
-                              return (
-                                <div key={application.id} style={{ border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: 12, display: 'grid', gap: 10 }}>
-                                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-                                    <div>
-                                      <strong>{student?.user?.firstName} {student?.user?.lastName}</strong>
-                                      <div style={{ color: '#ffffff80', fontSize: 12 }}>{student?.cicle || 'Ciclo no indicado'}{student?.user?.location ? ` · ${student.user.location}` : ''}</div>
-                                      <div style={{ color: student?.seekingJob ? '#bbf7d0' : '#ffffff80', fontSize: 12, marginTop: 4 }}>
-                                        {student?.seekingJob ? 'Disponible para oportunidades' : 'Disponibilidad no indicada'}
-                                      </div>
-                                    </div>
-                                    <select
-                                      value={application.status}
-                                      onChange={(event) => handleApplicationStatusChange(offer.id, application.id, event.target.value)}
-                                      style={{ height: 36, borderRadius: 8, border: '1px solid rgba(255,255,255,0.18)', background: '#1a1a2e', color: '#fff', padding: '0 10px' }}
-                                    >
-                                      {Object.entries(APPLICATION_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-                                    </select>
-                                  </div>
-                                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                                    {skills.length > 0 ? skills.map(skill => <span key={skill} style={{ fontSize: 11, padding: '4px 8px', borderRadius: 999, background: 'rgba(236,72,153,0.18)', border: '1px solid rgba(236,72,153,0.35)' }}>{skill}</span>) : <span style={{ color: '#ffffff70', fontSize: 12 }}>Sin skills registradas</span>}
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        )}
+
+                    <div style={{ padding: 20 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
+                        <h3 style={{ margin: 0, fontSize: 18 }}>{offer.title}</h3>
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                          <button onClick={() => toggleApplicants(offer.id)}
+                            style={{ padding: '6px 12px', borderRadius: 8, border: 'none', background: 'rgba(236,72,153,0.2)', color: '#fbcfe8', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
+                            {expandedOfferId === offer.id ? 'Ocultar candidatos' : 'Ver candidatos'}
+                          </button>
+                          <button onClick={() => handleDeleteOffer(offer.id)}
+                            style={{ padding: '6px 12px', borderRadius: 8, border: 'none', background: 'rgba(239,68,68,0.2)', color: '#fca5a5', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
+                            Eliminar
+                          </button>
+                        </div>
                       </div>
-                    )}
+                      <p style={{ margin: 0, color: '#ffffffcc', fontSize: 14, lineHeight: 1.5 }}>{offer.description}</p>
+
+                      {expandedOfferId === offer.id && (
+                        <div style={{ marginTop: 18, borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 16 }}>
+                          <h4 style={{ margin: '0 0 12px', fontSize: 15 }}>Candidatos</h4>
+                          {applicationsLoadingByOffer[offer.id] ? (
+                            <p style={{ color: '#ffffff80', fontSize: 13 }}>Cargando candidatos...</p>
+                          ) : (applicationsByOffer[offer.id] || []).length === 0 ? (
+                            <p style={{ color: '#ffffff80', fontSize: 13 }}>Esta oferta aun no tiene aplicaciones.</p>
+                          ) : (
+                            <div style={{ display: 'grid', gap: 10 }}>
+                              {(applicationsByOffer[offer.id] || []).map(application => {
+                                const student = application.student;
+                                const skills = parseJsonArray(student?.skills);
+                                return (
+                                  <div key={application.id} style={{ border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: 12, display: 'grid', gap: 10 }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+                                      <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                                        <img
+                                          src={`https://ui-avatars.com/api/?name=${encodeURIComponent((student?.user?.firstName || '') + ' ' + (student?.user?.lastName || ''))}&background=EC4899&color=fff&size=40&bold=true&rounded=true`}
+                                          alt=""
+                                          style={{ width: 40, height: 40, borderRadius: '50%', flexShrink: 0 }}
+                                        />
+                                        <div>
+                                          <strong>{student?.user?.firstName} {student?.user?.lastName}</strong>
+                                          <div style={{ color: '#ffffff80', fontSize: 12 }}>{student?.cicle || 'Ciclo no indicado'}{student?.user?.location ? ` · ${student.user.location}` : ''}</div>
+                                          <div style={{ color: student?.seekingJob ? '#bbf7d0' : '#ffffff80', fontSize: 12, marginTop: 2 }}>
+                                            {student?.seekingJob ? '✅ Disponible para oportunidades' : 'Disponibilidad no indicada'}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <select
+                                        value={application.status}
+                                        onChange={(event) => handleApplicationStatusChange(offer.id, application.id, event.target.value)}
+                                        style={{ height: 36, borderRadius: 8, border: '1px solid rgba(255,255,255,0.18)', background: '#1a1a2e', color: '#fff', padding: '0 10px' }}
+                                      >
+                                        {Object.entries(APPLICATION_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                                      </select>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                                      {skills.length > 0 ? skills.map(skill => <span key={skill} style={{ fontSize: 11, padding: '4px 8px', borderRadius: 999, background: 'rgba(236,72,153,0.18)', border: '1px solid rgba(236,72,153,0.35)' }}>{skill}</span>) : <span style={{ color: '#ffffff70', fontSize: 12 }}>Sin skills registradas</span>}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
