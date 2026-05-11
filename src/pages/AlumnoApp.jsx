@@ -13,22 +13,16 @@ import NotificationsBell from '../components/NotificationsBell';
 const ANDALUCIA_PROVINCES = ['ALMERIA','CADIZ','CORDOBA','GRANADA','HUELVA','JAEN','MALAGA','SEVILLA'];
 
 const FP_NEWS_ITEMS = [
-  { id: 'mec-2026', title: 'Becas MEC 2026/2027 para estudios postobligatorios', category: 'Becas', summary: 'Ayudas para estudiantes de FP Grado Medio y Superior. Incluye cuantia fija y variable segun renta y rendimiento.', deadline: 'Plazo estimado: mayo-junio', source: 'Ministerio de Educacion y FP', url: 'https://www.becaseducacion.gob.es/' },
-  { id: 'fse-plus-andalucia', title: 'Programas de empleabilidad juvenil vinculados a FP en Andalucia', category: 'Convocatorias', summary: 'Iniciativas cofinanciadas para mejorar la insercion laboral de alumnado de FP con practicas y formacion complementaria.', deadline: 'Convocatorias durante el curso', source: 'Junta de Andalucia', url: 'https://www.juntadeandalucia.es/temas/estudiar/becas.html' },
-  { id: 'erasmus-fp', title: 'Movilidad Erasmus+ para alumnado de FP', category: 'Internacional', summary: 'Opciones para realizar practicas en empresas europeas con apoyo economico para viaje y estancia.', deadline: 'Depende del centro educativo', source: 'SEPIE - Erasmus+', url: 'https://www.sepie.es/' },
-  { id: 'andalucia-dual', title: 'Nuevas plazas de FP Dual en sectores tecnologicos', category: 'FP Dual', summary: 'Incremento de plazas en colaboracion con empresas andaluzas para DAM, DAW, ASIR y especializaciones digitales.', deadline: 'Apertura por centro', source: 'Portal de FP Andalucia', url: 'https://www.juntadeandalucia.es/educacion/portals/web/formacion-profesional-andaluza' },
-  { id: 'aula-emprendimiento', title: 'Aulas de emprendimiento y ayudas para proyectos de FP', category: 'Emprendimiento', summary: 'Convocatorias para prototipos y proyectos innovadores desarrollados por alumnado de ciclos formativos.', deadline: 'Revision trimestral', source: 'TodoFP', url: 'https://todofp.es/' },
+  { id: 'mec-2026', title: 'Becas MEC 2026/2027 para estudios postobligatorios', category: 'Becas', summary: 'Ayudas para estudiantes de FP Grado Medio y Superior. Incluye cuantia fija y variable segun renta y rendimiento.', deadline: 'Plazo estimado: mayo-junio', source: 'Ministerio de Educacion y FP', url: 'https://www.becaseducacion.gob.es/', img: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&q=80' },
+  { id: 'fse-plus-andalucia', title: 'Programas de empleabilidad juvenil vinculados a FP en Andalucia', category: 'Convocatorias', summary: 'Iniciativas cofinanciadas para mejorar la insercion laboral de alumnado de FP con practicas y formacion complementaria.', deadline: 'Convocatorias durante el curso', source: 'Junta de Andalucia', url: 'https://www.juntadeandalucia.es/temas/estudiar/becas.html', img: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=600&q=80' },
+  { id: 'erasmus-fp', title: 'Movilidad Erasmus+ para alumnado de FP', category: 'Internacional', summary: 'Opciones para realizar practicas en empresas europeas con apoyo economico para viaje y estancia.', deadline: 'Depende del centro educativo', source: 'SEPIE - Erasmus+', url: 'https://www.sepie.es/', img: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&q=80' },
+  { id: 'andalucia-dual', title: 'Nuevas plazas de FP Dual en sectores tecnologicos', category: 'FP Dual', summary: 'Incremento de plazas en colaboracion con empresas andaluzas para DAM, DAW, ASIR y especializaciones digitales.', deadline: 'Apertura por centro', source: 'Portal de FP Andalucia', url: 'https://www.juntadeandalucia.es/educacion/portals/web/formacion-profesional-andaluza', img: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&q=80' },
+  { id: 'aula-emprendimiento', title: 'Aulas de emprendimiento y ayudas para proyectos de FP', category: 'Emprendimiento', summary: 'Convocatorias para prototipos y proyectos innovadores desarrollados por alumnado de ciclos formativos.', deadline: 'Revision trimestral', source: 'TodoFP', url: 'https://todofp.es/', img: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=600&q=80' },
 ];
 
 const normalizeText = (value = '') => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
 
-const APPLICATION_LABELS = {
-  PENDING: 'Pendiente',
-  REVIEWED: 'Revisado',
-  ACCEPTED: 'Aceptado',
-  REJECTED: 'Rechazado',
-};
-
+const APPLICATION_LABELS = { PENDING: 'Pendiente', REVIEWED: 'Revisado', ACCEPTED: 'Aceptado', REJECTED: 'Rechazado' };
 const APPLICATION_COLORS = {
   PENDING: ['rgba(234,179,8,0.18)', 'rgba(234,179,8,0.45)', '#fef3c7'],
   REVIEWED: ['rgba(59,130,246,0.18)', 'rgba(59,130,246,0.45)', '#bfdbfe'],
@@ -38,11 +32,17 @@ const APPLICATION_COLORS = {
 
 const ApplicationBadge = ({ status }) => {
   const colors = APPLICATION_COLORS[status] || APPLICATION_COLORS.PENDING;
-  return (
-    <span style={{ fontSize: 12, padding: '5px 10px', borderRadius: 999, background: colors[0], border: `1px solid ${colors[1]}`, color: colors[2], fontWeight: 800 }}>
-      {APPLICATION_LABELS[status] || status}
-    </span>
-  );
+  return <span style={{ fontSize: 12, padding: '5px 10px', borderRadius: 999, background: colors[0], border: `1px solid ${colors[1]}`, color: colors[2], fontWeight: 800 }}>{APPLICATION_LABELS[status] || status}</span>;
+};
+
+// Imagen aleatoria para ofertas según tipo
+const getOfferImage = (type) => {
+  const images = {
+    PRACTICAS: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&q=80',
+    EMPLEO: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&q=80',
+    BECA: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&q=80',
+  };
+  return images[type] || images.EMPLEO;
 };
 
 export default function AlumnoApp() {
@@ -71,36 +71,10 @@ export default function AlumnoApp() {
   const { followers, following, recommendations, loadFollowers, loadFollowing, loadRecommendations, followUser, unfollowUser, loading: connectionsLoading } = useConnections();
   const { results: searchResults, search, loading: searchLoading } = useUserSearch();
 
-  const parseCicles = (rawCicles) => {
-    if (!rawCicles) return [];
-    if (Array.isArray(rawCicles)) return rawCicles;
-    try { return JSON.parse(rawCicles); } catch { return []; }
-  };
-
-  const getGradeType = (cicle) => {
-    const value = (cicle || '').toUpperCase();
-    if (value.startsWith('GM:')) return 'GM';
-    if (value.startsWith('GS:')) return 'GS';
-    if (value.startsWith('GE:')) return 'GE';
-    if (['SMR','GESTION ADMINISTRATIVA','MICROINFORMATICOS'].some(t => value.includes(t))) return 'GM';
-    if (['DAM','DAW','ASIR','DESARROLLO'].some(t => value.includes(t))) return 'GS';
-    if (['BIG DATA','CIBERSEGURIDAD','IA','INTELIGENCIA ARTIFICIAL','ESPECIALIZACION'].some(t => value.includes(t))) return 'GE';
-    return 'OTHER';
-  };
-
-  const centerMatchesFilter = (center) => {
-    const cicles = parseCicles(center.centerProfile?.cicles);
-    const matchesGrade = gradeFilter === 'ALL' || cicles.some(c => getGradeType(c) === gradeFilter);
-    const centerProvince = normalizeText(center.centerProfile?.province || '');
-    const matchesProvince = provinceFilter === 'ALL' || centerProvince === provinceFilter;
-    const matchesQuickProvince = exploreProvinceQuickFilter === 'ALL' || centerProvince === exploreProvinceQuickFilter;
-    return matchesGrade && matchesProvince && matchesQuickProvince;
-  };
-
-  const matchesQuickProvinceFromText = (value) => {
-    if (exploreProvinceQuickFilter === 'ALL') return true;
-    return normalizeText(value || '').includes(exploreProvinceQuickFilter);
-  };
+  const parseCicles = (rawCicles) => { if (!rawCicles) return []; if (Array.isArray(rawCicles)) return rawCicles; try { return JSON.parse(rawCicles); } catch { return []; } };
+  const getGradeType = (cicle) => { const value = (cicle || '').toUpperCase(); if (value.startsWith('GM:')) return 'GM'; if (value.startsWith('GS:')) return 'GS'; if (value.startsWith('GE:')) return 'GE'; if (['SMR','GESTION ADMINISTRATIVA','MICROINFORMATICOS'].some(t => value.includes(t))) return 'GM'; if (['DAM','DAW','ASIR','DESARROLLO'].some(t => value.includes(t))) return 'GS'; if (['BIG DATA','CIBERSEGURIDAD','IA','INTELIGENCIA ARTIFICIAL','ESPECIALIZACION'].some(t => value.includes(t))) return 'GE'; return 'OTHER'; };
+  const centerMatchesFilter = (center) => { const cicles = parseCicles(center.centerProfile?.cicles); const matchesGrade = gradeFilter === 'ALL' || cicles.some(c => getGradeType(c) === gradeFilter); const centerProvince = normalizeText(center.centerProfile?.province || ''); const matchesProvince = provinceFilter === 'ALL' || centerProvince === provinceFilter; const matchesQuickProvince = exploreProvinceQuickFilter === 'ALL' || centerProvince === exploreProvinceQuickFilter; return matchesGrade && matchesProvince && matchesQuickProvince; };
+  const matchesQuickProvinceFromText = (value) => { if (exploreProvinceQuickFilter === 'ALL') return true; return normalizeText(value || '').includes(exploreProvinceQuickFilter); };
 
   const filteredCenters = (searchResults || []).filter(u => u.role === 'CENTRO').filter(centerMatchesFilter);
   const filteredEnterprises = (searchResults || []).filter(u => u.role === 'EMPRESA').filter(u => matchesQuickProvinceFromText(u.enterpriseProfile?.province || u.enterpriseProfile?.city || u.location || ''));
@@ -108,28 +82,11 @@ export default function AlumnoApp() {
   const availableProvinces = Array.from(new Set((searchResults || []).filter(u => u.role === 'CENTRO').map(u => u.centerProfile?.province).filter(Boolean).map(p => normalizeText(p)))).sort();
 
   const getUserRoleLabel = (role) => role === 'ALUMNO' ? 'alumno' : role === 'CENTRO' ? 'centro educativo' : role === 'EMPRESA' ? 'empresa' : 'perfil';
+  const resolveUserRoleById = (userId) => { const knownUsers = [...(followers||[]),...(following||[]),...(recommendations||[]),...(searchResults||[])]; return knownUsers.find(c => c?.id === userId)?.role; };
 
-  const resolveUserRoleById = (userId) => {
-    const knownUsers = [...(followers||[]),...(following||[]),...(recommendations||[]),...(searchResults||[])];
-    return knownUsers.find(c => c?.id === userId)?.role;
-  };
-
-  const loadLinkedCenter = async () => {
-    try { const r = await usersService.getMyLinkedCenter(); setLinkedCenter(r.data || null); }
-    catch { setLinkedCenter(null); }
-  };
-
-  const loadOffers = async () => {
-    setOffersLoading(true);
-    try { const r = await jobOffersService.getAll(); setOffers(r.data || []); }
-    catch (err) { console.error(err); }
-    finally { setOffersLoading(false); }
-  };
-
-  const loadApplications = async () => {
-    try { const r = await jobOffersService.getMyApplications(); setApplications(r.data || []); }
-    catch (err) { console.error(err); }
-  };
+  const loadLinkedCenter = async () => { try { const r = await usersService.getMyLinkedCenter(); setLinkedCenter(r.data || null); } catch { setLinkedCenter(null); } };
+  const loadOffers = async () => { setOffersLoading(true); try { const r = await jobOffersService.getAll(); setOffers(r.data || []); } catch (err) { console.error(err); } finally { setOffersLoading(false); } };
+  const loadApplications = async () => { try { const r = await jobOffersService.getMyApplications(); setApplications(r.data || []); } catch (err) { console.error(err); } };
 
   useEffect(() => {
     if (activeTab === 'feed') { loadFeed(); loadRecommendations(); loadFollowing(1, 200); }
@@ -146,54 +103,21 @@ export default function AlumnoApp() {
   useEffect(() => { loadLinkedCenter(); }, []);
 
   const handleLogout = async () => await logout();
-
-  const handleFollowUser = async (userId) => {
-    try { await followUser(userId); showToast(`Ahora sigues a este ${getUserRoleLabel(resolveUserRoleById(userId))}`, 'success'); }
-    catch (err) { showToast(err.message || 'No se pudo seguir al usuario', 'error'); }
-  };
-
-  const handleUnfollowUser = async (userId) => {
-    try {
-      await unfollowUser(userId);
-      showToast(`Has dejado de seguir este ${getUserRoleLabel(resolveUserRoleById(userId))}`, 'success');
-      if (linkedCenter?.id === userId) setLinkedCenter(null);
-    } catch (err) { showToast(err.message || 'No se pudo dejar de seguir', 'error'); }
-  };
-
-  const handleLinkToCenter = async (center) => {
-    setLinkingCenterId(center.id); setLinkError('');
-    try { const r = await usersService.linkMeToCenter(center.id); setLinkedCenter(r.data); await loadFollowing(1, 200); await loadRecommendations(); }
-    catch (err) { setLinkError(err.message || 'No se pudo vincular el centro'); }
-    finally { setLinkingCenterId(''); }
-  };
-
-  const handleUnlinkCenter = async () => {
-    setUnlinkingCenter(true); setLinkError('');
-    try { await usersService.unlinkMeFromCenter(); setLinkedCenter(null); await loadFollowing(1, 200); await loadRecommendations(); }
-    catch (err) { setLinkError(err.message || 'No se pudo desvincular el centro'); }
-    finally { setUnlinkingCenter(false); }
-  };
-
-  const handleOpenProfile = async (userId) => {
-    setViewedProfileId(userId);
-    try { await loadFollowing(1, 200); } catch {}
-  };
-
+  const handleFollowUser = async (userId) => { try { await followUser(userId); showToast(`Ahora sigues a este ${getUserRoleLabel(resolveUserRoleById(userId))}`, 'success'); } catch (err) { showToast(err.message || 'No se pudo seguir al usuario', 'error'); } };
+  const handleUnfollowUser = async (userId) => { try { await unfollowUser(userId); showToast(`Has dejado de seguir este ${getUserRoleLabel(resolveUserRoleById(userId))}`, 'success'); if (linkedCenter?.id === userId) setLinkedCenter(null); } catch (err) { showToast(err.message || 'No se pudo dejar de seguir', 'error'); } };
+  const handleLinkToCenter = async (center) => { setLinkingCenterId(center.id); setLinkError(''); try { const r = await usersService.linkMeToCenter(center.id); setLinkedCenter(r.data); await loadFollowing(1, 200); await loadRecommendations(); } catch (err) { setLinkError(err.message || 'No se pudo vincular el centro'); } finally { setLinkingCenterId(''); } };
+  const handleUnlinkCenter = async () => { setUnlinkingCenter(true); setLinkError(''); try { await usersService.unlinkMeFromCenter(); setLinkedCenter(null); await loadFollowing(1, 200); await loadRecommendations(); } catch (err) { setLinkError(err.message || 'No se pudo desvincular el centro'); } finally { setUnlinkingCenter(false); } };
+  const handleOpenProfile = async (userId) => { setViewedProfileId(userId); try { await loadFollowing(1, 200); } catch {} };
   const handleApplyOffer = async (offerId) => {
     setApplyingOfferId(offerId);
     try {
       const response = await jobOffersService.apply(offerId);
       const application = response.data;
-      setApplications((prev) => [application, ...prev.filter((item) => item.id !== application.id)]);
-      setOffers((prev) => prev.map((offer) => (
-        offer.id === offerId ? { ...offer, applications: [application] } : offer
-      )));
+      setApplications(prev => [application, ...prev.filter(item => item.id !== application.id)]);
+      setOffers(prev => prev.map(offer => offer.id === offerId ? { ...offer, applications: [application] } : offer));
       showToast('Aplicacion enviada correctamente', 'success');
-    } catch (err) {
-      showToast(err.message || 'No se pudo aplicar a la oferta', 'error');
-    } finally {
-      setApplyingOfferId('');
-    }
+    } catch (err) { showToast(err.message || 'No se pudo aplicar a la oferta', 'error'); }
+    finally { setApplyingOfferId(''); }
   };
 
   const isViewedProfileFollowing = viewedProfileId ? !!following?.find(u => u.id === viewedProfileId) : false;
@@ -245,9 +169,21 @@ export default function AlumnoApp() {
             isFollowing={isViewedProfileFollowing} onFollow={handleFollowUser} onUnfollow={handleUnfollowUser} />
         ) : activeTab === 'feed' && (
           <div className="fp-feed-layout">
-            {feedLoading ? <div style={{ textAlign: 'center', padding: 40, color: '#ffffff66' }}>⏳ Cargando feed...</div> : (
-              <Feed recommendations={recommendations} following={following} onFollow={handleFollowUser} onUnfollow={handleUnfollowUser} onOpenProfile={handleOpenProfile} />
-            )}
+            {/* Banner con imagen */}
+            <div>
+              <div style={{ borderRadius: 16, overflow: 'hidden', marginBottom: 24, position: 'relative', height: 160 }}>
+                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&q=80" alt="Banner" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(0,20,15,0.85) 0%, rgba(0,40,30,0.4) 100%)', display: 'flex', alignItems: 'center', padding: '0 28px' }}>
+                  <div>
+                    <div style={{ fontSize: 22, fontWeight: 800, color: '#fff', marginBottom: 4 }}>Hola, {authUser?.firstName} 👋</div>
+                    <div style={{ fontSize: 14, color: '#ffffffcc' }}>Bienvenido a FPConnect — tu red profesional de FP</div>
+                  </div>
+                </div>
+              </div>
+              {feedLoading ? <div style={{ textAlign: 'center', padding: 40, color: '#ffffff66' }}>⏳ Cargando feed...</div> : (
+                <Feed recommendations={recommendations} following={following} onFollow={handleFollowUser} onUnfollow={handleUnfollowUser} onOpenProfile={handleOpenProfile} />
+              )}
+            </div>
             <aside className="fp-sidebar fp-card">
               <h3 style={{ margin: '0 0 16px 0', fontSize: 15, fontWeight: 800 }}>Sugerencias para ampliar tu red</h3>
               {connectionsLoading ? <p style={{ color: '#ffffff66', fontSize: 12 }}>Cargando...</p> : (
@@ -258,11 +194,9 @@ export default function AlumnoApp() {
                         onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
                         onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}>
                         <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
-                          <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg, #00A878, #007A57)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700 }}>
-                            {rec.firstName?.[0]?.toUpperCase()}
-                          </div>
+                          <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(rec.firstName + ' ' + rec.lastName)}&background=00A878&color=fff&size=32&bold=true&rounded=true`} alt="" style={{ width: 32, height: 32, borderRadius: '50%' }} />
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{rec.firstName}</div>
+                            <div style={{ fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{rec.firstName} {rec.lastName}</div>
                           </div>
                         </div>
                         <button onClick={() => following?.find(u => u.id === rec.id) ? handleUnfollowUser(rec.id) : handleFollowUser(rec.id)}
@@ -479,37 +413,38 @@ export default function AlumnoApp() {
               offers.length === 0 ? <p style={{ color: '#ffffff66', textAlign: 'center', padding: 40 }}>📭 No hay ofertas disponibles por ahora</p> : (
                 <div style={{ display: 'grid', gap: 16 }}>
                   {offers.map(offer => {
-                    const application = offer.applications?.[0] || applications.find((item) => item.jobOfferId === offer.id);
+                    const application = offer.applications?.[0] || applications.find(item => item.jobOfferId === offer.id);
                     return (
-                      <div key={offer.id} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 14, border: '1px solid rgba(255,255,255,0.1)', padding: 24 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                          <div>
-                            <h3 style={{ margin: '0 0 8px', fontSize: 20 }}>{offer.title}</h3>
-                            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-                              <span style={{ fontSize: 12, padding: '4px 10px', borderRadius: 999, background: 'rgba(0,168,120,0.2)', border: '1px solid rgba(0,168,120,0.4)' }}>{offer.type}</span>
-                              {offer.location && <span style={{ fontSize: 12, color: '#ffffff99' }}>📍 {offer.location}</span>}
-                              {offer.salary && <span style={{ fontSize: 12, color: '#ffffff99' }}>💰 {offer.salary}</span>}
-                              <span style={{ fontSize: 12, color: '#ffffff66' }}>🏢 {offer.enterprise?.user?.firstName} {offer.enterprise?.user?.lastName}</span>
+                      <div key={offer.id} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 14, border: '1px solid rgba(255,255,255,0.1)', overflow: 'hidden' }}>
+                        {/* Imagen de la oferta */}
+                        <div style={{ position: 'relative', height: 120, overflow: 'hidden' }}>
+                          <img src={getOfferImage(offer.type)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(0,10,8,0.8) 0%, rgba(0,0,0,0.3) 100%)', display: 'flex', alignItems: 'center', padding: '0 24px', gap: 12 }}>
+                            <span style={{ fontSize: 12, padding: '4px 10px', borderRadius: 999, background: 'rgba(0,168,120,0.8)', color: '#fff', fontWeight: 700 }}>{offer.type}</span>
+                            {offer.location && <span style={{ fontSize: 12, color: '#ffffffcc' }}>📍 {offer.location}</span>}
+                            {offer.salary && <span style={{ fontSize: 12, color: '#ffffffcc' }}>💰 {offer.salary}</span>}
+                          </div>
+                        </div>
+                        <div style={{ padding: 24 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                            <div>
+                              <h3 style={{ margin: '0 0 6px', fontSize: 20 }}>{offer.title}</h3>
+                              <span style={{ fontSize: 12, color: '#ffffff66' }}>🏢 {offer.enterprise?.user?.firstName} {offer.enterprise?.user?.lastName} · {new Date(offer.createdAt).toLocaleDateString()}</span>
                             </div>
                           </div>
-                          <span style={{ fontSize: 11, color: '#ffffff66', whiteSpace: 'nowrap' }}>{new Date(offer.createdAt).toLocaleDateString()}</span>
-                        </div>
-                        <p style={{ margin: 0, color: '#ffffffcc', fontSize: 14, lineHeight: 1.6 }}>{offer.description}</p>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginTop: 18, flexWrap: 'wrap' }}>
-                          {application ? (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                              <span style={{ color: '#ffffff99', fontSize: 13 }}>Estado de aplicacion:</span>
-                              <ApplicationBadge status={application.status} />
-                            </div>
-                          ) : <span style={{ color: '#ffffff80', fontSize: 13 }}>Aun no has aplicado a esta oferta.</span>}
-                          <button
-                            onClick={() => handleApplyOffer(offer.id)}
-                            disabled={!!application || applyingOfferId === offer.id}
-                            className="fp-button"
-                            style={{ opacity: application ? 0.65 : 1, cursor: application ? 'default' : 'pointer' }}
-                          >
-                            {application ? 'Aplicacion enviada' : applyingOfferId === offer.id ? 'Enviando...' : 'Aplicar'}
-                          </button>
+                          <p style={{ margin: '0 0 18px', color: '#ffffffcc', fontSize: 14, lineHeight: 1.6 }}>{offer.description}</p>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                            {application ? (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <span style={{ color: '#ffffff99', fontSize: 13 }}>Estado:</span>
+                                <ApplicationBadge status={application.status} />
+                              </div>
+                            ) : <span style={{ color: '#ffffff80', fontSize: 13 }}>Aun no has aplicado.</span>}
+                            <button onClick={() => handleApplyOffer(offer.id)} disabled={!!application || applyingOfferId === offer.id}
+                              className="fp-button" style={{ opacity: application ? 0.65 : 1, cursor: application ? 'default' : 'pointer' }}>
+                              {application ? 'Aplicacion enviada' : applyingOfferId === offer.id ? 'Enviando...' : 'Aplicar'}
+                            </button>
+                          </div>
                         </div>
                       </div>
                     );
@@ -519,6 +454,7 @@ export default function AlumnoApp() {
           </div>
         )}
 
+        {/* MIS APLICACIONES */}
         {!viewedProfileId && activeTab === 'applications' && (
           <div>
             <h2 style={{ margin: '0 0 8px', fontSize: 24 }}>Mis Aplicaciones</h2>
@@ -527,15 +463,12 @@ export default function AlumnoApp() {
               <p style={{ color: '#ffffff66', textAlign: 'center', padding: 40 }}>Todavia no has aplicado a ninguna oferta.</p>
             ) : (
               <div style={{ display: 'grid', gap: 14 }}>
-                {applications.map((application) => (
+                {applications.map(application => (
                   <article key={application.id} style={{ border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.05)', borderRadius: 14, padding: 18, display: 'grid', gap: 10 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
                       <div>
                         <h3 style={{ margin: '0 0 6px', fontSize: 18 }}>{application.jobOffer?.title}</h3>
-                        <div style={{ color: '#ffffff99', fontSize: 13 }}>
-                          {application.jobOffer?.enterprise?.user?.firstName} {application.jobOffer?.enterprise?.user?.lastName}
-                          {application.jobOffer?.location ? ` · ${application.jobOffer.location}` : ''}
-                        </div>
+                        <div style={{ color: '#ffffff99', fontSize: 13 }}>{application.jobOffer?.enterprise?.user?.firstName} {application.jobOffer?.enterprise?.user?.lastName}{application.jobOffer?.location ? ` · ${application.jobOffer.location}` : ''}</div>
                       </div>
                       <ApplicationBadge status={application.status} />
                     </div>
@@ -554,17 +487,22 @@ export default function AlumnoApp() {
             <p style={{ margin: '0 0 22px 0', color: '#ffffff99', fontSize: 14 }}>Becas, convocatorias y oportunidades para alumnado de Formacion Profesional.</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 14 }}>
               {FP_NEWS_ITEMS.map(item => (
-                <article key={item.id} style={{ borderRadius: 14, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', padding: 16, display: 'grid', gap: 10 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 11, borderRadius: 999, padding: '4px 9px', background: 'rgba(0,168,120,0.2)', border: '1px solid rgba(0,168,120,0.5)', color: '#d3ffef', fontWeight: 700 }}>{item.category}</span>
-                    <span style={{ color: '#ffffff88', fontSize: 12 }}>{item.source}</span>
+                <article key={item.id} style={{ borderRadius: 14, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', overflow: 'hidden' }}>
+                  {/* Imagen de la noticia */}
+                  <div style={{ position: 'relative', height: 140, overflow: 'hidden' }}>
+                    <img src={item.img} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.7) 100%)' }} />
+                    <span style={{ position: 'absolute', bottom: 10, left: 12, fontSize: 11, borderRadius: 999, padding: '4px 9px', background: 'rgba(0,168,120,0.9)', color: '#fff', fontWeight: 700 }}>{item.category}</span>
                   </div>
-                  <h3 style={{ margin: 0, fontSize: 18 }}>{item.title}</h3>
-                  <p style={{ margin: 0, color: '#ffffffcc', fontSize: 14, lineHeight: 1.5 }}>{item.summary}</p>
-                  <div style={{ color: '#ffffffa8', fontSize: 12 }}>{item.deadline}</div>
-                  <a href={item.url} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, border: '1px solid rgba(255,255,255,0.24)', color: '#fff', padding: '8px 12px', textDecoration: 'none', fontWeight: 600, width: 'fit-content' }}>
-                    Ver convocatoria
-                  </a>
+                  <div style={{ padding: 16, display: 'grid', gap: 10 }}>
+                    <div style={{ color: '#ffffff88', fontSize: 12 }}>{item.source}</div>
+                    <h3 style={{ margin: 0, fontSize: 16, lineHeight: 1.4 }}>{item.title}</h3>
+                    <p style={{ margin: 0, color: '#ffffffcc', fontSize: 13, lineHeight: 1.5 }}>{item.summary}</p>
+                    <div style={{ color: '#ffffffa8', fontSize: 12 }}>{item.deadline}</div>
+                    <a href={item.url} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, border: '1px solid rgba(255,255,255,0.24)', color: '#fff', padding: '8px 12px', textDecoration: 'none', fontWeight: 600, width: 'fit-content', fontSize: 13 }}>
+                      Ver convocatoria →
+                    </a>
+                  </div>
                 </article>
               ))}
             </div>
