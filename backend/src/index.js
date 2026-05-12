@@ -12,6 +12,7 @@ import prisma from './config/prisma.js';
 
 // Middlewares
 import { errorHandler } from './middlewares/errorHandler.js';
+import passport from './config/passport.js';
 
 // Socket.io
 import { initializeSocket } from './sockets/messaging.socket.js';
@@ -25,6 +26,7 @@ import connectionRoutes from './routes/connection.routes.js';
 import jobOfferRoutes from './routes/jobOffer.routes.js';
 import conversationRoutes from './routes/conversation.routes.js';
 import notificationRoutes from './routes/notification.routes.js';
+import googleAuthRoutes from './routes/googleAuth.routes.js';
 
 // ============ INICIALIZACIÓN ============
 
@@ -56,27 +58,18 @@ const isDevelopmentLanOrigin = (origin) => {
 
 app.use(express.json());
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
+app.use(passport.initialize());
 
 // ============ SEGURIDAD ============
 
 app.use(helmet());
 app.use(cors({
   origin: (origin, callback) => {
-    // Permitir requests sin Origin (Postman, curl, server-to-server)
-    if (!origin) {
-      callback(null, true);
-      return;
-    }
-
+    if (!origin) { callback(null, true); return; }
     const allowedOrigins = config.cors_origin || [];
     const isExplicitlyAllowed = allowedOrigins.includes(origin);
     const isLocalhostOrLanDevOrigin = isDevelopmentLanOrigin(origin);
-
-    if (isExplicitlyAllowed || isLocalhostOrLanDevOrigin) {
-      callback(null, true);
-      return;
-    }
-
+    if (isExplicitlyAllowed || isLocalhostOrLanDevOrigin) { callback(null, true); return; }
     callback(new Error('CORS origin no permitido'));
   },
   credentials: true,
@@ -100,6 +93,7 @@ app.get('/health', (req, res) => {
 // ============ API ROUTES ============
 
 app.use('/api/auth', authRoutes);
+app.use('/api/auth/google', googleAuthRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/posts/:postId/comments', commentRoutes);
 app.use('/api/users', userRoutes);
@@ -109,7 +103,8 @@ app.use('/api/job-offers', jobOfferRoutes);
 app.use('/api/conversations', conversationRoutes);
 app.use('/api/notifications', notificationRoutes);
 
-// Rutas temporales de demostración
+// ============ API INFO ============
+
 app.get('/api', (req, res) => {
   res.status(200).json({
     message: 'FPConnect API v1.0',
@@ -117,17 +112,18 @@ app.get('/api', (req, res) => {
     version: '1.0.0',
     endpoints: {
       auth: '/api/auth',
+      googleAuth: '/api/auth/google',
       posts: '/api/posts',
       comments: '/api/posts/:postId/comments',
       users: '/api/users',
       connections: '/api/connections',
-      messages: '/api/messages (próximamente)',
-      jobs: '/api/jobs (próximamente)',
+      conversations: '/api/conversations',
+      notifications: '/api/notifications',
     },
   });
 });
 
-// ============ 404 - RUTA NO ENCONTRADA ============
+// ============ 404 ============
 
 app.use((req, res) => {
   res.status(404).json({
@@ -146,11 +142,8 @@ app.use(errorHandler);
 
 const startServer = async () => {
   try {
-    // Verificar conexión a BD
     await prisma.$connect();
     logger.info('✅ Conectado a base de datos PostgreSQL');
-
-    // Iniciar servidor
     server.listen(config.port, config.host, () => {
       logger.info(`
 ╔═══════════════════════════════════════╗
@@ -161,7 +154,7 @@ const startServer = async () => {
 ║   Log Level: ${config.log_level}
 ║═══════════════════════════════════════╝
       `);
-      logger.info(`📍 Accede a http://localhost:${config.port} y desde tu LAN con la IP del equipo`);
+      logger.info(`📍 Accede a http://localhost:${config.port}`);
       logger.info('💬 WebSocket activo para mensajería en tiempo real');
     });
   } catch (error) {
@@ -175,19 +168,13 @@ const startServer = async () => {
 process.on('SIGTERM', async () => {
   logger.warn('⚠️ Señal SIGTERM recibida');
   await prisma.$disconnect();
-  server.close(() => {
-    logger.info('✅ Servidor cerrado');
-    process.exit(0);
-  });
+  server.close(() => { logger.info('✅ Servidor cerrado'); process.exit(0); });
 });
 
 process.on('SIGINT', async () => {
   logger.warn('⚠️ Señal SIGINT recibida');
   await prisma.$disconnect();
-  server.close(() => {
-    logger.info('✅ Servidor cerrado');
-    process.exit(0);
-  });
+  server.close(() => { logger.info('✅ Servidor cerrado'); process.exit(0); });
 });
 
 process.on('uncaughtException', (error) => {
