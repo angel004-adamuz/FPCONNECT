@@ -36,7 +36,8 @@ export default function LoginPage() {
   const handleRecoveryChange = (e) => { const { name, value } = e.target; setRecoveryData(p => ({ ...p, [name]: value })); setRecoveryError(''); };
 
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:3000/api/auth/google';
+    const baseUrl = import.meta.env.VITE_API_BASE_URL.replace('/api', '');
+    window.location.href = `${baseUrl}/api/auth/google`;
   };
 
   const handleSubmit = async (e) => {
