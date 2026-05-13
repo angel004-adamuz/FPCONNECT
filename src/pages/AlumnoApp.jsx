@@ -26,15 +26,16 @@ const APPLICATION_LABELS = { PENDING: 'Pendiente', REVIEWED: 'Revisado', ACCEPTE
 const APPLICATION_COLORS = {
   PENDING: ['rgba(234,179,8,0.18)', 'rgba(234,179,8,0.45)', '#fef3c7'],
   REVIEWED: ['rgba(59,130,246,0.18)', 'rgba(59,130,246,0.45)', '#bfdbfe'],
-  ACCEPTED: ['rgba(34,197,94,0.25)', 'rgba(34,197,94,0.6)', '#4ade80'],
+  ACCEPTED: ['rgba(34,197,94,0.18)', 'rgba(34,197,94,0.45)', '#bbf7d0'],
   REJECTED: ['rgba(239,68,68,0.18)', 'rgba(239,68,68,0.45)', '#fecaca'],
 };
 
 const ApplicationBadge = ({ status }) => {
   const colors = APPLICATION_COLORS[status] || APPLICATION_COLORS.PENDING;
-  return <span style={{ fontSize: 11, padding: '4px 12px', borderRadius: 999, background: colors[0], border: `1px solid ${colors[1]}`, color: colors[2], fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{APPLICATION_LABELS[status] || status}</span>;
+  return <span style={{ fontSize: 12, padding: '5px 10px', borderRadius: 999, background: colors[0], border: `1px solid ${colors[1]}`, color: colors[2], fontWeight: 800 }}>{APPLICATION_LABELS[status] || status}</span>;
 };
 
+// Imagen aleatoria para ofertas según tipo
 const getOfferImage = (type) => {
   const images = {
     PRACTICAS: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&q=80',
@@ -125,34 +126,21 @@ export default function AlumnoApp() {
   const recommendedByInterests = (recommendations || []).filter(u => !followingIds.has(u.id));
 
   return (
-    <div className="fp-app-shell" style={{ 
-      background: 'radial-gradient(circle at top right, #002d20 0%, #000c0a 100%)',
-      minHeight: '100vh',
-      animation: 'fadeIn 0.5s ease-out'
-    }}>
-      <style>{`
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulseGlow { 0% { box-shadow: 0 0 5px rgba(0,168,120,0.2); } 50% { box-shadow: 0 0 20px rgba(0,168,120,0.4); } 100% { box-shadow: 0 0 5px rgba(0,168,120,0.2); } }
-        .fp-card-animated { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .fp-card-animated:hover { transform: translateY(-5px); background: rgba(255,255,255,0.08) !important; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
-        .fp-tab { transition: all 0.2s ease; border-radius: 8px !important; margin: 0 4px; }
-        .fp-tab.is-active { background: rgba(0,168,120,0.2) !important; color: #00ffb7 !important; border-bottom: 2px solid #00ffb7 !important; }
-      `}</style>
-
-      <nav className="fp-topbar" style={{ backdropFilter: 'blur(10px)', background: 'rgba(0,15,10,0.8)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+    <div className="fp-app-shell">
+      <nav className="fp-topbar">
         <div className="fp-topbar__left">
-          <div className="fp-brand" style={{ cursor: 'pointer' }} onClick={() => setActiveTab('feed')}>
-            <span className="fp-brand__mark" style={{ background: 'linear-gradient(135deg, #00ffb7, #00A878)', boxShadow: '0 0 15px rgba(0,255,183,0.3)' }}>FP</span>
-            <span style={{ letterSpacing: '1px' }}>FP<span className="fp-brand__accent" style={{ color: '#00ffb7' }}>Connect</span></span>
+          <div className="fp-brand">
+            <span className="fp-brand__mark">FP</span>
+            <span>FP<span className="fp-brand__accent">Connect</span></span>
           </div>
           <div className="fp-tabs">
             {[
-              { id: 'feed', label: 'Inicio' },
-              { id: 'network', label: 'Red' },
+              { id: 'feed', label: 'Feed' },
+              { id: 'network', label: 'Conexiones' },
               { id: 'explore', label: 'Explorar' },
-              { id: 'offers', label: 'Empleo' },
-              { id: 'applications', label: 'Mis Candidaturas' },
-              { id: 'news', label: 'Noticias' },
+              { id: 'offers', label: 'Ofertas' },
+              { id: 'applications', label: 'Mis Aplicaciones' },
+              { id: 'news', label: 'Noticias FP' },
               { id: 'profile', label: 'Mi Perfil' },
             ].map(tab => (
               <button key={tab.id} onClick={() => { setViewedProfileId(null); setActiveTab(tab.id); }}
@@ -163,17 +151,17 @@ export default function AlumnoApp() {
           </div>
         </div>
         <div className="fp-topbar__right">
-          <div style={{ textAlign: 'right', marginRight: 15 }}>
-            <div style={{ fontWeight: 700, color: '#fff', fontSize: 13 }}>{authUser?.firstName} {authUser?.lastName}</div>
-            <div style={{ color: '#00ffb7', fontSize: 10, textTransform: 'uppercase', fontWeight: 800 }}>Estudiante</div>
+          <div style={{ textAlign: 'right', fontSize: 12 }}>
+            <div style={{ fontWeight: 600 }}>{authUser?.firstName} {authUser?.lastName}</div>
+            <div style={{ color: 'var(--fp-muted)' }}>Alumno</div>
           </div>
           <NotificationsBell user={authUser} />
           <MessagesPanel user={authUser} />
-          <button onClick={handleLogout} className="fp-button" style={{ background: 'rgba(239,68,68,0.15)', color: '#ff6b6b', border: '1px solid rgba(239,68,68,0.3)', marginLeft: 10 }}>Salir</button>
+          <button onClick={handleLogout} className="fp-button fp-button--danger">Salir</button>
         </div>
       </nav>
 
-      <div className="fp-content" style={{ animation: 'fadeIn 0.6s ease-out' }}>
+      <div className="fp-content">
 
         {/* FEED */}
         {viewedProfileId ? (
@@ -181,48 +169,39 @@ export default function AlumnoApp() {
             isFollowing={isViewedProfileFollowing} onFollow={handleFollowUser} onUnfollow={handleUnfollowUser} />
         ) : activeTab === 'feed' && (
           <div className="fp-feed-layout">
+            {/* Banner con imagen */}
             <div>
-              <div style={{ borderRadius: 20, overflow: 'hidden', marginBottom: 24, position: 'relative', height: 180, boxShadow: '0 10px 30px rgba(0,0,0,0.4)', animation: 'pulseGlow 4s infinite' }}>
+              <div style={{ borderRadius: 16, overflow: 'hidden', marginBottom: 24, position: 'relative', height: 160 }}>
                 <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&q=80" alt="Banner" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(0,20,15,0.9) 0%, rgba(0,40,30,0.2) 100%)', display: 'flex', alignItems: 'center', padding: '0 40px' }}>
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(0,20,15,0.85) 0%, rgba(0,40,30,0.4) 100%)', display: 'flex', alignItems: 'center', padding: '0 28px' }}>
                   <div>
-                    <div style={{ fontSize: 28, fontWeight: 900, color: '#fff', marginBottom: 6, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>¡Hola de nuevo, {authUser?.firstName}! 👋</div>
-                    <div style={{ fontSize: 16, color: '#00ffb7', fontWeight: 500 }}>Tu futuro profesional empieza hoy en FPConnect.</div>
+                    <div style={{ fontSize: 22, fontWeight: 800, color: '#fff', marginBottom: 4 }}>Hola, {authUser?.firstName} 👋</div>
+                    <div style={{ fontSize: 14, color: '#ffffffcc' }}>Bienvenido a FPConnect — tu red profesional de FP</div>
                   </div>
                 </div>
               </div>
-              {feedLoading ? (
-                <div style={{ textAlign: 'center', padding: 60 }}>
-                  <div className="spinner" style={{ border: '3px solid rgba(0,255,183,0.1)', borderTop: '3px solid #00ffb7', borderRadius: '50%', width: 40, height: 40, animation: 'spin 1s linear infinite', margin: '0 auto 15px' }} />
-                  <p style={{ color: '#ffffff66', fontSize: 14 }}>Sincronizando tu feed...</p>
-                </div>
-              ) : (
+              {feedLoading ? <div style={{ textAlign: 'center', padding: 40, color: '#ffffff66' }}>⏳ Cargando feed...</div> : (
                 <Feed recommendations={recommendations} following={following} onFollow={handleFollowUser} onUnfollow={handleUnfollowUser} onOpenProfile={handleOpenProfile} />
               )}
             </div>
-            <aside className="fp-sidebar fp-card" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20 }}>
-              <h3 style={{ margin: '0 0 20px 0', fontSize: 16, fontWeight: 800, color: '#00ffb7', display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span>✨</span> Sugerencias
-              </h3>
-              {connectionsLoading ? <p style={{ color: '#ffffff44', fontSize: 12 }}>Buscando conexiones...</p> : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                  {recommendations?.length === 0 ? <p style={{ color: '#ffffff66', fontSize: 12, textAlign: 'center' }}>No hay perfiles nuevos hoy</p> : (
+            <aside className="fp-sidebar fp-card">
+              <h3 style={{ margin: '0 0 16px 0', fontSize: 15, fontWeight: 800 }}>Sugerencias para ampliar tu red</h3>
+              {connectionsLoading ? <p style={{ color: '#ffffff66', fontSize: 12 }}>Cargando...</p> : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {recommendations?.length === 0 ? <p style={{ color: '#ffffff66', fontSize: 12, textAlign: 'center' }}>Sin recomendaciones</p> : (
                     recommendations?.slice(0, 5).map(rec => (
-                      <div key={rec.id} className="fp-card-animated" style={{ background: 'rgba(255,255,255,0.02)', padding: 12, borderRadius: 15, border: '1px solid rgba(255,255,255,0.05)' }}>
-                        <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 12 }}>
-                          <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(rec.firstName + ' ' + rec.lastName)}&background=00ffb7&color=002d20&size=40&bold=true&rounded=true`} alt="" style={{ width: 38, height: 38, borderRadius: '12px', boxShadow: '0 4px 10px rgba(0,0,0,0.2)' }} />
+                      <div key={rec.id} style={{ background: 'rgba(255,255,255,0.02)', padding: 10, borderRadius: 10 }}
+                        onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
+                        onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}>
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
+                          <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(rec.firstName + ' ' + rec.lastName)}&background=00A878&color=fff&size=32&bold=true&rounded=true`} alt="" style={{ width: 32, height: 32, borderRadius: '50%' }} />
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{rec.firstName} {rec.lastName}</div>
-                            <div style={{ fontSize: 11, color: '#ffffff66' }}>{rec.role}</div>
+                            <div style={{ fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{rec.firstName} {rec.lastName}</div>
                           </div>
                         </div>
                         <button onClick={() => following?.find(u => u.id === rec.id) ? handleUnfollowUser(rec.id) : handleFollowUser(rec.id)}
-                          style={{ 
-                            width: '100%', padding: '8px', borderRadius: 8, border: 'none', 
-                            background: following?.find(u => u.id === rec.id) ? 'rgba(255,255,255,0.1)' : 'linear-gradient(135deg, #00A878, #00d196)', 
-                            color: '#fff', cursor: 'pointer', fontSize: 11, fontWeight: 700, transition: '0.3s' 
-                          }}>
-                          {following?.find(u => u.id === rec.id) ? '✓ Siguiendo' : '+ Conectar'}
+                          style={{ width: '100%', padding: '6px 8px', borderRadius: 6, border: 'none', background: following?.find(u => u.id === rec.id) ? 'rgba(255,255,255,0.15)' : 'linear-gradient(135deg, #00A878, #007A57)', color: '#fff', cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
+                          {following?.find(u => u.id === rec.id) ? '✓ Siguiendo' : '+ Seguir'}
                         </button>
                       </div>
                     ))
@@ -235,46 +214,50 @@ export default function AlumnoApp() {
 
         {/* NETWORK */}
         {!viewedProfileId && activeTab === 'network' && (
-          <div style={{ animation: 'fadeIn 0.5s ease' }}>
-            <div style={{ display: 'flex', gap: 12, marginBottom: 25 }}>
-              {[{ id: 'following', label: `Siguiendo`, count: following?.length }, { id: 'followers', label: `Seguidores`, count: followers?.length }].map(tab => (
+          <div>
+            <div style={{ display: 'flex', gap: 10, marginBottom: 18 }}>
+              {[{ id: 'following', label: `⭐ Siguiendo (${following?.length || 0})` }, { id: 'followers', label: `👥 Seguidores (${followers?.length || 0})` }].map(tab => (
                 <button key={tab.id} onClick={() => setNetworkSubTab(tab.id)}
-                  style={{ 
-                    border: 'none', borderRadius: 12, padding: '12px 20px', color: '#fff', cursor: 'pointer', fontWeight: 700, 
-                    background: networkSubTab === tab.id ? 'linear-gradient(135deg, #00ffb7, #00A878)' : 'rgba(255,255,255,0.05)',
-                    color: networkSubTab === tab.id ? '#002d20' : '#fff', transition: '0.3s', boxShadow: networkSubTab === tab.id ? '0 5px 15px rgba(0,255,183,0.2)' : 'none'
-                  }}>
-                  {tab.label} <span style={{ opacity: 0.6, fontSize: 12, marginLeft: 5 }}>{tab.count || 0}</span>
+                  style={{ border: 'none', borderRadius: 10, padding: '10px 14px', color: '#fff', cursor: 'pointer', fontWeight: 700, background: networkSubTab === tab.id ? 'linear-gradient(135deg, #00A878, #007A57)' : 'rgba(255,255,255,0.08)' }}>
+                  {tab.label}
                 </button>
               ))}
             </div>
             {networkSubTab === 'following' && (
-              <div style={{ display: 'grid', gap: 20 }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 15 }}>
-                  {following?.slice(0, 6).map(u => <UserCard key={u.id} user={u} isFollowing={true} onUnfollow={() => handleUnfollowUser(u.id)} onOpenProfile={handleOpenProfile} />)}
-                </div>
-                <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 20, padding: 25 }}>
-                  <h3 style={{ margin: '0 0 20px 0', fontSize: 18, color: '#00ffb7' }}>📰 Actividad Reciente</h3>
-                  {followingPosts.length === 0 ? <p style={{ color: '#ffffff44', textAlign: 'center', padding: 20 }}>Tus conexiones aún no han publicado nada.</p> : (
-                    <div style={{ display: 'grid', gap: 15 }}>
-                      {followingPosts.slice(0, 8).map(post => (
-                        <div key={post.id} className="fp-card-animated" style={{ padding: 18, borderRadius: 15, border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.01)' }}>
-                          <div style={{ fontSize: 12, color: '#00ffb7', fontWeight: 700, marginBottom: 8 }}>{post.author?.firstName} {post.author?.lastName}</div>
-                          <div style={{ fontSize: 14, color: '#ffffffcc', lineHeight: 1.5 }}>{post.content}</div>
-                        </div>
-                      ))}
+              <div style={{ display: 'grid', gap: 18 }}>
+                {connectionsLoading ? <p style={{ color: '#ffffff66', textAlign: 'center', padding: 40 }}>⏳ Cargando...</p> : (
+                  <>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
+                      {following?.slice(0, 6).map(u => <UserCard key={u.id} user={u} isFollowing={true} onUnfollow={() => handleUnfollowUser(u.id)} onOpenProfile={handleOpenProfile} />)}
                     </div>
-                  )}
-                </div>
+                    <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14, padding: 16 }}>
+                      <h3 style={{ margin: '0 0 12px 0', fontSize: 18 }}>📰 Publicaciones de quienes sigues</h3>
+                      {followingPosts.length === 0 ? <p style={{ color: '#ffffff80', margin: 0 }}>Aún no hay publicaciones recientes.</p> : (
+                        <div style={{ display: 'grid', gap: 10 }}>
+                          {followingPosts.slice(0, 12).map(post => (
+                            <div key={post.id} style={{ padding: 12, borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.03)' }}>
+                              <div style={{ fontSize: 12, color: '#ffffff99', marginBottom: 6 }}>{post.author?.firstName} {post.author?.lastName} · {post.author?.role}</div>
+                              <div style={{ fontSize: 14, color: '#fff' }}>{post.content}</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
             )}
             {networkSubTab === 'followers' && (
-              <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 20, padding: 25 }}>
-                <h3 style={{ margin: '0 0 20px 0', fontSize: 18, color: '#00ffb7' }}>🎯 Sugerencias para ti</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 15 }}>
-                  {recommendedByInterests.map(u => (
-                    <UserCard key={u.id} user={u} isFollowing={false} onFollow={() => handleFollowUser(u.id)} onOpenProfile={handleOpenProfile} />
-                  ))}
+              <div style={{ display: 'grid', gap: 18 }}>
+                <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14, padding: 16 }}>
+                  <h3 style={{ margin: '0 0 10px 0', fontSize: 18 }}>🎯 Recomendaciones por intereses</h3>
+                  <p style={{ margin: '0 0 12px 0', color: '#ffffff99', fontSize: 13 }}>Perfiles sugeridos en base a tu actividad en FPConnect.</p>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
+                    {recommendedByInterests.length === 0 && <p style={{ color: '#ffffff80' }}>No hay recomendaciones nuevas.</p>}
+                    {recommendedByInterests.slice(0, 9).map(u => (
+                      <UserCard key={u.id} user={u} isFollowing={!!following?.find(f => f.id === u.id)} onFollow={() => handleFollowUser(u.id)} onUnfollow={() => handleUnfollowUser(u.id)} onOpenProfile={handleOpenProfile} />
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
@@ -283,34 +266,22 @@ export default function AlumnoApp() {
 
         {/* EXPLORE */}
         {!viewedProfileId && activeTab === 'explore' && (
-          <div style={{ animation: 'fadeIn 0.5s ease' }}>
-            <div style={{ display: 'flex', gap: 10, marginBottom: 30, background: 'rgba(255,255,255,0.03)', padding: 8, borderRadius: 15, width: 'fit-content' }}>
-              {[{ id: 'centers', label: '🏫 Centros' }, { id: 'enterprises', label: '🏢 Empresas' }, { id: 'students', label: '👨‍🎓 Alumnos' }].map(sub => (
+          <div>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 24, borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 12 }}>
+              {[{ id: 'centers', label: '🏫 Centros Educativos' }, { id: 'enterprises', label: '🏢 Empresas' }, { id: 'students', label: '👨‍🎓 Alumnos' }].map(sub => (
                 <button key={sub.id} onClick={() => setExploreSubTab(sub.id)}
-                  style={{ 
-                    padding: '10px 20px', borderRadius: 10, border: 'none', 
-                    background: exploreSubTab === sub.id ? '#00ffb7' : 'transparent', 
-                    color: exploreSubTab === sub.id ? '#002d20' : '#ffffff88', 
-                    cursor: 'pointer', fontWeight: 700, transition: '0.3s' 
-                  }}>
+                  style={{ padding: '10px 16px', borderRadius: 8, border: 'none', background: exploreSubTab === sub.id ? 'linear-gradient(135deg, #00A878, #007A57)' : 'rgba(255,255,255,0.08)', color: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: 14 }}>
                   {sub.label}
                 </button>
               ))}
             </div>
-
-            <div style={{ marginBottom: 30, background: 'rgba(0,0,0,0.2)', padding: 20, borderRadius: 20, border: '1px solid rgba(255,255,255,0.05)' }}>
-              <div style={{ fontSize: 12, color: '#00ffb7', fontWeight: 800, textTransform: 'uppercase', marginBottom: 15, letterSpacing: '1px' }}>Filtro por Provincia</div>
+            <div style={{ marginBottom: 18 }}>
+              <div style={{ fontSize: 12, color: '#ffffffb3', marginBottom: 10 }}>Filtro rápido por provincia</div>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 {['ALL', ...ANDALUCIA_PROVINCES].map(p => (
                   <button key={p} onClick={() => setExploreProvinceQuickFilter(p)}
-                    style={{ 
-                      padding: '8px 16px', borderRadius: 999, border: '1px solid',
-                      borderColor: exploreProvinceQuickFilter === p ? '#00ffb7' : 'rgba(255,255,255,0.1)', 
-                      background: exploreProvinceQuickFilter === p ? 'rgba(0,255,183,0.1)' : 'rgba(255,255,255,0.03)', 
-                      color: exploreProvinceQuickFilter === p ? '#00ffb7' : '#ffffff88', 
-                      cursor: 'pointer', fontSize: 12, fontWeight: 600, transition: '0.2s'
-                    }}>
-                    {p === 'ALL' ? 'Todas' : p.charAt(0) + p.slice(1).toLowerCase()}
+                    style={{ padding: '7px 12px', borderRadius: 999, border: exploreProvinceQuickFilter === p ? '1px solid rgba(0,168,120,0.8)' : '1px solid rgba(255,255,255,0.18)', background: exploreProvinceQuickFilter === p ? 'rgba(0,168,120,0.2)' : 'rgba(255,255,255,0.05)', color: '#fff', cursor: 'pointer', fontSize: 12, fontWeight: p === 'ALL' ? 600 : 400 }}>
+                    {p === 'ALL' ? 'Todas' : p[0] + p.slice(1).toLowerCase()}
                   </button>
                 ))}
               </div>
@@ -318,121 +289,218 @@ export default function AlumnoApp() {
 
             {exploreSubTab === 'centers' && (
               <div>
-                <div style={{ background: 'linear-gradient(135deg, rgba(0,168,120,0.2), rgba(0,255,183,0.05))', border: '1px solid rgba(0,255,183,0.2)', borderRadius: 20, padding: 20, marginBottom: 25, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div>
-                    <div style={{ fontSize: 11, color: '#00ffb7', fontWeight: 800, marginBottom: 4 }}>MI CENTRO ACTUAL</div>
-                    <div style={{ fontSize: 18, fontWeight: 700, color: '#fff' }}>
-                      {linkedCenter ? `✅ ${linkedCenter.centerProfile?.centerName || linkedCenter.firstName}` : 'Aún no has vinculado tu centro'}
-                    </div>
-                  </div>
-                  {linkedCenter && (
-                    <button onClick={handleUnlinkCenter} disabled={unlinkingCenter} style={{ background: 'rgba(255,107,107,0.1)', color: '#ff6b6b', border: '1px solid rgba(255,107,107,0.3)', padding: '8px 15px', borderRadius: 10, cursor: 'pointer', fontSize: 12, fontWeight: 700 }}>
-                      {unlinkingCenter ? '...' : 'Desvincular'}
-                    </button>
-                  )}
-                </div>
-                
-                <input type="text" placeholder="🔍 Buscar por nombre de centro o ciclo..." value={centerQuery}
-                  onChange={e => { setCenterQuery(e.target.value); search(e.target.value.trim() || 'all', 1, 50, 'CENTRO'); }}
-                  style={{ width: '100%', padding: '16px 25px', borderRadius: 15, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: 15, marginBottom: 25, boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.2)' }} />
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
-                  {filteredCenters.map(su => (
-                    <div key={su.id} className="fp-card-animated" style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 20, border: '1px solid rgba(255,255,255,0.08)', padding: 20, display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ display: 'flex', gap: 15, marginBottom: 15 }}>
-                         <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(su.centerProfile?.centerName || su.firstName)}&background=00A878&color=fff&size=50&bold=true&rounded=true`} style={{ width: 50, height: 50, borderRadius: 12 }} />
-                         <div>
-                            <h4 style={{ margin: 0, fontSize: 16, color: '#fff' }}>{su.centerProfile?.centerName || su.firstName}</h4>
-                            <div style={{ fontSize: 12, color: '#00ffb7' }}>{su.centerProfile?.province}</div>
-                         </div>
-                      </div>
-                      <div style={{ flex: 1, marginBottom: 15 }}>
-                        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-                          {parseCicles(su.centerProfile?.cicles).slice(0, 3).map(c => (
-                            <span key={c} style={{ fontSize: 10, padding: '3px 8px', background: 'rgba(255,255,255,0.05)', borderRadius: 5, color: '#ffffff88' }}>{c}</span>
-                          ))}
-                        </div>
-                      </div>
-                      <button onClick={() => handleLinkToCenter(su)} disabled={linkedCenter?.id === su.id}
-                        style={{ width: '100%', padding: '10px', borderRadius: 10, background: linkedCenter?.id === su.id ? 'rgba(0,255,183,0.1)' : '#00ffb7', color: linkedCenter?.id === su.id ? '#00ffb7' : '#002d20', fontWeight: 700, border: 'none', cursor: 'pointer' }}>
-                        {linkedCenter?.id === su.id ? 'Centro Vinculado' : 'Vincularme'}
+                <h2 style={{ margin: '0 0 14px 0', fontSize: 22 }}>🏫 Centros de FP de Andalucia</h2>
+                <div style={{ border: '1px solid rgba(0,168,120,0.35)', background: 'rgba(0,168,120,0.12)', borderRadius: 12, padding: 14, marginBottom: 18 }}>
+                  <div style={{ fontSize: 12, color: '#ffffffaa', marginBottom: 4 }}>Mi centro vinculado</div>
+                  {linkedCenter ? (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center' }}>
+                      <div style={{ fontSize: 14, fontWeight: 600 }}>✅ {linkedCenter.centerProfile?.centerName || `${linkedCenter.firstName} ${linkedCenter.lastName}`}</div>
+                      <button onClick={handleUnlinkCenter} disabled={unlinkingCenter} style={{ border: '1px solid rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.08)', color: '#fff', borderRadius: 8, padding: '6px 10px', fontSize: 12, cursor: unlinkingCenter ? 'default' : 'pointer' }}>
+                        {unlinkingCenter ? 'Desvinculando...' : 'Desvincular'}
                       </button>
                     </div>
-                  ))}
+                  ) : <div style={{ fontSize: 14, color: '#ffffffcc' }}>Aun no has vinculado tu centro educativo</div>}
                 </div>
+                {linkError && <div style={{ color: '#ff9f9f', fontSize: 13, marginBottom: 14 }}>{linkError}</div>}
+                <div style={{ marginBottom: 32 }}>
+                  <input type="text" placeholder="Buscar centros..." value={centerQuery}
+                    onChange={e => { setCenterQuery(e.target.value); search(e.target.value.trim() || 'all', 1, 50, 'CENTRO'); }}
+                    style={{ width: '100%', maxWidth: 500, padding: '14px 18px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: 14, fontFamily: 'inherit' }} />
+                  <div style={{ display: 'flex', gap: 10, marginTop: 14, flexWrap: 'wrap' }}>
+                    {[{ key: 'ALL', label: 'Todos' }, { key: 'GM', label: 'Grado Medio' }, { key: 'GS', label: 'Grado Superior' }, { key: 'GE', label: 'Especializacion' }].map(item => (
+                      <button key={item.key} onClick={() => setGradeFilter(item.key)}
+                        style={{ padding: '8px 12px', borderRadius: 999, border: gradeFilter === item.key ? '1px solid rgba(0,168,120,0.8)' : '1px solid rgba(255,255,255,0.18)', background: gradeFilter === item.key ? 'rgba(0,168,120,0.2)' : 'rgba(255,255,255,0.05)', color: '#fff', fontSize: 12, cursor: 'pointer' }}>
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                  <select value={provinceFilter} onChange={e => setProvinceFilter(e.target.value)}
+                    style={{ marginTop: 12, width: '100%', maxWidth: 280, padding: '10px 12px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: 12 }}>
+                    <option value="ALL" style={{ color: '#111' }}>Todas las provincias</option>
+                    {availableProvinces.map(p => <option key={p} value={p} style={{ color: '#111' }}>{p}</option>)}
+                  </select>
+                  <div style={{ marginTop: 10, fontSize: 12, color: '#ffffffb3' }}>Mostrando {filteredCenters.length} centros</div>
+                </div>
+                {searchLoading ? <p style={{ color: '#ffffff66', textAlign: 'center', padding: 40 }}>⏳ Buscando...</p> : (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
+                    {filteredCenters.length === 0 && <p style={{ color: '#ffffff66', gridColumn: '1 / -1', textAlign: 'center', padding: 40 }}>🔍 No hay centros para el filtro seleccionado</p>}
+                    {filteredCenters.map(su => {
+                      const cicles = parseCicles(su.centerProfile?.cicles);
+                      return (
+                        <UserCard key={su.id} user={su} actions={false} onOpenProfile={handleOpenProfile}>
+                          <div style={{ paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: 'auto' }}>
+                            <div style={{ fontSize: 12, color: '#ffffffcc', marginBottom: 6 }}>📍 {su.centerProfile?.city || 'Ciudad no indicada'}{su.centerProfile?.province ? `, ${su.centerProfile.province}` : ''}</div>
+                            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                              {cicles.length > 0 ? cicles.map(c => <span key={c} style={{ fontSize: 11, padding: '4px 8px', borderRadius: 999, background: 'rgba(0,168,120,0.18)', border: '1px solid rgba(0,168,120,0.35)' }}>{c}</span>) : <span style={{ fontSize: 11, color: '#ffffff88' }}>Sin ciclos registrados</span>}
+                            </div>
+                            <button onClick={() => handleLinkToCenter(su)} disabled={linkingCenterId === su.id || linkedCenter?.id === su.id}
+                              style={{ marginTop: 10, width: '100%', padding: '9px 10px', borderRadius: 8, border: 'none', background: linkedCenter?.id === su.id ? 'rgba(255,255,255,0.15)' : 'linear-gradient(135deg, #00A878, #007A57)', color: '#fff', cursor: linkingCenterId === su.id || linkedCenter?.id === su.id ? 'default' : 'pointer', fontWeight: 700, fontSize: 12 }}>
+                              {linkedCenter?.id === su.id ? 'Centro vinculado' : linkingCenterId === su.id ? 'Vinculando...' : 'Vincularme a este centro'}
+                            </button>
+                            <button onClick={() => following?.find(u => u.id === su.id) ? handleUnfollowUser(su.id) : handleFollowUser(su.id)}
+                              style={{ marginTop: 10, width: '100%', padding: '9px 10px', borderRadius: 8, border: 'none', background: following?.find(u => u.id === su.id) ? 'rgba(255,255,255,0.15)' : 'linear-gradient(135deg, #007a57, #004c36)', color: '#fff', cursor: 'pointer', fontWeight: 700, fontSize: 12 }}>
+                              {following?.find(u => u.id === su.id) ? '✓ Siguiendo' : '+ Seguir Centro'}
+                            </button>
+                          </div>
+                        </UserCard>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
 
-            {/* Render similar para Enterprises y Students usando el mismo estilo visual */}
-            {(exploreSubTab === 'enterprises' || exploreSubTab === 'students') && (
-               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20 }}>
-                  {(exploreSubTab === 'enterprises' ? filteredEnterprises : filteredStudents).map(item => (
-                    <UserCard key={item.id} user={item} onOpenProfile={handleOpenProfile} />
-                  ))}
-               </div>
-            )}
-          </div>
-        )}
-
-        {/* OFERTAS CON DISEÑO DE CARDS MODERNAS */}
-        {!viewedProfileId && activeTab === 'offers' && (
-          <div style={{ animation: 'fadeIn 0.5s ease' }}>
-            <div style={{ marginBottom: 30 }}>
-              <h2 style={{ margin: 0, fontSize: 28, fontWeight: 900, color: '#fff' }}>Oportunidades <span style={{ color: '#00ffb7' }}>Laborales</span></h2>
-              <p style={{ color: '#ffffff66', marginTop: 5 }}>Encuentra prácticas y empleo adaptados a tu perfil de FP.</p>
-            </div>
-            {offersLoading ? <div style={{ textAlign: 'center', padding: 50 }}><div className="spinner" /></div> : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: 25 }}>
-                {offers.map(offer => {
-                  const application = offer.applications?.[0] || applications.find(item => item.jobOfferId === offer.id);
-                  return (
-                    <article key={offer.id} className="fp-card-animated" style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 25, border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ height: 140, position: 'relative' }}>
-                        <img src={getOfferImage(offer.type)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        <div style={{ position: 'absolute', top: 15, right: 15 }}>
-                           <span style={{ padding: '5px 12px', borderRadius: 10, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(5px)', color: '#00ffb7', fontSize: 11, fontWeight: 800, border: '1px solid rgba(0,255,183,0.3)' }}>{offer.type}</span>
-                        </div>
-                      </div>
-                      <div style={{ padding: 25, flex: 1, display: 'flex', flexDirection: 'column' }}>
-                        <h3 style={{ margin: '0 0 10px 0', fontSize: 19, color: '#fff', fontWeight: 800 }}>{offer.title}</h3>
-                        <div style={{ fontSize: 13, color: '#ffffff66', marginBottom: 15, display: 'flex', alignItems: 'center', gap: 5 }}>
-                           <span>🏢</span> {offer.enterprise?.user?.firstName || 'Empresa'} • 📍 {offer.location || 'Remoto'}
-                        </div>
-                        <p style={{ fontSize: 14, color: '#ffffffaa', lineHeight: 1.6, marginBottom: 20, flex: 1 }}>{offer.description?.substring(0, 120)}...</p>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          {application ? <ApplicationBadge status={application.status} /> : <div style={{ width: 10 }} />}
-                          <button onClick={() => handleApplyOffer(offer.id)} disabled={!!application}
-                            style={{ 
-                              padding: '10px 25px', borderRadius: 12, border: 'none', 
-                              background: application ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg, #00A878, #00ffb7)', 
-                              color: application ? '#ffffff44' : '#002d20', fontWeight: 800, cursor: application ? 'default' : 'pointer', transition: '0.3s'
-                            }}>
-                            {application ? 'Inscrito' : 'Inscribirme'}
+            {exploreSubTab === 'enterprises' && (
+              <div>
+                <h2 style={{ margin: '0 0 14px 0', fontSize: 22 }}>🏢 Empresas Colaboradoras</h2>
+                <input type="text" placeholder="Buscar empresas..." value={enterpriseQuery}
+                  onChange={e => { setEnterpriseQuery(e.target.value); search(e.target.value.trim() || 'all', 1, 50, 'EMPRESA'); }}
+                  style={{ width: '100%', maxWidth: 500, padding: '14px 18px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: 14, fontFamily: 'inherit', marginBottom: 24 }} />
+                {searchLoading ? <p style={{ color: '#ffffff66', textAlign: 'center', padding: 40 }}>⏳ Buscando...</p> : (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
+                    {filteredEnterprises.length === 0 && <p style={{ color: '#ffffff66', gridColumn: '1 / -1', textAlign: 'center', padding: 40 }}>🔍 No hay empresas disponibles</p>}
+                    {filteredEnterprises.map(e => (
+                      <UserCard key={e.id} user={e} actions={false} onOpenProfile={handleOpenProfile}>
+                        <div style={{ paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: 'auto' }}>
+                          <div style={{ fontSize: 12, color: '#ffffffcc', marginBottom: 6 }}>🏭 {e.enterpriseProfile?.industry || 'Sector no indicado'}</div>
+                          <div style={{ fontSize: 12, color: '#ffffffcc', marginBottom: 8 }}>📍 {e.enterpriseProfile?.city || 'Ciudad no indicada'}</div>
+                          <button onClick={() => following?.find(u => u.id === e.id) ? handleUnfollowUser(e.id) : handleFollowUser(e.id)}
+                            style={{ width: '100%', padding: '9px 10px', borderRadius: 8, border: 'none', background: following?.find(u => u.id === e.id) ? 'rgba(255,255,255,0.15)' : 'linear-gradient(135deg, #00A878, #007A57)', color: '#fff', cursor: 'pointer', fontWeight: 700, fontSize: 12 }}>
+                            {following?.find(u => u.id === e.id) ? '✓ Siguiendo' : '+ Seguir Empresa'}
                           </button>
                         </div>
-                      </div>
-                    </article>
-                  );
-                })}
+                      </UserCard>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {exploreSubTab === 'students' && (
+              <div>
+                <h2 style={{ margin: '0 0 14px 0', fontSize: 22 }}>👨‍🎓 Conecta con Otros Alumnos</h2>
+                <input type="text" placeholder="Buscar alumnos..." value={studentQuery}
+                  onChange={e => { setStudentQuery(e.target.value); search(e.target.value.trim() || 'all', 1, 50, 'ALUMNO'); }}
+                  style={{ width: '100%', maxWidth: 500, padding: '14px 18px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: 14, fontFamily: 'inherit', marginBottom: 24 }} />
+                {searchLoading ? <p style={{ color: '#ffffff66', textAlign: 'center', padding: 40 }}>⏳ Buscando...</p> : (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
+                    {filteredStudents.length === 0 && <p style={{ color: '#ffffff66', gridColumn: '1 / -1', textAlign: 'center', padding: 40 }}>🔍 No hay alumnos disponibles</p>}
+                    {filteredStudents.map(s => (
+                      <UserCard key={s.id} user={s} actions={false} onOpenProfile={handleOpenProfile}>
+                        <div style={{ paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: 'auto' }}>
+                          <div style={{ fontSize: 12, color: '#ffffffcc', marginBottom: 6 }}>📚 {s.studentProfile?.cicle || 'Ciclo no indicado'}</div>
+                          <div style={{ fontSize: 12, color: '#ffffffcc', marginBottom: 8 }}>📍 {s.location || 'Ubicación no indicada'}</div>
+                          <button onClick={() => following?.find(u => u.id === s.id) ? handleUnfollowUser(s.id) : handleFollowUser(s.id)}
+                            style={{ width: '100%', padding: '9px 10px', borderRadius: 8, border: 'none', background: following?.find(u => u.id === s.id) ? 'rgba(255,255,255,0.15)' : 'linear-gradient(135deg, #00A878, #007A57)', color: '#fff', cursor: 'pointer', fontWeight: 700, fontSize: 12 }}>
+                            {following?.find(u => u.id === s.id) ? '✓ Siguiendo' : '+ Seguir Alumno'}
+                          </button>
+                        </div>
+                      </UserCard>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
         )}
 
-        {/* NOTICIAS CON EFECTO NEWS-FEED */}
+        {/* OFERTAS */}
+        {!viewedProfileId && activeTab === 'offers' && (
+          <div>
+            <h2 style={{ margin: '0 0 8px', fontSize: 24 }}>💼 Ofertas de Empleo y Prácticas</h2>
+            <p style={{ color: '#ffffff99', fontSize: 13, marginBottom: 24 }}>Oportunidades publicadas por empresas para alumnos de FP</p>
+            {offersLoading ? <p style={{ color: '#ffffff66', textAlign: 'center', padding: 40 }}>⏳ Cargando ofertas...</p> :
+              offers.length === 0 ? <p style={{ color: '#ffffff66', textAlign: 'center', padding: 40 }}>📭 No hay ofertas disponibles por ahora</p> : (
+                <div style={{ display: 'grid', gap: 16 }}>
+                  {offers.map(offer => {
+                    const application = offer.applications?.[0] || applications.find(item => item.jobOfferId === offer.id);
+                    return (
+                      <div key={offer.id} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 14, border: '1px solid rgba(255,255,255,0.1)', overflow: 'hidden' }}>
+                        {/* Imagen de la oferta */}
+                        <div style={{ position: 'relative', height: 120, overflow: 'hidden' }}>
+                          <img src={getOfferImage(offer.type)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(0,10,8,0.8) 0%, rgba(0,0,0,0.3) 100%)', display: 'flex', alignItems: 'center', padding: '0 24px', gap: 12 }}>
+                            <span style={{ fontSize: 12, padding: '4px 10px', borderRadius: 999, background: 'rgba(0,168,120,0.8)', color: '#fff', fontWeight: 700 }}>{offer.type}</span>
+                            {offer.location && <span style={{ fontSize: 12, color: '#ffffffcc' }}>📍 {offer.location}</span>}
+                            {offer.salary && <span style={{ fontSize: 12, color: '#ffffffcc' }}>💰 {offer.salary}</span>}
+                          </div>
+                        </div>
+                        <div style={{ padding: 24 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                            <div>
+                              <h3 style={{ margin: '0 0 6px', fontSize: 20 }}>{offer.title}</h3>
+                              <span style={{ fontSize: 12, color: '#ffffff66' }}>🏢 {offer.enterprise?.user?.firstName} {offer.enterprise?.user?.lastName} · {new Date(offer.createdAt).toLocaleDateString()}</span>
+                            </div>
+                          </div>
+                          <p style={{ margin: '0 0 18px', color: '#ffffffcc', fontSize: 14, lineHeight: 1.6 }}>{offer.description}</p>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                            {application ? (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <span style={{ color: '#ffffff99', fontSize: 13 }}>Estado:</span>
+                                <ApplicationBadge status={application.status} />
+                              </div>
+                            ) : <span style={{ color: '#ffffff80', fontSize: 13 }}>Aun no has aplicado.</span>}
+                            <button onClick={() => handleApplyOffer(offer.id)} disabled={!!application || applyingOfferId === offer.id}
+                              className="fp-button" style={{ opacity: application ? 0.65 : 1, cursor: application ? 'default' : 'pointer' }}>
+                              {application ? 'Aplicacion enviada' : applyingOfferId === offer.id ? 'Enviando...' : 'Aplicar'}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+          </div>
+        )}
+
+        {/* MIS APLICACIONES */}
+        {!viewedProfileId && activeTab === 'applications' && (
+          <div>
+            <h2 style={{ margin: '0 0 8px', fontSize: 24 }}>Mis Aplicaciones</h2>
+            <p style={{ color: '#ffffff99', fontSize: 13, marginBottom: 24 }}>Seguimiento de tus candidaturas enviadas a empresas.</p>
+            {applications.length === 0 ? (
+              <p style={{ color: '#ffffff66', textAlign: 'center', padding: 40 }}>Todavia no has aplicado a ninguna oferta.</p>
+            ) : (
+              <div style={{ display: 'grid', gap: 14 }}>
+                {applications.map(application => (
+                  <article key={application.id} style={{ border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.05)', borderRadius: 14, padding: 18, display: 'grid', gap: 10 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+                      <div>
+                        <h3 style={{ margin: '0 0 6px', fontSize: 18 }}>{application.jobOffer?.title}</h3>
+                        <div style={{ color: '#ffffff99', fontSize: 13 }}>{application.jobOffer?.enterprise?.user?.firstName} {application.jobOffer?.enterprise?.user?.lastName}{application.jobOffer?.location ? ` · ${application.jobOffer.location}` : ''}</div>
+                      </div>
+                      <ApplicationBadge status={application.status} />
+                    </div>
+                    <div style={{ color: '#ffffff80', fontSize: 12 }}>Enviada el {new Date(application.appliedAt).toLocaleDateString()}</div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* NOTICIAS */}
         {!viewedProfileId && activeTab === 'news' && (
-          <div style={{ animation: 'fadeIn 0.5s ease' }}>
-            <h2 style={{ marginBottom: 25, fontSize: 26, fontWeight: 900 }}>📰 Boletín de <span style={{ color: '#00ffb7' }}>FP Andalucía</span></h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
+          <div>
+            <h2 style={{ margin: '0 0 12px 0', fontSize: 24 }}>📰 Noticias FP</h2>
+            <p style={{ margin: '0 0 22px 0', color: '#ffffff99', fontSize: 14 }}>Becas, convocatorias y oportunidades para alumnado de Formacion Profesional.</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 14 }}>
               {FP_NEWS_ITEMS.map(item => (
-                <article key={item.id} className="fp-card-animated" style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 20, border: '1px solid rgba(255,255,255,0.06)', overflow: 'hidden' }}>
-                  <img src={item.img} style={{ width: '100%', height: 150, objectFit: 'cover', opacity: 0.8 }} />
-                  <div style={{ padding: 20 }}>
-                    <div style={{ fontSize: 10, color: '#00ffb7', fontWeight: 800, marginBottom: 8, textTransform: 'uppercase' }}>{item.category}</div>
-                    <h3 style={{ margin: '0 0 12px 0', fontSize: 16, lineHeight: 1.4, color: '#fff' }}>{item.title}</h3>
-                    <p style={{ fontSize: 13, color: '#ffffff88', marginBottom: 20 }}>{item.summary}</p>
-                    <a href={item.url} target="_blank" rel="noreferrer" style={{ textDecoration: 'none', color: '#00ffb7', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 5 }}>
-                      Leer más <span>→</span>
+                <article key={item.id} style={{ borderRadius: 14, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', overflow: 'hidden' }}>
+                  {/* Imagen de la noticia */}
+                  <div style={{ position: 'relative', height: 140, overflow: 'hidden' }}>
+                    <img src={item.img} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.7) 100%)' }} />
+                    <span style={{ position: 'absolute', bottom: 10, left: 12, fontSize: 11, borderRadius: 999, padding: '4px 9px', background: 'rgba(0,168,120,0.9)', color: '#fff', fontWeight: 700 }}>{item.category}</span>
+                  </div>
+                  <div style={{ padding: 16, display: 'grid', gap: 10 }}>
+                    <div style={{ color: '#ffffff88', fontSize: 12 }}>{item.source}</div>
+                    <h3 style={{ margin: 0, fontSize: 16, lineHeight: 1.4 }}>{item.title}</h3>
+                    <p style={{ margin: 0, color: '#ffffffcc', fontSize: 13, lineHeight: 1.5 }}>{item.summary}</p>
+                    <div style={{ color: '#ffffffa8', fontSize: 12 }}>{item.deadline}</div>
+                    <a href={item.url} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, border: '1px solid rgba(255,255,255,0.24)', color: '#fff', padding: '8px 12px', textDecoration: 'none', fontWeight: 600, width: 'fit-content', fontSize: 13 }}>
+                      Ver convocatoria →
                     </a>
                   </div>
                 </article>
@@ -443,9 +511,7 @@ export default function AlumnoApp() {
 
         {/* PERFIL */}
         {!viewedProfileId && activeTab === 'profile' && (
-          <div style={{ maxWidth: 800, margin: '0 auto', animation: 'fadeIn 0.5s ease' }}>
-            <ProfileEditor user={authUser} role="ALUMNO" />
-          </div>
+          <ProfileEditor user={authUser} role="ALUMNO" />
         )}
 
       </div>
