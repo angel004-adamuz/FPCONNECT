@@ -1,258 +1,685 @@
-// ── Shared reusable components ─────────────────────────────────────────────
+import { useState } from "react";
+
+/* ──────────────────────────────────────────────────────────
+   BADGE
+────────────────────────────────────────────────────────── */
 
 export const Badge = ({ text, color = "00d97f" }) => (
-  <span style={{
-    background: `rgba(0, 217, 127, 0.15)`,
-    color: `#a8f3d8`,
-    border: `1.5px solid rgba(32, 224, 176, 0.4)`,
-    borderRadius: 999,
-    padding: "4px 11px",
-    fontSize: 11,
-    fontWeight: 700,
-    fontFamily: "'Inter', sans-serif",
-    whiteSpace: "nowrap",
-    display: "inline-block",
-    transition: "all 0.2s ease",
-  }}>{text}</span>
-);
-
-export const Avatar = ({ iniciales, size = 40, bg = "00d97f" }) => (
-  <div style={{
-    width: size,
-    height: size,
-    borderRadius: size / 2,
-    background: `linear-gradient(135deg, #00d97f, #20e0b0)`,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color: "#fff",
-    fontWeight: 800,
-    fontSize: size * 0.35,
-    fontFamily: "'Inter', sans-serif",
-    flexShrink: 0,
-    boxShadow: `0 8px 24px rgba(0, 217, 127, 0.35)`,
-    letterSpacing: 0.8,
-    border: "2px solid rgba(255, 255, 255, 0.15)",
-  }}>{iniciales}</div>
-);
-
-export const Star = ({ filled = true }) => (
-  <span style={{ color: filled ? "#F5C518" : "#ddd", fontSize: 13 }}>★</span>
-);
-
-export const StatCard = ({ value, label, icon, color = "00d97f" }) => (
-  <div style={{
-    background: `rgba(0, 217, 127, 0.1)`,
-    borderRadius: 18,
-    padding: "16px 20px",
-    border: `1.5px solid rgba(32, 224, 176, 0.3)`,
-    minWidth: 110,
-    transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
-    cursor: "pointer",
-  }}
-  onMouseEnter={(e) => {
-    e.currentTarget.style.background = `rgba(0, 217, 127, 0.18)`;
-    e.currentTarget.style.boxShadow = `0 12px 30px rgba(0, 217, 127, 0.2)`;
-    e.currentTarget.style.transform = `translateY(-4px)`;
-  }}
-  onMouseLeave={(e) => {
-    e.currentTarget.style.background = `rgba(0, 217, 127, 0.1)`;
-    e.currentTarget.style.boxShadow = `none`;
-    e.currentTarget.style.transform = `translateY(0)`;
-  }}
+  <span
+    style={{
+      background: `linear-gradient(
+        135deg,
+        rgba(0,217,127,0.18),
+        rgba(32,224,176,0.08)
+      )`,
+      color: "#d9fff1",
+      border: `1px solid rgba(32,224,176,0.35)`,
+      borderRadius: 999,
+      padding: "5px 12px",
+      fontSize: 11,
+      fontWeight: 800,
+      whiteSpace: "nowrap",
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 6,
+      backdropFilter: "blur(12px)",
+      boxShadow: "0 8px 22px rgba(0,217,127,0.12)",
+      transition: "all .25s ease",
+      letterSpacing: 0.3,
+    }}
   >
-    <div style={{ fontSize: 26, marginBottom: 4 }}>{icon}</div>
-    <div style={{ fontSize: 24, fontWeight: 800, color: `#a8f3d8`, lineHeight: 1 }}>{value}</div>
-    <div style={{ fontSize: 12, color: "rgba(168, 243, 216, 0.65)", marginTop: 4 }}>{label}</div>
-  </div>
+    ✦ {text}
+  </span>
 );
 
-export const Button = ({ children, onClick, variant = "primary", color = "00d97f", size = "md", style = {} }) => {
-  const sizes = { sm: "7px 14px", md: "11px 20px", lg: "14px 26px" };
-  const fontSizes = { sm: 12, md: 14, lg: 15 };
+/* ──────────────────────────────────────────────────────────
+   AVATAR
+────────────────────────────────────────────────────────── */
+
+export const Avatar = ({
+  iniciales,
+  size = 42,
+  bg = "00d97f",
+}) => {
+  const [hover, setHover] = useState(false);
+
   return (
-    <button
-      onClick={onClick}
+    <div
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
       style={{
-        background: variant === "primary"
-          ? `linear-gradient(135deg, #00d97f, #20e0b0)`
-          : variant === "outline"
-          ? "transparent"
-          : "rgba(255,255,255,0.9)",
-        color: variant === "primary" ? "#fff" : `#00d97f`,
-        border: variant === "outline" ? `1.5px solid rgba(32, 224, 176, 0.5)` : "none",
-        borderRadius: 14,
-        padding: sizes[size],
-        fontSize: fontSizes[size],
-        fontWeight: 700,
-        cursor: "pointer",
-        fontFamily: "'Inter', sans-serif",
-        display: "inline-flex",
+        width: size,
+        height: size,
+        borderRadius: "50%",
+        background: `
+          linear-gradient(
+            135deg,
+            #00d97f,
+            #20e0b0,
+            #5b9eff
+          )
+        `,
+        display: "flex",
         alignItems: "center",
-        gap: 7,
-        boxShadow: variant === "primary" ? `0 12px 30px rgba(0, 217, 127, 0.3)` : "none",
-        transition: "all 0.2s ease",
-        ...style,
+        justifyContent: "center",
+        color: "#fff",
+        fontWeight: 900,
+        fontSize: size * 0.34,
+        flexShrink: 0,
+        letterSpacing: 1,
+        position: "relative",
+        cursor: "pointer",
+        transform: hover
+          ? "translateY(-2px) scale(1.05)"
+          : "translateY(0) scale(1)",
+        transition: "all .28s ease",
+        boxShadow: hover
+          ? "0 18px 40px rgba(0,217,127,0.35)"
+          : "0 10px 28px rgba(0,217,127,0.22)",
       }}
-      onMouseEnter={(e) => {
-        if (variant === "primary") {
-          e.currentTarget.style.transform = "translateY(-2px)";
-          e.currentTarget.style.boxShadow = "0 16px 40px rgba(0, 217, 127, 0.4)";
-        }
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = `${variant === "primary" ? "0 12px 30px rgba(0, 217, 127, 0.3)" : "none"}`;
-      }}
-    >{children}</button>
+    >
+      <div
+        style={{
+          position: "absolute",
+          inset: -2,
+          borderRadius: "50%",
+          background: `
+            linear-gradient(
+              135deg,
+              rgba(255,255,255,.7),
+              transparent
+            )
+          `,
+          opacity: .5,
+        }}
+      />
+
+      <span style={{ position: "relative", zIndex: 2 }}>
+        {iniciales}
+      </span>
+    </div>
   );
 };
 
-export const Card = ({ children, style = {} }) => (
-  <div style={{
-    background: "rgba(255, 255, 255, 0.06)",
-    borderRadius: 20,
-    padding: 24,
-    border: "1px solid rgba(255, 255, 255, 0.1)",
-    boxShadow: "0 20px 60px rgba(0, 0, 0, 0.25)",
-    backdropFilter: "blur(24px)",
-    transition: "all 0.3s ease",
-    ...style,
-  }}
-  onMouseEnter={(e) => {
-    e.currentTarget.style.border = "1px solid rgba(32, 224, 176, 0.3)";
-    e.currentTarget.style.background = "rgba(255, 255, 255, 0.075)";
-    e.currentTarget.style.transform = "translateY(-4px)";
-    e.currentTarget.style.boxShadow = "0 28px 80px rgba(0, 0, 0, 0.35)";
-  }}
-  onMouseLeave={(e) => {
-    e.currentTarget.style.border = "1px solid rgba(255, 255, 255, 0.1)";
-    e.currentTarget.style.background = "rgba(255, 255, 255, 0.06)";
-    e.currentTarget.style.transform = "translateY(0)";
-    e.currentTarget.style.boxShadow = "0 20px 60px rgba(0, 0, 0, 0.25)";
-  }}
-  >{children}</div>
-);
+/* ──────────────────────────────────────────────────────────
+   STAR
+────────────────────────────────────────────────────────── */
 
-export const Input = ({ placeholder, value, onChange, style = {} }) => (
-  <input
-    placeholder={placeholder}
-    value={value}
-    onChange={onChange}
+export const Star = ({ filled = true }) => (
+  <span
     style={{
-      border: "1.5px solid rgba(255,255,255,0.18)",
-      borderRadius: 12,
-      padding: "11px 16px",
-      fontSize: 14,
-      fontFamily: "'Inter', sans-serif",
-      outline: "none",
-      background: "rgba(255,255,255,0.06)",
-      color: "#f5f7fa",
-      transition: "all 0.2s ease",
-      ...style,
+      color: filled ? "#F5C518" : "#4b5563",
+      fontSize: 13,
+      filter: filled
+        ? "drop-shadow(0 0 6px rgba(245,197,24,.35))"
+        : "none",
     }}
-    onFocus={(e) => {
-      e.currentTarget.style.borderColor = "rgba(32, 224, 176, 0.6)";
-      e.currentTarget.style.background = "rgba(255,255,255,0.08)";
-      e.currentTarget.style.boxShadow = "0 0 0 3px rgba(32, 224, 176, 0.15)";
-    }}
-    onBlur={(e) => {
-      e.currentTarget.style.borderColor = "rgba(255,255,255,0.18)";
-      e.currentTarget.style.background = "rgba(255,255,255,0.06)";
-      e.currentTarget.style.boxShadow = "none";
-    }}
-  />
+  >
+    ★
+  </span>
 );
 
-export const SectionTitle = ({ children, sub }) => (
-  <div style={{ marginBottom: 24 }}>
-    <h2 style={{ margin: 0, fontSize: 26, fontWeight: 900, color: "#f5f7fa", letterSpacing: -0.5 }}>{children}</h2>
-    {sub && <p style={{ margin: "6px 0 0", fontSize: 14, color: "rgba(245, 247, 250, 0.65)" }}>{sub}</p>}
-  </div>
-);
+/* ──────────────────────────────────────────────────────────
+   STAT CARD
+────────────────────────────────────────────────────────── */
 
-// Top navigation bar shared across roles
-export const NavBar = ({ rol, accentColor, tabs, activeTab, onTabChange, userInitials, onLogout }) => (
-  <div style={{
-    background: "rgba(4, 8, 10, 0.8)",
-    borderBottom: "1px solid rgba(255,255,255,0.1)",
-    padding: "0 28px",
-    display: "flex",
-    alignItems: "center",
-    position: "sticky",
-    top: 0,
-    zIndex: 100,
-    boxShadow: "0 12px 40px rgba(0, 0, 0, 0.3)",
-    backdropFilter: "blur(24px)",
-  }}>
-    {/* Logo */}
-    <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 0", marginRight: 40, flexShrink: 0 }}>
-      <div style={{
-        width: 36, height: 36, borderRadius: 12,
-        background: `linear-gradient(135deg, #00d97f, #20e0b0)`,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: 18, boxShadow: `0 12px 30px rgba(0, 217, 127, 0.35)`,
-        fontWeight: 900,
-        color: "#fff",
-      }}>🌿</div>
-      <span style={{ fontWeight: 900, fontSize: 18, color: "#f5f7fa", letterSpacing: -0.5 }}>
-        FP<span style={{ color: `#00d97f` }}>Connect</span>
-      </span>
-    </div>
+export const StatCard = ({
+  value,
+  label,
+  icon,
+}) => {
+  const [hover, setHover] = useState(false);
 
-    {/* Tabs */}
-    {tabs.map(t => (
-      <button key={t.key} onClick={() => onTabChange(t.key)} style={{
-        background: "none", border: "none", cursor: "pointer",
-        padding: "16px 14px",
-        borderBottom: `3px solid ${activeTab === t.key ? `#00d97f` : "transparent"}`,
-        color: activeTab === t.key ? `#a8f3d8` : "rgba(245, 247, 250, 0.65)",
-        fontWeight: activeTab === t.key ? 700 : 600,
-        fontSize: 14, display: "flex", alignItems: "center", gap: 7,
-        fontFamily: "'Inter', sans-serif",
-        transition: "all 0.2s ease",
+  return (
+    <div
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        position: "relative",
+        overflow: "hidden",
+        borderRadius: 22,
+        padding: "22px",
+        minWidth: 130,
+        background: `
+          linear-gradient(
+            145deg,
+            rgba(255,255,255,0.08),
+            rgba(255,255,255,0.03)
+          )
+        `,
+        border: "1px solid rgba(255,255,255,0.1)",
+        backdropFilter: "blur(24px)",
+        cursor: "pointer",
+        transform: hover
+          ? "translateY(-6px)"
+          : "translateY(0)",
+        transition: "all .3s cubic-bezier(.2,.8,.2,1)",
+        boxShadow: hover
+          ? "0 24px 60px rgba(0,0,0,.35)"
+          : "0 12px 30px rgba(0,0,0,.18)",
       }}
-      onMouseEnter={(e) => {
-        if (activeTab !== t.key) {
-          e.currentTarget.style.color = "rgba(245, 247, 250, 0.85)";
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (activeTab !== t.key) {
-          e.currentTarget.style.color = "rgba(245, 247, 250, 0.65)";
-        }
-      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: `
+            radial-gradient(
+              circle at top right,
+              rgba(0,217,127,.16),
+              transparent 40%
+            )
+          `,
+        }}
+      />
+
+      <div
+        style={{
+          fontSize: 32,
+          marginBottom: 10,
+          position: "relative",
+        }}
       >
-        <span>{t.icon}</span>{t.label}
-      </button>
-    ))}
+        {icon}
+      </div>
 
-    {/* Right side */}
-    <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 14 }}>
-      <span style={{ fontSize: 11, color: "rgba(245, 247, 250, 0.55)", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1 }}>{rol}</span>
-      <Avatar iniciales={userInitials} size={36} bg="00d97f" />
-      <button onClick={onLogout} style={{
-        background: "rgba(255, 107, 122, 0.12)", border: "1.5px solid rgba(255, 107, 122, 0.3)", borderRadius: 10,
-        padding: "7px 14px", fontSize: 13, color: "#ffb8c0", cursor: "pointer",
-        fontFamily: "'Inter', sans-serif",
-        fontWeight: 700,
-        transition: "all 0.2s ease",
+      <div
+        style={{
+          fontSize: 30,
+          fontWeight: 900,
+          color: "#fff",
+          lineHeight: 1,
+          position: "relative",
+        }}
+      >
+        {value}
+      </div>
+
+      <div
+        style={{
+          fontSize: 13,
+          color: "rgba(255,255,255,.62)",
+          marginTop: 7,
+          position: "relative",
+        }}
+      >
+        {label}
+      </div>
+    </div>
+  );
+};
+
+/* ──────────────────────────────────────────────────────────
+   BUTTON
+────────────────────────────────────────────────────────── */
+
+export const Button = ({
+  children,
+  onClick,
+  variant = "primary",
+  size = "md",
+  style = {},
+  ...props
+}) => {
+  const [hover, setHover] = useState(false);
+
+  const sizes = {
+    sm: {
+      padding: "8px 15px",
+      fontSize: 12,
+    },
+    md: {
+      padding: "11px 20px",
+      fontSize: 14,
+    },
+    lg: {
+      padding: "14px 28px",
+      fontSize: 15,
+    },
+  };
+
+  return (
+    <button
+      {...props}
+      onClick={onClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        position: "relative",
+        overflow: "hidden",
+        border: variant === "outline"
+          ? "1px solid rgba(255,255,255,.16)"
+          : "none",
+
+        background:
+          variant === "primary"
+            ? `
+              linear-gradient(
+                135deg,
+                #00d97f,
+                #20e0b0
+              )
+            `
+            : variant === "outline"
+            ? "rgba(255,255,255,.04)"
+            : "#fff",
+
+        color:
+          variant === "primary"
+            ? "#fff"
+            : "#d8fff0",
+
+        borderRadius: 16,
+        fontWeight: 800,
+        cursor: "pointer",
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 8,
+
+        transform: hover
+          ? "translateY(-2px)"
+          : "translateY(0)",
+
+        transition: "all .28s ease",
+
+        boxShadow:
+          variant === "primary"
+            ? hover
+              ? "0 22px 50px rgba(0,217,127,.38)"
+              : "0 12px 30px rgba(0,217,127,.22)"
+            : "none",
+
+        ...sizes[size],
+        ...style,
       }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.background = "rgba(255, 107, 122, 0.2)";
-        e.currentTarget.style.boxShadow = "0 8px 20px rgba(255, 107, 122, 0.2)";
+    >
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: hover ? "130%" : "-120%",
+          width: "70%",
+          height: "100%",
+          background: `
+            linear-gradient(
+              90deg,
+              transparent,
+              rgba(255,255,255,.22),
+              transparent
+            )
+          `,
+          transition: ".8s",
+        }}
+      />
+
+      <span style={{ position: "relative", zIndex: 2 }}>
+        {children}
+      </span>
+    </button>
+  );
+};
+
+/* ──────────────────────────────────────────────────────────
+   CARD
+────────────────────────────────────────────────────────── */
+
+export const Card = ({
+  children,
+  style = {},
+}) => {
+  const [hover, setHover] = useState(false);
+
+  return (
+    <div
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        position: "relative",
+        overflow: "hidden",
+        borderRadius: 26,
+        padding: 24,
+
+        background: `
+          linear-gradient(
+            145deg,
+            rgba(255,255,255,0.08),
+            rgba(255,255,255,0.03)
+          )
+        `,
+
+        border: hover
+          ? "1px solid rgba(32,224,176,.25)"
+          : "1px solid rgba(255,255,255,.08)",
+
+        backdropFilter: "blur(24px)",
+
+        transform: hover
+          ? "translateY(-5px)"
+          : "translateY(0)",
+
+        transition: "all .3s cubic-bezier(.2,.8,.2,1)",
+
+        boxShadow: hover
+          ? `
+            0 30px 80px rgba(0,0,0,.35),
+            0 0 30px rgba(0,217,127,.08)
+          `
+          : "0 16px 40px rgba(0,0,0,.22)",
+
+        ...style,
       }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.background = "rgba(255, 107, 122, 0.12)";
-        e.currentTarget.style.boxShadow = "none";
+    >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: `
+            radial-gradient(
+              circle at top right,
+              rgba(0,217,127,.12),
+              transparent 35%
+            )
+          `,
+          opacity: hover ? 1 : .6,
+          transition: ".3s",
+          pointerEvents: "none",
+        }}
+      />
+
+      <div style={{ position: "relative", zIndex: 2 }}>
+        {children}
+      </div>
+    </div>
+  );
+};
+
+/* ──────────────────────────────────────────────────────────
+   INPUT
+────────────────────────────────────────────────────────── */
+
+export const Input = ({
+  placeholder,
+  value,
+  onChange,
+  style = {},
+  ...props
+}) => {
+  const [focus, setFocus] = useState(false);
+
+  return (
+    <input
+      {...props}
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
+      onFocus={() => setFocus(true)}
+      onBlur={() => setFocus(false)}
+      style={{
+        width: "100%",
+        borderRadius: 14,
+        border: focus
+          ? "1px solid rgba(32,224,176,.55)"
+          : "1px solid rgba(255,255,255,.12)",
+
+        padding: "13px 16px",
+        fontSize: 14,
+
+        background: focus
+          ? "rgba(255,255,255,.08)"
+          : "rgba(255,255,255,.05)",
+
+        color: "#fff",
+
+        outline: "none",
+
+        transition: "all .24s ease",
+
+        boxShadow: focus
+          ? "0 0 0 4px rgba(0,217,127,.10)"
+          : "none",
+
+        ...style,
       }}
-      >Salir</button>
+    />
+  );
+};
+
+/* ──────────────────────────────────────────────────────────
+   SECTION TITLE
+────────────────────────────────────────────────────────── */
+
+export const SectionTitle = ({
+  children,
+  sub,
+}) => (
+  <div style={{ marginBottom: 28 }}>
+    <h2
+      style={{
+        margin: 0,
+        fontSize: 30,
+        fontWeight: 900,
+        letterSpacing: -1,
+        color: "#fff",
+      }}
+    >
+      {children}
+    </h2>
+
+    {sub && (
+      <p
+        style={{
+          marginTop: 8,
+          color: "rgba(255,255,255,.62)",
+          lineHeight: 1.6,
+          maxWidth: 650,
+        }}
+      >
+        {sub}
+      </p>
+    )}
+  </div>
+);
+
+/* ──────────────────────────────────────────────────────────
+   NAVBAR
+────────────────────────────────────────────────────────── */
+
+export const NavBar = ({
+  rol,
+  tabs,
+  activeTab,
+  onTabChange,
+  userInitials,
+  onLogout,
+}) => (
+  <div
+    style={{
+      position: "sticky",
+      top: 0,
+      zIndex: 100,
+
+      backdropFilter: "blur(28px)",
+
+      background: `
+        linear-gradient(
+          180deg,
+          rgba(4,8,10,.88),
+          rgba(4,8,10,.68)
+        )
+      `,
+
+      borderBottom: "1px solid rgba(255,255,255,.08)",
+
+      boxShadow: "0 10px 40px rgba(0,0,0,.22)",
+
+      padding: "0 28px",
+
+      display: "flex",
+      alignItems: "center",
+      gap: 20,
+    }}
+  >
+    {/* LOGO */}
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 12,
+        padding: "14px 0",
+        marginRight: 30,
+      }}
+    >
+      <div
+        style={{
+          width: 40,
+          height: 40,
+          borderRadius: 14,
+
+          background: `
+            linear-gradient(
+              135deg,
+              #00d97f,
+              #20e0b0,
+              #5b9eff
+            )
+          `,
+
+          display: "grid",
+          placeItems: "center",
+
+          color: "#fff",
+          fontWeight: 900,
+          fontSize: 18,
+
+          boxShadow: `
+            0 12px 35px rgba(0,217,127,.35)
+          `,
+        }}
+      >
+        ✦
+      </div>
+
+      <div
+        style={{
+          fontWeight: 900,
+          fontSize: 20,
+          letterSpacing: -.6,
+          color: "#fff",
+        }}
+      >
+        FP
+        <span style={{ color: "#20e0b0" }}>
+          Connect
+        </span>
+      </div>
+    </div>
+
+    {/* TABS */}
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+      }}
+    >
+      {tabs.map((t) => (
+        <button
+          key={t.key}
+          onClick={() => onTabChange(t.key)}
+          style={{
+            border: "none",
+            cursor: "pointer",
+
+            background:
+              activeTab === t.key
+                ? `
+                  linear-gradient(
+                    135deg,
+                    rgba(0,217,127,.22),
+                    rgba(32,224,176,.08)
+                  )
+                `
+                : "transparent",
+
+            color:
+              activeTab === t.key
+                ? "#d9fff1"
+                : "rgba(255,255,255,.6)",
+
+            borderRadius: 14,
+
+            padding: "10px 15px",
+
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+
+            fontWeight:
+              activeTab === t.key
+                ? 800
+                : 600,
+
+            transition: ".24s ease",
+
+            border:
+              activeTab === t.key
+                ? "1px solid rgba(32,224,176,.25)"
+                : "1px solid transparent",
+          }}
+        >
+          <span>{t.icon}</span>
+          {t.label}
+        </button>
+      ))}
+    </div>
+
+    {/* RIGHT */}
+    <div
+      style={{
+        marginLeft: "auto",
+        display: "flex",
+        alignItems: "center",
+        gap: 14,
+      }}
+    >
+      <Badge text={rol} />
+
+      <Avatar
+        iniciales={userInitials}
+        size={38}
+      />
+
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={onLogout}
+        style={{
+          color: "#ffb8c0",
+          border: "1px solid rgba(255,107,122,.22)",
+          background: "rgba(255,107,122,.08)",
+        }}
+      >
+        Salir
+      </Button>
     </div>
   </div>
 );
 
-export const PageWrapper = ({ children }) => (
-  <div style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 28px" }}>
+/* ──────────────────────────────────────────────────────────
+   PAGE WRAPPER
+────────────────────────────────────────────────────────── */
+
+export const PageWrapper = ({
+  children,
+}) => (
+  <div
+    style={{
+      maxWidth: 1180,
+      margin: "0 auto",
+      padding: "34px 28px",
+    }}
+  >
     {children}
   </div>
 );
