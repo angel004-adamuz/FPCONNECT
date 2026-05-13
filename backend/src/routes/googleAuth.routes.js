@@ -12,7 +12,7 @@ router.get('/', passport.authenticate('google', {
 
 // Callback de Google
 router.get('/callback',
-  passport.authenticate('google', { session: false, failureRedirect: 'http://localhost:5173?error=google_auth_failed' }),
+  passport.authenticate('google', { session: false, failureRedirect: `${process.env.FRONTEND_URL}?error=google_auth_failed`}),
   (req, res) => {
     const user = req.user;
 
@@ -29,7 +29,7 @@ router.get('/callback',
     );
 
     // Redirigir al frontend con los tokens
-    res.redirect(`http://localhost:5173?token=${token}&refreshToken=${refreshToken}&role=${user.role}`);
+    res.redirect(`${process.env.FRONTEND_URL}?token=${token}&refreshToken=${refreshToken}&role=${user.role}`);
   }
 );
 
